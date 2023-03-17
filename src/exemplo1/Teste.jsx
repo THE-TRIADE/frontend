@@ -5,9 +5,8 @@ import './teste.css';
 
 // Função JavaScript
 export const Teste = () => {
-
 	// Estados
-	const [estado, setEstado] = useState("teste");
+	const [estado, setEstado] = useState('teste 2');
 
 	// Efeitos colaterais
 	useEffect(() => {
@@ -16,29 +15,9 @@ export const Teste = () => {
 
 	// HTML (JSX)
 	return (
-		<div className='testando'>
+		<div className="testando">
 			<p>teste + {estado}</p>
+			<input type="text" id="teste" onBlur={(e) => setEstado(e.target.value)} />
 		</div>
 	);
-}
-
-
-
-
-
-
-
-
-
-// Tipos de função em JS
-function name(params) {
-	//
-}
-
-var name2 = function(params) {
-	//
-}
-								// = + > --> =>
-const name3 = (params) => {
-	//
-}
+};
