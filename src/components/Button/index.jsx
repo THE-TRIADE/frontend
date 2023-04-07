@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import './styles.css';
 
-export const Button = ({ text, onClick, disabled = false }) => {
+export const Button = ({ text, onClick, size = 'medium', disabled = false }) => {
 	return (
-		<button onClick={onClick} disabled={disabled}>
+		<button className={'button ' + size} onClick={onClick} disabled={disabled}>
 			{text}
 		</button>
 	);
@@ -11,10 +11,12 @@ export const Button = ({ text, onClick, disabled = false }) => {
 
 Button.defaultProps = {
 	disabled: false,
+	size: 'medium',
 };
 
 Button.propTypes = {
 	text: PropTypes.string.isRequired,
 	onClick: PropTypes.func.isRequired,
 	disabled: PropTypes.bool,
+	size: PropTypes.oneOf('small', 'medium', 'large'),
 };

@@ -1,0 +1,23 @@
+.button {
+	height: 45px;
+	text-align: center;
+	background: #CB8FFF;
+	box-shadow: 0px 4px 4px #AE83D3;
+	border: 0;
+  border-radius: 10px;
+	color: #FFF;
+	margin: 15px 0;
+	cursor: pointer;
+}
+
+.small {
+	width: 140px;
+}
+
+.medium {
+	width: 300px;
+}
+
+.large {
+	width: 455px;
+}
