@@ -1,0 +1,22 @@
+.loginInput {
+	height: 45px;
+	border: 3px solid #CB8FFF;
+	border-radius: 10px;
+  background-color: #FFF;
+	color: #595D6EB2;
+	outline: 0;
+	padding-left: 10px;
+	margin: 15px 0;
+}
+
+.small {
+	width: 140px;
+}
+
+.medium {
+	width: 300px;
+}
+
+.large {
+	width: 455px;
+}
