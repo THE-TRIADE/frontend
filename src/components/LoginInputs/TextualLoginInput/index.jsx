@@ -8,5 +8,5 @@ export const TextualLoginInput = ({ onChange, placeholder, size = 'medium' }) =>
 TextualLoginInput.propTypes = {
 	onChange: PropTypes.func.isRequired,
 	placeholder: PropTypes.string.isRequired,
-	size: PropTypes.oneOf('small', 'medium', 'large'),
+	size: PropTypes.oneOf(['small', 'medium', 'large']),
 };

@@ -1,14 +1,14 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  background-color: #FFF;
+	font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+	line-height: 1.5;
+	font-weight: 400;
+	background-color: #fff;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
+	font-synthesis: none;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-text-size-adjust: 100%;
 }
 * {
 	box-sizing: border-box;
@@ -26,17 +26,21 @@
 h2 {
 	text-align: center;
 	font-size: 35px;
-	color: #03A7B8;
+	color: #03a7b8;
 	margin: 50px 0 5px 0;
 }
+h4 {
+	font-weight: bold;
+	color: #cb8fff;
+}
 .app p {
-	color: #595D6E;
+	color: #595d6e;
 	font-size: 16px;
 	margin-bottom: 20px;
 }
 
 .app b {
-	color: #CB8FFF;
+	color: #cb8fff;
 }
 
 .app svg {

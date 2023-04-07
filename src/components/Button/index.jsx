@@ -18,5 +18,5 @@ Button.propTypes = {
 	text: PropTypes.string.isRequired,
 	onClick: PropTypes.func.isRequired,
 	disabled: PropTypes.bool,
-	size: PropTypes.oneOf('small', 'medium', 'large'),
+	size: PropTypes.oneOf(['small', 'medium', 'large']),
 };

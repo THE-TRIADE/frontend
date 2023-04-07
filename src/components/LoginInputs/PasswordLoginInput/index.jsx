@@ -8,5 +8,5 @@ export const PasswordLoginInput = ({ onChange, placeholder, size = 'medium' }) =
 PasswordLoginInput.propTypes = {
 	onChange: PropTypes.func.isRequired,
 	placeholder: PropTypes.string.isRequired,
-	size: PropTypes.oneOf('small', 'medium', 'large'),
+	size: PropTypes.oneOf(['small', 'medium', 'large']),
 };
