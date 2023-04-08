@@ -23,26 +23,28 @@
 	justify-content: center;
 }
 
-h2 {
-	text-align: center;
-	font-size: 35px;
+h1,
+h2,
+h3 {
 	color: #03a7b8;
-	margin: 50px 0 5px 0;
+	font-weight: 600;
 }
 h4 {
 	font-weight: bold;
 	color: #cb8fff;
 }
-.app p {
+.container p {
 	color: #595d6e;
-	font-size: 16px;
-	margin-bottom: 20px;
+	font-size: 1.25rem;
+	font-weight: 400;
 }
 
-.app b {
+b {
 	color: #cb8fff;
 }
-
+.secondary-color {
+	color: #cb8fff;
+}
 .app svg {
 	width: 100%;
 	position: absolute;
