@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import '../styles.css';
 
-export const SelectLoginInput = ({ options, onChange, size = 'medium', value }) => {
+export const SelectLoginInput = ({ options, onChange, value }) => {
 	return (
-		<select className={'loginSelect ' + size} value={value} onChange={onChange}>
+		<select className="loginSelect form-select mt-3 mb-2" value={value} onChange={onChange}>
 			{options.map((o) => (
 				<option value={o} key={o}>
 					{o}
@@ -17,5 +17,4 @@ SelectLoginInput.propTypes = {
 	options: PropTypes.array.isRequired,
 	value: PropTypes.string.isRequired,
 	onChange: PropTypes.func.isRequired,
-	size: PropTypes.oneOf(['small', 'medium', 'large']),
 };

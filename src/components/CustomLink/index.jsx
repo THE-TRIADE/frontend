@@ -1,16 +1,16 @@
 import PropTypes from 'prop-types';
 import './styles.css';
+import { Link } from 'react-router-dom';
 
-export const CustomLink = ({ href, target, text }) => {
+export const CustomLink = ({ to, text }) => {
 	return (
-		<a className="customLink" href={href} target={target}>
+		<Link className="customLink " to={to}>
 			{text}
-		</a>
+		</Link>
 	);
 };
 
 CustomLink.propTypes = {
-	target: PropTypes.string.isRequired,
-	href: PropTypes.string.isRequired,
+	to: PropTypes.string.isRequired,
 	text: PropTypes.string.isRequired,
 };

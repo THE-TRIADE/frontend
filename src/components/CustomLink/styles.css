@@ -2,4 +2,8 @@
 	color: #03a7b8;
 	font-weight: bold;
 	text-decoration: none;
+	margin-top: 1rem;
+}
+.customLink:hover {
+	color: #cb8fff;
 }
