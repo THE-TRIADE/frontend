@@ -56,6 +56,10 @@ export const SignUp = () => {
 			newErrorMessages.name = 'Nome não pode conter números';
 		}
 
+		if (!signUpForm.email.includes('@')) {
+			newErrorMessages.name = 'Email inválido';
+		}
+
 		if (signUpForm.cpf.length != 11) {
 			newErrorMessages.cpf = 'CPF inválido';
 		}
@@ -116,13 +120,17 @@ export const SignUp = () => {
 				</p>
 				<div className="row text-start">
 					<div className="col-12">
-						<TextualLoginInput placeholder="Nome" onChange={(e) => updateForm('name', e)} />
+						<TextualLoginInput placeholder="Nome" value={signUpForm.name} onChange={(e) => updateForm('name', e)} />
 						{showErrorMessages('name')}
-						<EmailLoginInput placeholder="E-mail" onChange={(e) => updateForm('email', e)} />
+						<EmailLoginInput placeholder="E-mail" value={signUpForm.email} onChange={(e) => updateForm('email', e)} />
 						{showErrorMessages('email')}
 						<CpfLoginInput placeholder="CPF" value={signUpForm.cpf} onChange={(e) => updateForm('cpf', e)} />
 						{showErrorMessages('cpf')}
-						<DateLoginInput placeholder="Data de Nascimento" onChange={(e) => updateForm('birthDate', e)} />
+						<DateLoginInput
+							placeholder="Data de Nascimento"
+							value={signUpForm.birthDate}
+							onChange={(e) => updateForm('birthDate', e)}
+						/>
 						{showErrorMessages('birthDate')}
 						<PasswordLoginInput
 							placeholder="Senha"

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import '../styles.css';
 
-export const PasswordLoginInput = ({ onChange, placeholder, value }) => {
+export const PasswordLoginInput = ({ value, onChange, placeholder }) => {
 	return (
 		<input
 			type="password"
