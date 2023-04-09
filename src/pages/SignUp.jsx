@@ -9,6 +9,7 @@ import { CustomLink } from '../components/CustomLink';
 import { CustomSpan } from '../components/CustomSpan';
 
 import { api } from '../config/api';
+import { useNavigate } from 'react-router-dom';
 
 export const SignUp = () => {
 	const [signUpForm, setSignUpForm] = useState({
@@ -20,12 +21,15 @@ export const SignUp = () => {
 		passwordConfirmation: '',
 	});
 	const [errorMessages, setErrorMessages] = useState({
-		name: [],
-		email: [],
-		cpf: [],
-		birthDate: [],
-		password: [],
+		name: null,
+		email: null,
+		cpf: null,
+		birthDate: null,
+		password: null,
+		passwordConfirmation: null,
 	});
+
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		clearValidationFields();
@@ -37,55 +41,40 @@ export const SignUp = () => {
 		});
 	};
 
-	const isEmpty = (text) => text.trim() == '';
+	const isEmpty = (text) => text.trim() === '';
 
 	const validateForm = () => {
-		if (isEmpty(signUpForm.name)) {
-			setErrorMessages((prevState) => {
-				return { ...prevState, name: [...prevState.name, 'Nome não pode ser vazio'] };
-			});
-		}
-		if (!isEmpty(signUpForm.name)) {
-			if (signUpForm.name.match(/\d/g) != null) {
-				setErrorMessages((prevState) => {
-					return { ...prevState, name: [...prevState.name, 'Nome não pode conter números'] };
-				});
+		const newErrorMessages = { ...errorMessages };
+
+		for (const [key, value] of Object.entries(signUpForm)) {
+			if (isEmpty(value)) {
+				newErrorMessages[key] = 'Este campo não pode ser vazio';
 			}
 		}
-		if (isEmpty(signUpForm.email)) {
-			setErrorMessages((prevState) => {
-				return { ...prevState, email: [...prevState.email, 'Email não pode ser vazio'] };
-			});
+
+		if (signUpForm.name.match(/\d/g) != null) {
+			newErrorMessages.name = 'Nome não pode conter números';
 		}
-		if (isEmpty(signUpForm.cpf)) {
-			setErrorMessages((prevState) => {
-				return { ...prevState, cpf: [...prevState.cpf, 'CPF não pode ser vazio'] };
-			});
+
+		if (signUpForm.cpf.length != 11) {
+			newErrorMessages.cpf = 'CPF inválido';
 		}
-		if (!isEmpty(signUpForm.cpf) && signUpForm.cpf.length != 11) {
-			setErrorMessages((prevState) => {
-				return { ...prevState, cpf: [...prevState.cpf, 'CPF inválido'] };
-			});
+
+		if (signUpForm.password !== signUpForm.passwordConfirmation) {
+			newErrorMessages.passwordConfirmation = 'Senhas não coincidem';
 		}
-		if (isEmpty(signUpForm.birthDate)) {
-			setErrorMessages((prevState) => {
-				return { ...prevState, birthDate: [...prevState.birthDate, 'Data de nascimento não pode ser vazia'] };
-			});
-		}
-		if (isEmpty(signUpForm.password)) {
-			setErrorMessages((prevState) => {
-				return { ...prevState, password: [...prevState.password, 'Senha não pode ser vazia'] };
-			});
-		}
+
+		setErrorMessages(newErrorMessages);
 	};
 
 	const clearValidationFields = () => {
 		setErrorMessages({
-			name: [],
-			email: [],
-			cpf: [],
-			birthDate: [],
-			password: [],
+			name: null,
+			email: null,
+			cpf: null,
+			birthDate: null,
+			password: null,
+			passwordConfirmation: null,
 		});
 	};
 
@@ -93,27 +82,28 @@ export const SignUp = () => {
 		clearValidationFields();
 		validateForm();
 		let isValid = true;
-		Object.keys(errorMessages).forEach((key) => {
-			if (errorMessages[key].length) {
+		Object.values(errorMessages).forEach((errors) => {
+			if (errors !== null) {
 				isValid = false;
 			}
 		});
 
 		if (isValid) {
-			const newGuardian = signUpForm;
+			const newGuardian = { ...signUpForm };
 			delete newGuardian.passwordConfirmation;
 			api
 				.post('/guardian', newGuardian)
-				.then((res) => console.log(res))
+				.then((res) => {
+					console.log(res);
+					navigate('/');
+				})
 				.catch((err) => console.error(err));
 		}
 	};
 
 	const showErrorMessages = (field) => {
-		if (errorMessages[field].length) {
-			return errorMessages[field].map((fieldError, index) => (
-				<CustomSpan key={'error-' + field + '-' + index} text={fieldError} />
-			));
+		if (errorMessages[field] !== null) {
+			return <CustomSpan key={'error-' + field} text={errorMessages[field]} />;
 		}
 	};
 
@@ -130,13 +120,22 @@ export const SignUp = () => {
 						{showErrorMessages('name')}
 						<EmailLoginInput placeholder="E-mail" onChange={(e) => updateForm('email', e)} />
 						{showErrorMessages('email')}
-						<CpfLoginInput placeholder="CPF" onChange={(e) => updateForm('cpf', e)} />
+						<CpfLoginInput placeholder="CPF" value={signUpForm.cpf} onChange={(e) => updateForm('cpf', e)} />
 						{showErrorMessages('cpf')}
 						<DateLoginInput placeholder="Data de Nascimento" onChange={(e) => updateForm('birthDate', e)} />
 						{showErrorMessages('birthDate')}
-						<PasswordLoginInput placeholder="Senha" onChange={(e) => updateForm('password', e)} />
+						<PasswordLoginInput
+							placeholder="Senha"
+							value={signUpForm.password}
+							onChange={(e) => updateForm('password', e)}
+						/>
 						{showErrorMessages('password')}
-						<PasswordLoginInput placeholder="Confirmar Senha" onChange={(e) => updateForm('passwordConfirmation', e)} />
+						<PasswordLoginInput
+							value={signUpForm.passwordConfirmation}
+							placeholder="Confirmar Senha"
+							onChange={(e) => updateForm('passwordConfirmation', e)}
+						/>
+						{showErrorMessages('passwordConfirmation')}
 						<div className="mt-3">
 							<Button onClick={submitSignUpForm} text="Cadastrar" />
 						</div>
