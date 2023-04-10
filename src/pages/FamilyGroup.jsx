@@ -142,7 +142,7 @@ export const FamilyGroup = () => {
 							{showErrorMessages('dependentName')}
 							<CpfInput
 								placeholder="CPF"
-								value={familyGroupForm.cpf}
+								value={familyGroupForm.dependentCpf}
 								label="CPF do dependente"
 								onChange={(e) => updateForm('dependentCpf', e)}
 							/>
