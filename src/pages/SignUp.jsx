@@ -99,9 +99,10 @@ export const SignUp = () => {
 				.post('/guardian', newGuardian)
 				.then((res) => {
 					console.log(res);
-					navigate('/');
+					navigate('/familygroup');
 				})
 				.catch((err) => console.error(err));
+			navigate('/familygroup');
 		}
 	};
 

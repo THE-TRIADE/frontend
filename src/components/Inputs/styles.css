@@ -1,36 +1,13 @@
-.inputText {
-	height: 45px;
-	border: 1px solid #8a8390;
-	border-radius: 10px;
-	background-color: #fff;
-	color: #595d6eb2;
-	outline: 0;
-	padding-left: 10px;
-	margin: 10px 0;
-}
-.select {
-	height: 45px;
-	border: 3px solid #cb8fff;
-	border-radius: 10px;
-	background-color: #fff;
-	color: #595d6eb2;
-	outline: 0;
-	padding-left: 10px;
-	margin: 15px 0;
-}
 .customLabel {
 	color: #03a7b8;
 	font-weight: 500;
 }
-
-.small {
-	width: 140px;
+.inputCustom,
+.selectCustom {
+	width: 100%;
+	border: 1px solid #e2e5ec;
 }
-
-.medium {
-	width: 300px;
-}
-
-.large {
-	width: 455px;
+.inputCustom:hover,
+.selectCustom:hover {
+	border: 1px solid #03a7b8;
 }
