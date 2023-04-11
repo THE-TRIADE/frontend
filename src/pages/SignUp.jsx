@@ -28,6 +28,7 @@ export const SignUp = () => {
 		password: null,
 		passwordConfirmation: null,
 	});
+	const [trySignUp, setTrySignUp] = useState(false);
 
 	const navigate = useNavigate();
 
@@ -35,9 +36,41 @@ export const SignUp = () => {
 		clearValidationFields();
 	}, []);
 
+	useEffect(() => {
+		if (trySignUp) {
+			const newErrorMessages = validateForm();
+			let isValid = true;
+			Object.values(newErrorMessages).forEach((errors) => {
+				if (errors !== null) {
+					isValid = false;
+				}
+			});
+
+			if (isValid) {
+				const newGuardian = { ...signUpForm };
+				delete newGuardian.passwordConfirmation;
+				api
+					.post('/guardian', newGuardian)
+					.then((res) => {
+						console.log(res);
+
+						navigate('/familygroup');
+					})
+					.catch((err) => console.error(err));
+			} else {
+				setTrySignUp(false);
+			}
+		}
+	}, [trySignUp]);
+
 	const updateForm = (inputName, event) => {
+		let newCpf;
+		if (inputName == 'cpf') {
+			newCpf = event.target.value.replace(/\D/g, '');
+		}
+
 		setSignUpForm((prevState) => {
-			return { ...prevState, [inputName]: event.target.value };
+			return { ...prevState, [inputName]: inputName == 'cpf' ? newCpf : event.target.value };
 		});
 	};
 
@@ -57,7 +90,7 @@ export const SignUp = () => {
 		}
 
 		if (!signUpForm.email.includes('@')) {
-			newErrorMessages.name = 'Email inválido';
+			newErrorMessages.email = 'Email inválido';
 		}
 
 		if (signUpForm.cpf.length != 11) {
@@ -69,6 +102,8 @@ export const SignUp = () => {
 		}
 
 		setErrorMessages(newErrorMessages);
+
+		return newErrorMessages;
 	};
 
 	const clearValidationFields = () => {
@@ -84,26 +119,7 @@ export const SignUp = () => {
 
 	const submitSignUpForm = () => {
 		clearValidationFields();
-		validateForm();
-		let isValid = true;
-		Object.values(errorMessages).forEach((errors) => {
-			if (errors !== null) {
-				isValid = false;
-			}
-		});
-
-		if (isValid) {
-			const newGuardian = { ...signUpForm };
-			delete newGuardian.passwordConfirmation;
-			api
-				.post('/guardian', newGuardian)
-				.then((res) => {
-					console.log(res);
-					navigate('/familygroup');
-				})
-				.catch((err) => console.error(err));
-			navigate('/familygroup');
-		}
+		setTrySignUp(true);
 	};
 
 	const showErrorMessages = (field) => {
