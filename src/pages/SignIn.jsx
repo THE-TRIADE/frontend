@@ -6,6 +6,7 @@ import { PasswordLoginInput } from '../components/LoginInputs/PasswordLoginInput
 import { useNavigate } from 'react-router-dom';
 import { api } from '../config/api';
 import { CustomSpan } from '../components/CustomSpan';
+import { FooterWave } from '../components/FooterWave';
 
 export const SignIn = () => {
 	const [login, setLogin] = useState({
@@ -93,26 +94,29 @@ export const SignIn = () => {
 	};
 
 	return (
-		<div className="container my-5 text-center custom-card">
-			<h2>
-				Entre no <span className="secondary-color">Family</span>Routine
-			</h2>
+		<div className="app justify-content-center pb-5">
+			<div className="container text-center custom-card pb-5">
+				<h2>
+					Entre no <span className="secondary-color">Family</span>Routine
+				</h2>
 
-			<p>
-				Não tem cadastro? <CustomLink to="/signup" text="Cadastre-se" />
-			</p>
-			<div className="row text-start">
-				<div className="col-12">
-					<EmailLoginInput placeholder="E-mail" onChange={(e) => updateForm('username', e)} />
-					{showErrorMessages('username')}
-					<PasswordLoginInput placeholder="Senha" onChange={(e) => updateForm('password', e)} />
-					{showErrorMessages('password')}
-					<div className="my-3 text-end">
-						<CustomLink to="/forgotpassword" text="Esqueceu sua senha?" />
+				<p>
+					Não tem cadastro? <CustomLink to="/signup" text="Cadastre-se" />
+				</p>
+				<div className="row text-start">
+					<div className="col-12">
+						<EmailLoginInput placeholder="E-mail" onChange={(e) => updateForm('username', e)} />
+						{showErrorMessages('username')}
+						<PasswordLoginInput placeholder="Senha" onChange={(e) => updateForm('password', e)} />
+						{showErrorMessages('password')}
+						<div className="my-3 text-end">
+							<CustomLink to="/forgotpassword" text="Esqueceu sua senha?" />
+						</div>
 					</div>
 				</div>
+				<Button onClick={logIn} text="Entrar" />
 			</div>
-			<Button onClick={logIn} text="Entrar" />
+			<FooterWave />
 		</div>
 	);
 };

@@ -10,6 +10,7 @@ import { CustomSpan } from '../components/CustomSpan';
 
 import { api } from '../config/api';
 import { useNavigate } from 'react-router-dom';
+import { FooterWave } from '../components/FooterWave';
 
 export const SignUp = () => {
 	const [signUpForm, setSignUpForm] = useState({
@@ -130,7 +131,7 @@ export const SignUp = () => {
 
 	return (
 		<div className="app">
-			<div className="container my-5 text-center custom-card">
+			<div className="container text-center custom-card mt-5 pt-5">
 				<h1>Cadastro</h1>
 				<p>
 					Cadastre-se e tenha acesso ao <b>Family</b>Routine
@@ -170,6 +171,7 @@ export const SignUp = () => {
 					<CustomLink to="/login" text="Voltar para página de login" />
 				</div>
 			</div>
+			<FooterWave />
 		</div>
 	);
 };
