@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Button } from '../components/Button';
 import { CustomSpan } from '../components/CustomSpan';
 import { TextualInput } from '../components/Inputs/TextualInput';
-import { SelectInput } from '../components/Inputs/SelectInput';
 
 import { api } from '../config/api';
 import { ButtonOutline } from '../components/ButtonOutline';
@@ -12,30 +11,72 @@ import { CpfInput } from '../components/Inputs/CpfInput';
 export const FamilyGroup = () => {
 	const [familyGroupForm, setfamilyGroupForm] = useState({
 		name: '',
-		guardianPaper: '',
-		guardianPartner: '',
-		dependentName: '',
-		dependentCpf: '',
-		dependentBirthDate: '',
+		dependents: [
+			{
+				dependentName: '',
+				dependentCpf: '',
+				dependentBirthDate: '',
+			},
+		],
 	});
 	const [errorMessages, setErrorMessages] = useState({
 		name: null,
-		guardianPaper: null,
-		guardianPartner: null,
-		dependentName: null,
-		dependentCpf: null,
-		dependentBirthDate: null,
 	});
+	const [dependentCount, setDependentCount] = useState(1);
 
 	useEffect(() => {
 		clearValidationFields();
 	}, []);
 
-	const [option, setOption] = useState('A');
+	useEffect(() => {
+		if (familyGroupForm.dependents.length < dependentCount) {
+			for (let count = familyGroupForm.dependents.length; count < dependentCount; count++) {
+				setfamilyGroupForm((prevState) => {
+					const newDependentForm = {
+						dependentName: '',
+						dependentCpf: '',
+						dependentBirthDate: '',
+					};
+					const newDependentsArray = [...prevState.dependents, newDependentForm];
+					return { ...prevState, dependents: newDependentsArray };
+				});
+			}
+		}
+		if (familyGroupForm.dependents.length > dependentCount) {
+			for (let count = familyGroupForm.dependents.length; count > dependentCount; count--) {
+				setfamilyGroupForm((prevState) => {
+					const newArray = prevState.dependents.slice(0, -1);
+					return { ...prevState, dependents: newArray };
+				});
+			}
+		}
+	}, [dependentCount]);
+
+	useEffect(() => {
+		console.log(familyGroupForm);
+	}, [familyGroupForm]);
 
 	const updateForm = (inputName, event) => {
 		setfamilyGroupForm((prevState) => {
 			return { ...prevState, [inputName]: event.target.value };
+		});
+	};
+
+	const updateDependentForm = (inputName, event, index) => {
+		let value = event.target.value;
+
+		setfamilyGroupForm((prevState) => {
+			const updatedDependents = prevState.dependents.map((dependent, i) => {
+				if (i === index) {
+					if (inputName == 'dependentCpf') {
+						value = event.target.value.replace(/\D/g, '');
+					}
+					return { ...dependent, [inputName]: value };
+				}
+				return dependent;
+			});
+
+			return { ...prevState, dependents: updatedDependents };
 		});
 	};
 
@@ -44,29 +85,29 @@ export const FamilyGroup = () => {
 	const validateForm = () => {
 		const newErrorMessages = { ...errorMessages };
 
-		for (const [key, value] of Object.entries(familyGroupForm)) {
-			if (isEmpty(value)) {
+		if (isEmpty(familyGroupForm.name)) {
+			newErrorMessages.name = 'Este campo não pode ser vazio';
+		}
+		for (let i = 0; i < familyGroupForm.dependents.length; i++) {
+			if (isEmpty(familyGroupForm.dependents[i].dependentName)) {
+				const key = `dependentName${i + 1}`;
+				newErrorMessages[key] = 'Este campo não pode ser vazio';
+			}
+			if (familyGroupForm.dependents[i].dependentCpf.length != 11) {
+				const key = `dependentCpf${i + 1}`;
+				newErrorMessages[key] = 'CPF inválido';
+			}
+			if (isEmpty(familyGroupForm.dependents[i].dependentBirthDate)) {
+				const key = `dependentBirthDate${i + 1}`;
 				newErrorMessages[key] = 'Este campo não pode ser vazio';
 			}
 		}
-		if (familyGroupForm.dependentCpf.length != 11) {
-			newErrorMessages.dependentCpf = 'CPF inválido';
-		}
-		if (!familyGroupForm.guardianPartner.includes('@')) {
-			newErrorMessages.guardianPartner = 'Email inválido';
-		}
-
 		setErrorMessages(newErrorMessages);
 	};
 
 	const clearValidationFields = () => {
 		setErrorMessages({
 			name: null,
-			guardianPaper: null,
-			guardianPartner: null,
-			dependentName: null,
-			dependentCpf: null,
-			dependentBirthDate: null,
 		});
 	};
 
@@ -91,14 +132,45 @@ export const FamilyGroup = () => {
 		}
 	};
 
-	const teste = () => {
-		console.log('teste');
-	};
-
 	const showErrorMessages = (field) => {
 		if (errorMessages[field] !== null) {
 			return <CustomSpan key={'error-' + field} text={errorMessages[field]} />;
 		}
+	};
+
+	// eslint-disable-next-line react/prop-types
+	const DependentForm = ({ counter, onchange }) => {
+		return (
+			<>
+				<b className="text-start h5">Dependente {counter}</b>
+				{counter > 1 && (
+					<b className="text-danger">
+						<ButtonOutline onClick={() => setDependentCount((ps) => ps - 1)} text="Excluir" />
+					</b>
+				)}
+				<TextualInput
+					placeholder="Nome"
+					label="Nome do dependente"
+					value={familyGroupForm.dependents[counter - 1].dependentName}
+					onChange={(e) => onchange('dependentName', e, counter - 1)}
+				/>
+				{showErrorMessages('dependentName' + counter)}
+				<CpfInput
+					placeholder="CPF"
+					value={familyGroupForm.dependents[counter - 1].dependentCpf}
+					label="CPF do dependente"
+					onChange={(e) => onchange('dependentCpf', e, counter - 1)}
+				/>
+				{showErrorMessages('dependentCpf' + counter)}
+				<DateInput
+					label="Data de Nascimento"
+					placeholder="00/00/0000"
+					value={familyGroupForm.dependents[counter - 1].dependentBirthDate}
+					onChange={(e) => onchange('dependentBirthDate', e, counter - 1)}
+				/>
+				{showErrorMessages('dependentBirthDate' + counter)}
+			</>
+		);
 	};
 
 	return (
@@ -116,49 +188,14 @@ export const FamilyGroup = () => {
 								onChange={(e) => updateForm('name', e)}
 							/>
 							{showErrorMessages('name')}
-							<SelectInput
-								options={['Mãe', 'Pai', 'Parente', 'Provisório']}
-								value={option}
-								label="Papel no grupo familiar"
-								onChange={(e) => setOption(e.target.value)}
-							/>
-							{showErrorMessages('guardianPaper')}
+							<h5 className="text-center mt-5 text-secondary">Cadastro de dependente(s)</h5>
 
-							<TextualInput
-								placeholder="Email"
-								label="Email do parceiro de tutela"
-								value={familyGroupForm.guardianPartner}
-								onChange={(e) => updateForm('guardianPartner', e)}
-							/>
-							{showErrorMessages('guardianPartner')}
-							<h5 className="text-center mt-5 text-secondary">Cadastro de dependete(s)</h5>
-							<b className="text-start h5">Dependente 1</b>
-							<TextualInput
-								placeholder="Nome"
-								label="Nome do dependente"
-								value={familyGroupForm.dependentName}
-								onChange={(e) => updateForm('dependentName', e)}
-							/>
-							{showErrorMessages('dependentName')}
-							<CpfInput
-								placeholder="CPF"
-								value={familyGroupForm.dependentCpf}
-								label="CPF do dependente"
-								onChange={(e) => updateForm('dependentCpf', e)}
-							/>
-
-							{showErrorMessages('dependentCpf')}
-							<DateInput
-								label="Data de Nascimento"
-								placeholder="00/00/0000"
-								value={familyGroupForm.dependentBirthDate}
-								onChange={(e) => updateForm('dependentBirthDate', e)}
-							/>
-							{showErrorMessages('dependentBirthDate')}
-							<div className="my-3 text-end">
-								<ButtonOutline onClick={teste} text="Adicionar dependente +" />
+							<div className="my-3 text-start">
+								{familyGroupForm.dependents.map((df, index) => (
+									<DependentForm counter={index + 1} onchange={updateDependentForm} key={'kdf' + index} />
+								))}
+								<ButtonOutline onClick={() => setDependentCount((ps) => ps + 1)} text="Adicionar dependente +" />
 							</div>
-
 							<Button onClick={submitFamilyGroupForm} text="Finalizar Cadastro" />
 						</div>
 					</div>

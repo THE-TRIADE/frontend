@@ -55,3 +55,7 @@ b {
 	position: absolute;
 	bottom: 0;
 }
+
+b > button.buttonOutline {
+	color: red;
+}
