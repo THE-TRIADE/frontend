@@ -4,6 +4,8 @@ import { TitlePages } from '../components/TitlePages';
 import { DateInput } from '../components/Inputs/DateInput';
 // import { api } from '../config/api';
 import { SelectInput } from '../components/Inputs/SelectInput';
+import { CardSpents } from '../components/Cards/CardSpents';
+import { api } from '../config/api';
 
 export const Spents = () => {
 	const [sentForm, setSentForm] = useState({
@@ -15,6 +17,7 @@ export const Spents = () => {
 		activityId: '',
 	});
 	const [option, setOption] = useState('A');
+	const [spents, setSpents] = useState([]);
 
 	const updateForm = (inputName, event) => {
 		setSentForm((prevState) => {
@@ -35,24 +38,27 @@ export const Spents = () => {
 	useEffect(() => {
 		const modalElement = document.getElementById('staticBackdrop');
 		modalElement.addEventListener('hidden.bs.modal', handleFormSubmit);
-
+		const getSpents = () => {
+			api.get('/spent').then((res) => {
+				setSpents(res.data);
+			});
+		};
 		return () => {
+			getSpents();
 			modalElement.removeEventListener('hidden.bs.modal', handleFormSubmit);
 		};
 	}, []);
-	// const getAllDependts = () => {
-	// 	let arrayOfDependents = [];
-	// 	api.get('/dependent').then((res) => {
-	// 		res.data.forEach((dependent) => arrayOfDependents.push(dependent));
-	// 	});
-	// };
 
 	return (
 		<div className="container">
 			<div className="row">
 				<div className="col-12">
 					<TitlePages text="Gastos" textButton="Cadastrar Gasto" target="#staticBackdrop" />
-
+					<div className="row">
+						{spents.map((spent) => (
+							<CardSpents key={spent.id} spent={spent} />
+						))}
+					</div>
 					<div
 						className="modal fade"
 						id="staticBackdrop"
