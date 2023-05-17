@@ -4,3 +4,6 @@
 .text-primary {
 	color: #03a7b8 !important;
 }
+.card:hover {
+	border: 1px solid #cb8fff;
+}

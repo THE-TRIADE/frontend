@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { CardFamilyGroup } from '../components/CardFamilyGroup';
-import { FooterWave } from '../components/FooterWave';
+import { CardFamilyGroup } from '../components/Cards/CardFamilyGroup';
 import { TitlePages } from '../components/TitlePages';
 import { api } from '../config/api';
 import { useEffect } from 'react';
@@ -27,7 +26,6 @@ export const Home = () => {
 					))}
 				</div>
 			</div>
-			<FooterWave />
 		</div>
 	);
 };
