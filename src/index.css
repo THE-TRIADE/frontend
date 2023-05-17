@@ -15,14 +15,19 @@
 	padding: 0;
 	margin: 0;
 }
-
+html,
+body,
+#root {
+	height: 100%;
+}
 .app {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	justify-content: center;
+	min-height: 100%;
 }
-
+.margin-login {
+}
 h1,
 h2,
 h3 {
@@ -41,6 +46,9 @@ h4 {
 
 b {
 	color: #cb8fff;
+}
+.bg-secondary {
+	background: #cb8fff;
 }
 .secondary-color {
 	color: #cb8fff;
