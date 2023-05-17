@@ -5,6 +5,7 @@ import { SignIn } from './pages/SignIn';
 import { ForgotPassword } from './pages/ForgotPassword';
 import { NotFound } from './pages/NotFound';
 import { FamilyGroup } from './pages/FamilyGroup';
+import { Spents } from './pages/Spents';
 
 function App() {
 	return (
@@ -13,6 +14,7 @@ function App() {
 				<Route path="/familygroup" element={<FamilyGroup />} />
 				<Route path="/" element={<Home />} />
 				<Route path="/signup" element={<SignUp />} />
+				<Route path="/spents" element={<Spents />} />
 				<Route path="/login" element={<SignIn />} />
 				<Route path="/forgotpassword" element={<ForgotPassword />} />
 				<Route path="*" element={<NotFound />} />
