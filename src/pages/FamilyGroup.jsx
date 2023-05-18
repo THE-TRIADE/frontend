@@ -2,36 +2,58 @@ import { useEffect, useState } from 'react';
 import { Button } from '../components/Button';
 import { CustomSpan } from '../components/CustomSpan';
 import { TextualInput } from '../components/Inputs/TextualInput';
-import { SelectInput } from '../components/Inputs/SelectInput';
 
 import { api } from '../config/api';
 import { ButtonOutline } from '../components/ButtonOutline';
-import { DateInput } from '../components/Inputs/DateInput';
-import { CpfInput } from '../components/Inputs/CpfInput';
+import { DependentForm } from '../components/DependentForm';
 
 export const FamilyGroup = () => {
 	const [familyGroupForm, setfamilyGroupForm] = useState({
 		name: '',
-		guardianPaper: '',
-		guardianPartner: '',
-		dependentName: '',
-		dependentCpf: '',
-		dependentBirthDate: '',
 	});
+	const [dependents, setDependents] = useState([]);
 	const [errorMessages, setErrorMessages] = useState({
 		name: null,
-		guardianPaper: null,
-		guardianPartner: null,
-		dependentName: null,
-		dependentCpf: null,
-		dependentBirthDate: null,
 	});
+	const [dependentCount, setDependentCount] = useState(1);
+	const [submit, setSubmit] = useState(false);
 
 	useEffect(() => {
 		clearValidationFields();
 	}, []);
 
-	const [option, setOption] = useState('A');
+	useEffect(() => {
+		console.log('Dependents', dependents);
+	}, [dependents]);
+
+	useEffect(() => {
+		if (dependents.length > dependentCount) {
+			setDependents((ps) => [...ps.slice(0, -1)]);
+		}
+	}, [dependentCount]);
+
+	useEffect(() => {
+		if (submit) {
+			const newErrors = validateForm();
+			let isValid = true;
+			Object.values(newErrors).forEach((errors) => {
+				if (errors !== null) {
+					isValid = false;
+				}
+			});
+
+			if (isValid) {
+				const newFamilyGroup = { ...familyGroupForm, dependents };
+				api
+					.post('/familyGroup', newFamilyGroup)
+					.then((res) => {
+						console.log(res);
+					})
+					.catch((err) => console.error(err));
+			}
+		}
+		setSubmit(false);
+	}, [submit]);
 
 	const updateForm = (inputName, event) => {
 		setfamilyGroupForm((prevState) => {
@@ -43,62 +65,39 @@ export const FamilyGroup = () => {
 
 	const validateForm = () => {
 		const newErrorMessages = { ...errorMessages };
-
-		for (const [key, value] of Object.entries(familyGroupForm)) {
-			if (isEmpty(value)) {
-				newErrorMessages[key] = 'Este campo não pode ser vazio';
-			}
+		if (isEmpty(familyGroupForm.name)) {
+			newErrorMessages.name = 'Este campo não pode ser vazio';
 		}
-		if (familyGroupForm.dependentCpf.length != 11) {
-			newErrorMessages.dependentCpf = 'CPF inválido';
-		}
-		if (!familyGroupForm.guardianPartner.includes('@')) {
-			newErrorMessages.guardianPartner = 'Email inválido';
-		}
-
 		setErrorMessages(newErrorMessages);
+		return newErrorMessages;
 	};
 
 	const clearValidationFields = () => {
 		setErrorMessages({
 			name: null,
-			guardianPaper: null,
-			guardianPartner: null,
-			dependentName: null,
-			dependentCpf: null,
-			dependentBirthDate: null,
 		});
 	};
 
 	const submitFamilyGroupForm = () => {
 		clearValidationFields();
-		validateForm();
-		let isValid = true;
-		Object.values(errorMessages).forEach((errors) => {
-			if (errors !== null) {
-				isValid = false;
-			}
-		});
-
-		if (isValid) {
-			const newFamilyGroup = { ...familyGroupForm };
-			api
-				.post('/familyGroup', newFamilyGroup)
-				.then((res) => {
-					console.log(res);
-				})
-				.catch((err) => console.error(err));
-		}
-	};
-
-	const teste = () => {
-		console.log('teste');
+		setSubmit(true);
 	};
 
 	const showErrorMessages = (field) => {
 		if (errorMessages[field] !== null) {
 			return <CustomSpan key={'error-' + field} text={errorMessages[field]} />;
 		}
+	};
+
+	const updateDependent = (newDependent, index) => {
+		setDependents((ps) => {
+			if (index >= 0 && index < ps.length) {
+				ps[index] = newDependent;
+			} else {
+				ps.push(newDependent);
+			}
+			return [...ps];
+		});
 	};
 
 	return (
@@ -116,49 +115,20 @@ export const FamilyGroup = () => {
 								onChange={(e) => updateForm('name', e)}
 							/>
 							{showErrorMessages('name')}
-							<SelectInput
-								options={['Mãe', 'Pai', 'Parente', 'Provisório']}
-								value={option}
-								label="Papel no grupo familiar"
-								onChange={(e) => setOption(e.target.value)}
-							/>
-							{showErrorMessages('guardianPaper')}
+							<h5 className="text-center mt-5 text-secondary">Cadastro de dependente(s)</h5>
 
-							<TextualInput
-								placeholder="Email"
-								label="Email do parceiro de tutela"
-								value={familyGroupForm.guardianPartner}
-								onChange={(e) => updateForm('guardianPartner', e)}
-							/>
-							{showErrorMessages('guardianPartner')}
-							<h5 className="text-center mt-5 text-secondary">Cadastro de dependete(s)</h5>
-							<b className="text-start h5">Dependente 1</b>
-							<TextualInput
-								placeholder="Nome"
-								label="Nome do dependente"
-								value={familyGroupForm.dependentName}
-								onChange={(e) => updateForm('dependentName', e)}
-							/>
-							{showErrorMessages('dependentName')}
-							<CpfInput
-								placeholder="CPF"
-								value={familyGroupForm.dependentCpf}
-								label="CPF do dependente"
-								onChange={(e) => updateForm('dependentCpf', e)}
-							/>
-
-							{showErrorMessages('dependentCpf')}
-							<DateInput
-								label="Data de Nascimento"
-								placeholder="00/00/0000"
-								value={familyGroupForm.dependentBirthDate}
-								onChange={(e) => updateForm('dependentBirthDate', e)}
-							/>
-							{showErrorMessages('dependentBirthDate')}
-							<div className="my-3 text-end">
-								<ButtonOutline onClick={teste} text="Adicionar dependente +" />
+							<div className="my-3 text-start">
+								{Array.from({ length: dependentCount }).map((_, index) => (
+									<DependentForm
+										counter={index + 1}
+										showErrorMessages={showErrorMessages}
+										updateDependentCount={setDependentCount}
+										updateDependent={updateDependent}
+										key={'kdf' + index}
+									/>
+								))}
+								<ButtonOutline onClick={() => setDependentCount((ps) => ps + 1)} text="Adicionar dependente +" />
 							</div>
-
 							<Button onClick={submitFamilyGroupForm} text="Finalizar Cadastro" />
 						</div>
 					</div>
