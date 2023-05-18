@@ -52,17 +52,14 @@ export const Spents = () => {
 		};
 
 		const getDependents = () => {
-			setDependents(() => []);
 			api.get('/guardian/' + sessionStorage.getItem('UserId')).then((res) => {
-				res.data.guards.map((x) => {
-					setDependents((oldList) => [
-						...oldList,
-						{
-							dependentName: x.dependentName,
-							dependentId: x.dependentId,
-						},
-					]);
+				const listDependent = res.data.guards.map((guard) => {
+					return {
+						dependentName: guard.dependentName,
+						dependentId: guard.dependentId,
+					};
 				});
+				setDependents(listDependent);
 			});
 		};
 		return () => {
@@ -126,8 +123,8 @@ export const Spents = () => {
 									<SelectInput
 										options={[
 											{ optName: 'escolha um dependente', optValue: '-1', disabled: true },
-											...dependents.map((x) => {
-												return { optName: x.dependentName, optValue: x.dependentId.toString() };
+											...dependents.map((dependent) => {
+												return { optName: dependent.dependentName, optValue: dependent.dependentId.toString() };
 											}),
 										]}
 										value={sentForm.dependentId}
