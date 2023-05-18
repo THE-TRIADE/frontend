@@ -6,17 +6,17 @@ import { DateInput } from '../components/Inputs/DateInput';
 import { SelectInput } from '../components/Inputs/SelectInput';
 import { CardSpents } from '../components/Cards/CardSpents';
 import { api } from '../config/api';
+import { Button } from '../components/Button';
 
 export const Spents = () => {
 	const [sentForm, setSentForm] = useState({
 		name: '',
 		value: '',
 		paidOn: '',
-		guardianId: '',
-		dependentId: '',
+		guardianId: sessionStorage.getItem('UserId'),
+		dependentId: '-1',
 		activityId: '',
 	});
-	const [option, setOption] = useState('A');
 	const [spents, setSpents] = useState([]);
 	const [dependents, setDependents] = useState([
 		{
@@ -37,13 +37,13 @@ export const Spents = () => {
 			value: '',
 			paidOn: '',
 			guardianId: '',
-			dependentId: '',
+			dependentId: '-1',
 			activityId: '',
 		});
 	};
 
 	useEffect(() => {
-		const modalElement = document.getElementById('staticBackdrop');
+		const modalElement = document.getElementById('ModalCadastrarGasto');
 		modalElement.addEventListener('hidden.bs.modal', handleFormSubmit);
 		const getSpents = () => {
 			api.get('/spent/by-guardian-id/' + sessionStorage.getItem('UserId')).then((res) => {
@@ -72,11 +72,16 @@ export const Spents = () => {
 		};
 	}, []);
 
+	const testFunc = () => {
+		console.log(sentForm);
+		return;
+	};
+
 	return (
 		<div className="container">
 			<div className="row">
 				<div className="col-12">
-					<TitlePages text="Gastos" textButton="Cadastrar Gasto" target="#staticBackdrop" />
+					<TitlePages text="Gastos" textButton="Cadastrar Gasto" target="#ModalCadastrarGasto" />
 					<div className="row">
 						{spents.map((spent) => (
 							<CardSpents key={spent.id} spent={spent} />
@@ -84,17 +89,17 @@ export const Spents = () => {
 					</div>
 					<div
 						className="modal fade"
-						id="staticBackdrop"
+						id="ModalCadastrarGasto"
 						data-bs-backdrop="static"
 						data-bs-keyboard="false"
 						tabIndex="-1"
-						aria-labelledby="staticBackdropLabel"
+						aria-labelledby="ModalCadastrarGasto"
 						aria-hidden="true"
 					>
 						<div className="modal-dialog modal-dialog-centered">
 							<div className="modal-content">
 								<div className="modal-header">
-									<h1 className="modal-title fs-5 secondary-color" id="staticBackdropLabel">
+									<h1 className="modal-title fs-5 secondary-color" id="ModalCadastrarGasto">
 										Cadastrar Gasto
 									</h1>
 									<button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -119,16 +124,19 @@ export const Spents = () => {
 										onChange={(e) => updateForm('paidOn', e)}
 									/>
 									<SelectInput
-										options={dependents.map((x) => x.dependentName)}
-										value={option}
+										options={[
+											{ optName: 'escolha um dependente', optValue: '-1', disabled: true },
+											...dependents.map((x) => {
+												return { optName: x.dependentName, optValue: x.dependentId.toString() };
+											}),
+										]}
+										value={sentForm.dependentId}
 										label="Dependente"
-										onChange={(e) => setOption(e.target.value)}
+										onChange={(e) => updateForm('dependentId', e)}
 									/>
 								</div>
 								<div className="modal-footer">
-									<button type="button" className="btn btn-secondary">
-										Cadastrar
-									</button>
+									<Button type="button" text="Cadastrar" onClick={testFunc} />
 								</div>
 							</div>
 						</div>
