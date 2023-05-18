@@ -2,64 +2,99 @@ import { useState } from 'react';
 import { CardDependents } from '../components/Cards/CardDependents';
 import { api } from '../config/api';
 import { useEffect } from 'react';
-import { FamilyGroupDetail } from '../components/FamilyGroupDetail';
+import { Link, useParams } from 'react-router-dom';
+
+const getActivities = (dependentId) => {
+	return api.get('/activity', { params: { dependentId } }).then((res) => {
+		let late = 0,
+			created = 0,
+			inProgress = 0;
+		res.data.forEach((activity) => {
+			if (activity.dependentId === dependentId) {
+				if (activity.state === 'LATE') {
+					late++;
+				} else if (activity.state === 'CREATED') {
+					created++;
+				} else if (activity.state === 'IN_PROGRESS') {
+					inProgress++;
+				}
+			}
+		});
+		return { late, created, inProgress };
+	});
+};
 
 export const FamilyGroupDetails = () => {
-	const [familyGroup, setFamilyGroup] = useState([]);
-	const [familyGroupDependents, setfamilyGroupDependents] = useState([]);
-	const [activitiesLate, setActivitiesLate] = useState(0);
-	const [activitiesCreated, setActivitiesCreated] = useState(0);
-	const [activitiesInProgress, setActivitiesInProgress] = useState(0);
+	const { id } = useParams();
+	const [familyGroup, setFamilyGroup] = useState(null);
+	const [guards, setGuards] = useState([]);
+	const [activities, setActivities] = useState({});
 
 	useEffect(() => {
 		const getFamilyGroup = () => {
-			api.get('/familyGroup').then((res) => {
-				setFamilyGroup(res.data[1]);
-				setfamilyGroupDependents(res.data[1].dependents);
-			});
-		};
-		const getActivities = (idDependent) => {
-			let late = 0,
-				created = 0,
-				in_progress = 0;
-			api.get('/activity').then((res) => {
-				res.data.forEach((activity) => {
-					console.log(activity);
-					if (activity.dependentId === idDependent) {
-						console.log('é igual');
-						if (activity.state === 'LATE') {
-							late++;
-						} else if (activity.state === 'CREATED') {
-							created++;
-						} else if (activity.state === 'IN_PROGRESS') {
-							in_progress++;
-						}
-					}
-					setActivitiesLate(late);
-					setActivitiesCreated(created);
-					setActivitiesInProgress(in_progress);
-				});
+			api.get('/familyGroup/' + id).then((res) => {
+				setFamilyGroup(res.data);
 			});
 		};
 		getFamilyGroup();
-		getActivities(1);
-	}, []);
+	}, [id]);
+
+	useEffect(() => {
+		const getGuards = (dependentId) => {
+			api.get('/guard/by-dependent-id/' + dependentId).then((res) => {
+				setGuards((prevGuards) => ({
+					...prevGuards,
+					[dependentId]: res.data,
+				}));
+			});
+		};
+		if (familyGroup) {
+			familyGroup.dependents.forEach((dependent) => {
+				getGuards(dependent.id);
+				getActivities(dependent.id).then((activity) => {
+					setActivities((a) => ({ ...a, [dependent.id]: activity }));
+				});
+			});
+		}
+	}, [familyGroup]);
 
 	return (
 		<div className="app">
 			<div className="container">
-				<div className="row">{familyGroup && <FamilyGroupDetail familyGroup={familyGroup} />}</div>
 				<div className="row">
-					<h3>Dependentes</h3>
-					{familyGroupDependents.map((dependent) => (
-						<CardDependents
-							key={dependent.id}
-							dependent={dependent}
-							late={activitiesLate}
-							created={activitiesCreated}
-							in_progress={activitiesInProgress}
-						/>
-					))}
+					<h3 className="mt-5">{familyGroup && familyGroup.name}</h3>
+					<div className="d-flex flex-row justify-content-between my-2">
+						<p className="fw-bold text-secondary pt-3">Responsáveis Parceiros:</p>
+						<Link className="customLink fs-5" to={'/manageguardians/' + id}>
+							Gerenciar Responsáveis
+						</Link>
+					</div>
+					{familyGroup &&
+						familyGroup.dependents.map((dependent) => (
+							<div key={dependent.id}>
+								<p className="fw-bold">Dependente: {dependent.name}</p>
+								{guards[dependent.id] &&
+									guards[dependent.id].map((guard) => (
+										<p key={guard.id} className="my-2">
+											{guard.guardianName} : <span>{guard.guardianRole}</span>
+											{/* <span className="text-primary mx-5">{guard.daysOfWeek}</span> */}
+										</p>
+									))}
+							</div>
+						))}
+				</div>
+				<div className="row">
+					<p className="fw-bold text-secondary my-2">Dependentes:</p>
+					{familyGroup &&
+						familyGroup.dependents.map((dependent) => (
+							<CardDependents
+								key={dependent.id}
+								dependent={dependent}
+								late={activities[dependent.id]?.late ?? 0}
+								created={activities[dependent.id]?.created ?? 0}
+								in_progress={activities[dependent.id]?.inProgress ?? 0}
+							/>
+						))}
 				</div>
 			</div>
 		</div>

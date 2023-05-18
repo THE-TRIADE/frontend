@@ -14,7 +14,7 @@ function App() {
 		<BrowserRouter>
 			<Routes>
 				<Route path="/familygroup" element={<FamilyGroup />} />
-				<Route path="/familygroupdetails" element={<FamilyGroupDetails />} />
+				<Route path="/familygroupdetails/:id" element={<FamilyGroupDetails />} />
 				<Route path="/" element={<Home />} />
 				<Route path="/signup" element={<SignUp />} />
 				<Route path="/manageguardians" element={<ManageGuardians />} />
