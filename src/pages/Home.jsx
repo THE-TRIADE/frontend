@@ -9,8 +9,8 @@ export const Home = () => {
 
 	useEffect(() => {
 		const getAllFamilyGroups = () => {
-			api.get('/familyGroup').then((res) => {
-				setFamilyGroups(res.data);
+			api.get('/guardian/' + sessionStorage.getItem('UserId')).then((res) => {
+				setFamilyGroups(res.data.familyGroups);
 			});
 		};
 		getAllFamilyGroups();
