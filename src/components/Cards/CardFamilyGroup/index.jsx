@@ -4,7 +4,7 @@ import '../styles.css';
 export const CardFamilyGroup = ({ familyGroup }) => {
 	return (
 		<div className="col-12 col-md-4 mb-3 mb-md-0 mt-3">
-			<a href="/familygroupdetails" className="text-decoration-none">
+			<a href={'/familygroupdetails/' + familyGroup.id} className="text-decoration-none">
 				<div className="card h-100">
 					<div className="card-header text-center">
 						<h5 className="text-primary fw-bold">{familyGroup.name}</h5>

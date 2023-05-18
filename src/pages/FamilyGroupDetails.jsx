@@ -3,19 +3,20 @@ import { CardDependents } from '../components/Cards/CardDependents';
 import { api } from '../config/api';
 import { useEffect } from 'react';
 import { FamilyGroupDetail } from '../components/FamilyGroupDetail';
+import { useParams } from 'react-router-dom';
 
 export const FamilyGroupDetails = () => {
-	const [familyGroup, setFamilyGroup] = useState([]);
-	const [familyGroupDependents, setfamilyGroupDependents] = useState([]);
+	const { id } = useParams();
+	const [familyGroup, setFamilyGroup] = useState(null);
+
 	const [activitiesLate, setActivitiesLate] = useState(0);
 	const [activitiesCreated, setActivitiesCreated] = useState(0);
 	const [activitiesInProgress, setActivitiesInProgress] = useState(0);
 
 	useEffect(() => {
 		const getFamilyGroup = () => {
-			api.get('/familyGroup').then((res) => {
-				setFamilyGroup(res.data[1]);
-				setfamilyGroupDependents(res.data[1].dependents);
+			api.get('/familyGroup/' + id).then((res) => {
+				setFamilyGroup(res.data);
 			});
 		};
 		const getActivities = (idDependent) => {
@@ -26,7 +27,6 @@ export const FamilyGroupDetails = () => {
 				res.data.forEach((activity) => {
 					console.log(activity);
 					if (activity.dependentId === idDependent) {
-						console.log('é igual');
 						if (activity.state === 'LATE') {
 							late++;
 						} else if (activity.state === 'CREATED') {
@@ -51,15 +51,16 @@ export const FamilyGroupDetails = () => {
 				<div className="row">{familyGroup && <FamilyGroupDetail familyGroup={familyGroup} />}</div>
 				<div className="row">
 					<h3>Dependentes</h3>
-					{familyGroupDependents.map((dependent) => (
-						<CardDependents
-							key={dependent.id}
-							dependent={dependent}
-							late={activitiesLate}
-							created={activitiesCreated}
-							in_progress={activitiesInProgress}
-						/>
-					))}
+					{familyGroup &&
+						familyGroup.dependents.map((dependent) => (
+							<CardDependents
+								key={dependent.id}
+								dependent={dependent}
+								late={activitiesLate}
+								created={activitiesCreated}
+								in_progress={activitiesInProgress}
+							/>
+						))}
 				</div>
 			</div>
 		</div>
