@@ -7,6 +7,7 @@ import { NotFound } from './pages/NotFound';
 import { FamilyGroup } from './pages/FamilyGroup';
 import { Spents } from './pages/Spents';
 import { FamilyGroupDetails } from './pages/FamilyGroupDetails';
+import { ManageGuardians } from './pages/ManageGuardians';
 
 function App() {
 	return (
@@ -16,6 +17,7 @@ function App() {
 				<Route path="/familygroupdetails" element={<FamilyGroupDetails />} />
 				<Route path="/" element={<Home />} />
 				<Route path="/signup" element={<SignUp />} />
+				<Route path="/manageguardians" element={<ManageGuardians />} />
 				<Route path="/spents" element={<Spents />} />
 				<Route path="/login" element={<SignIn />} />
 				<Route path="/forgotpassword" element={<ForgotPassword />} />
