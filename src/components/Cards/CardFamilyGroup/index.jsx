@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import '../styles.css';
+import { ButtonAction } from '../../ButtonAction';
 
-export const CardFamilyGroup = ({ familyGroup }) => {
+export const CardFamilyGroup = ({ familyGroup, deleteFunction }) => {
 	return (
 		<div className="col-12 col-md-4 mb-3 mb-md-0 mt-3">
 			<a href={'/familygroupdetails/' + familyGroup.id} className="text-decoration-none">
@@ -17,6 +18,9 @@ export const CardFamilyGroup = ({ familyGroup }) => {
 							</p>
 						))}
 					</div>
+					<div className="text-end mb-2 me-2">
+						<ButtonAction text="Excluir" bgColor="bg-danger" onClick={deleteFunction} />
+					</div>
 				</div>
 			</a>
 		</div>
@@ -25,4 +29,5 @@ export const CardFamilyGroup = ({ familyGroup }) => {
 
 CardFamilyGroup.propTypes = {
 	familyGroup: PropTypes.object.isRequired,
+	deleteFunction: PropTypes.func.isRequired,
 };
