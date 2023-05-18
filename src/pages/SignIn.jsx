@@ -106,9 +106,13 @@ export const SignIn = () => {
 				</p>
 				<div className="row text-start">
 					<div className="col-12">
-						<EmailLoginInput placeholder="E-mail" onChange={(e) => updateForm('username', e)} />
+						<EmailLoginInput placeholder="E-mail" value={login.username} onChange={(e) => updateForm('username', e)} />
 						{showErrorMessages('username')}
-						<PasswordLoginInput placeholder="Senha" onChange={(e) => updateForm('password', e)} />
+						<PasswordLoginInput
+							placeholder="Senha"
+							value={login.password}
+							onChange={(e) => updateForm('password', e)}
+						/>
 						{showErrorMessages('password')}
 						<div className="my-3 text-end">
 							<CustomLink to="/forgotpassword" text="Esqueceu sua senha?" />
