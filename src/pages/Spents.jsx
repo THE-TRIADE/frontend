@@ -35,11 +35,12 @@ export const Spents = () => {
 			activityId: '',
 		});
 	};
+
 	useEffect(() => {
 		const modalElement = document.getElementById('staticBackdrop');
 		modalElement.addEventListener('hidden.bs.modal', handleFormSubmit);
 		const getSpents = () => {
-			api.get('/spent').then((res) => {
+			api.get('/spent/by-guardian-id/' + sessionStorage.getItem('UserId')).then((res) => {
 				setSpents(res.data);
 			});
 		};
