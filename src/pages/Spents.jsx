@@ -18,6 +18,12 @@ export const Spents = () => {
 	});
 	const [option, setOption] = useState('A');
 	const [spents, setSpents] = useState([]);
+	const [dependents, setDependents] = useState([
+		{
+			dependentName: '',
+			dependentId: '',
+		},
+	]);
 
 	const updateForm = (inputName, event) => {
 		setSentForm((prevState) => {
@@ -44,8 +50,24 @@ export const Spents = () => {
 				setSpents(res.data);
 			});
 		};
+
+		const getDependents = () => {
+			setDependents(() => []);
+			api.get('/guardian/' + sessionStorage.getItem('UserId')).then((res) => {
+				res.data.guards.map((x) => {
+					setDependents((oldList) => [
+						...oldList,
+						{
+							dependentName: x.dependentName,
+							dependentId: x.dependentId,
+						},
+					]);
+				});
+			});
+		};
 		return () => {
 			getSpents();
+			getDependents();
 			modalElement.removeEventListener('hidden.bs.modal', handleFormSubmit);
 		};
 	}, []);
@@ -97,9 +119,9 @@ export const Spents = () => {
 										onChange={(e) => updateForm('paidOn', e)}
 									/>
 									<SelectInput
-										options={['Mãe', 'Pai', 'Parente', 'Provisório']}
+										options={dependents.map((x) => x.dependentName)}
 										value={option}
-										label="Papel no grupo familiar"
+										label="Dependente"
 										onChange={(e) => setOption(e.target.value)}
 									/>
 								</div>
