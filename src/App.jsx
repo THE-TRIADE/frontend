@@ -17,7 +17,7 @@ function App() {
 				<Route path="/familygroupdetails/:id" element={<FamilyGroupDetails />} />
 				<Route path="/" element={<Home />} />
 				<Route path="/signup" element={<SignUp />} />
-				<Route path="/manageguardians" element={<ManageGuardians />} />
+				<Route path="/manageguardians/:id" element={<ManageGuardians />} />
 				<Route path="/spents" element={<Spents />} />
 				<Route path="/login" element={<SignIn />} />
 				<Route path="/forgotpassword" element={<ForgotPassword />} />

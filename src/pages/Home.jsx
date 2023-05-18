@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { CardFamilyGroup } from '../components/Cards/CardFamilyGroup';
 import { api } from '../config/api';
 import { useEffect } from 'react';
@@ -6,16 +6,20 @@ import { ButtonOutlineSecondary } from '../components/ButtonOutlineSecondary';
 
 export const Home = () => {
 	const [familyGroups, setFamilyGroups] = useState([]);
-
-	useEffect(() => {
-		const getAllFamilyGroups = () => {
-			api.get('/guardian/' + sessionStorage.getItem('UserId')).then((res) => {
-				setFamilyGroups(res.data.familyGroups);
-			});
-		};
-		getAllFamilyGroups();
+	const getAllFamilyGroups = useCallback(() => {
+		let id = sessionStorage.getItem('UserId');
+		api.get('/guardian/' + id).then((res) => {
+			setFamilyGroups(res.data.familyGroups);
+		});
 	}, []);
 
+	useEffect(() => {
+		getAllFamilyGroups();
+	}, [getAllFamilyGroups]);
+	const deleteFamilyGroup = (e, id) => {
+		e.preventDefault();
+		api.delete('/familyGroup/' + id).then(() => getAllFamilyGroups());
+	};
 	return (
 		<div className="app">
 			<div className="container">
@@ -25,7 +29,11 @@ export const Home = () => {
 				</div>
 				<div className="row">
 					{familyGroups.map((familyGroup) => (
-						<CardFamilyGroup key={familyGroup.id} familyGroup={familyGroup} />
+						<CardFamilyGroup
+							key={familyGroup.id}
+							familyGroup={familyGroup}
+							deleteFunction={(e) => deleteFamilyGroup(e, familyGroup.id)}
+						/>
 					))}
 				</div>
 			</div>
