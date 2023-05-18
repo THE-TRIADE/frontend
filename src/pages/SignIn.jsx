@@ -40,7 +40,8 @@ export const SignIn = () => {
 					.post('/guardian/login', login)
 					.then((res) => {
 						console.log(res);
-
+						console.log(res.data.id);
+						sessionStorage.setItem('UserId', res.data.id);
 						navigate('/familygroup');
 					})
 					.catch((err) => console.error(err));
