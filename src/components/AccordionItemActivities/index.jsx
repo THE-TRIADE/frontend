@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types';
 import './styles.css';
-import { ButtonHeader } from '../ButtonHeader';
 import { ButtonAction } from '../ButtonAction';
 
-export const AccordionActivities = ({ activity, parent, deleteFunction }) => {
+export const AccordionActivities = ({ activity, parent, deleteFunction, finishFunction }) => {
 	return (
 		<div className="accordion-item">
 			<h2 className="accordion-header" id={'heading' + activity.id}>
@@ -50,7 +49,7 @@ export const AccordionActivities = ({ activity, parent, deleteFunction }) => {
 					)}
 					<div className="text-end">
 						<ButtonAction text="Excluir" bgColor="bg-danger" onClick={deleteFunction} />
-						<ButtonHeader text="Finalizar Atividade" target="#ModalFinalizarAtividade" />
+						<ButtonAction text="Finalizar Atividade" bgColor="bg-success" onClick={finishFunction} />
 					</div>
 				</div>
 			</div>
@@ -88,4 +87,5 @@ AccordionActivities.propTypes = {
 	activity: PropTypes.object.isRequired,
 	parent: PropTypes.string.isRequired,
 	deleteFunction: PropTypes.func.isRequired,
+	finishFunction: PropTypes.func.isRequired,
 };
