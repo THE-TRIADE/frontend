@@ -4,7 +4,7 @@ export const CheckBoxInput = ({ label, value, onChange }) => {
 	return (
 		<div className="mt-3">
 			<label className="customLabel">{label}</label>
-			<div className="form-check row my-3 text-center">
+			<div className="form-check my-3">
 				<input
 					name="inputCustom"
 					type="checkbox"
