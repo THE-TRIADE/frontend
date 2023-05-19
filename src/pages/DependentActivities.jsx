@@ -12,6 +12,7 @@ import { SelectInput } from '../components/Inputs/SelectInput';
 import { CheckBoxInput } from '../components/Inputs/CheckBoxInput';
 import { CheckBoxGroupInput } from '../components/Inputs/CheckBoxGroupInput';
 import { dayOfWeekEnum } from './ManageGuardians';
+import { Button } from '../components/Button';
 
 const getActivities = (dependentId) => {
 	return api.get('/activity', { params: { dependentId } }).then((res) => {
@@ -50,12 +51,31 @@ export const DependentActivities = () => {
 		daysToRepeat: [],
 		repeatUntil: '',
 	});
+	const [finishActivityId, setFinishActivityId] = useState(0);
+	const [sentFinishForm, setSentFinishForm] = useState({
+		guardianId: sessionStorage.getItem('UserId'),
+		done: false,
+		commentary: '',
+	});
+	const [trySubmitFinishForm, setTrySubmitFinishForm] = useState(false);
 
 	const updateForm = (inputName, event) => {
 		const { checked, value } = event.target;
 
 		setSentForm((prevState) => {
 			if (inputName == 'repeat') {
+				return { ...prevState, [inputName]: checked };
+			} else {
+				return { ...prevState, [inputName]: value };
+			}
+		});
+	};
+
+	const updateFinishForm = (inputName, event) => {
+		const { checked, value } = event.target;
+
+		setSentFinishForm((prevState) => {
+			if (inputName == 'done') {
 				return { ...prevState, [inputName]: checked };
 			} else {
 				return { ...prevState, [inputName]: value };
@@ -88,6 +108,40 @@ export const DependentActivities = () => {
 		console.log(guardians);
 	}, [guardians]);
 
+	const deleteActivityFunction = (e, activityId) => {
+		e.preventDefault();
+		api.delete(`/activity/${activityId}`).then(() => {
+			setActivities((oldList) => oldList.filter((activity) => activity.id != activityId));
+		});
+	};
+
+	useEffect(() => {
+		if (trySubmitFinishForm) {
+			const activity = api
+				.patch(`/activity/${finishActivityId}/finish`, sentFinishForm)
+				.then((res) => {
+					console.log(res);
+					setActivities((oldList) => {
+						const indexActivity = oldList.findIndex((activity) => activity.id != finishActivityId);
+						return oldList.splice(indexActivity, 1, activity);
+					});
+				})
+				.catch((err) => console.error(err))
+				.finally(() => {
+					setTrySubmitFinishForm(true);
+				});
+		}
+	}, [trySubmitFinishForm]);
+
+	const finishActivityFunction = (e) => {
+		e.preventDefault();
+		setTrySubmitFinishForm(true);
+	};
+
+	const setActivityToSendFinish = (finishActivityIdToSet) => {
+		setFinishActivityId(finishActivityIdToSet);
+	};
+
 	return (
 		<div className="app">
 			<Menu />
@@ -100,7 +154,8 @@ export const DependentActivities = () => {
 							target="#ModalCadastrarAtividades"
 						/>
 					)}
-					{!!activities.length && (
+					<>
+						{/* CONTAGEM DAS ATIVIDADES ININIO */}
 						<div className="resumo">
 							<h5 className="my-3">Resumo de Atividades</h5>
 							<div className="my-2">
@@ -134,71 +189,149 @@ export const DependentActivities = () => {
 									{activities.filter((activity) => activity.state === 'NOT_DONE').length}
 								</span>
 							</div>
-							<div className="">
-								{!!activities.filter((activity) => activity.state === 'IN_PROGRESS').length && (
-									<>
-										<h4 className="my-4 text-warning">Em Andamento</h4>
-										<div className="accordion pb-3" id="accordionEmAndamento">
-											{activities
-												.filter((activity) => activity.state === 'IN_PROGRESS')
-												.map((activity) => (
-													<AccordionActivities key={activity.id} activity={activity} parent="#accordionEmAndamento" />
-												))}
-										</div>
-									</>
-								)}
-								{!!activities.filter((activity) => activity.state === 'CREATED').length && (
-									<>
-										<h4 className="my-4 text-info">Criadas</h4>
-										<div className="accordion pb-3" id="accordionCriadas">
-											{activities
-												.filter((activity) => activity.state === 'CREATED')
-												.map((activity) => (
-													<AccordionActivities key={activity.id} activity={activity} parent="#accordionCriadas" />
-												))}
-										</div>
-									</>
-								)}
-								{!!activities.filter((activity) => activity.state === 'LATE').length && (
-									<>
-										<h4 className="my-4 text-info">Criadas</h4>
-										<div className="accordion pb-3" id="accordionAtrasadas">
-											{activities
-												.filter((activity) => activity.state === 'LATE')
-												.map((activity) => (
-													<AccordionActivities key={activity.id} activity={activity} parent="#accordionAtrasadas" />
-												))}
-										</div>
-									</>
-								)}
-								{!!activities.filter((activity) => activity.state === 'DONE').length && (
-									<>
-										<h4 className="my-4 text-success">Realizadas</h4>
-										<div className="accordion pb-3" id="accordionRealizadas">
-											{activities
-												.filter((activity) => activity.state === 'DONE')
-												.map((activity) => (
-													<AccordionActivities key={activity.id} activity={activity} parent="#accordionRealizadas" />
-												))}
-										</div>
-									</>
-								)}
-								{!!activities.filter((activity) => activity.state === 'NOT_DONE').length && (
-									<>
-										<h4 className="my-4 text-black-50">Não Realizadas</h4>
-										<div className="accordion pb-3" id="accordionNaoRealizadas">
-											{activities
-												.filter((activity) => activity.state === 'NOT_DONE')
-												.map((activity) => (
-													<AccordionActivities key={activity.id} activity={activity} parent="#accordionNaoRealizadas" />
-												))}
-										</div>
-									</>
-								)}
+						</div>
+						{/* CONTAGEM DAS ATIVIDADES FIM */}
+
+						{/* LISTAGEM DAS ATIVIDADES INICIO */}
+						<div className="">
+							{!!activities.filter((activity) => activity.state === 'IN_PROGRESS').length && (
+								<>
+									<h4 className="my-4 text-warning">Em Andamento</h4>
+									<div className="accordion pb-3" id="accordionEmAndamento">
+										{activities
+											.filter((activity) => activity.state === 'IN_PROGRESS')
+											.map((activity) => (
+												<AccordionActivities
+													key={activity.id}
+													activity={activity}
+													parent="#accordionEmAndamento"
+													deleteFunction={deleteActivityFunction}
+													target="#ModalFinishActivity"
+													funcOnClickFinish={setActivityToSendFinish}
+												/>
+											))}
+									</div>
+								</>
+							)}
+							{!!activities.filter((activity) => activity.state === 'CREATED').length && (
+								<>
+									<h4 className="my-4 text-info">Criadas</h4>
+									<div className="accordion pb-3" id="accordionCriadas">
+										{activities
+											.filter((activity) => activity.state === 'CREATED')
+											.map((activity) => (
+												<AccordionActivities
+													key={activity.id}
+													activity={activity}
+													parent="#accordionCriadas"
+													deleteFunction={deleteActivityFunction}
+													target="#ModalFinishActivity"
+													funcOnClickFinish={setActivityToSendFinish}
+												/>
+											))}
+									</div>
+								</>
+							)}
+							{!!activities.filter((activity) => activity.state === 'LATE').length && (
+								<>
+									<h4 className="my-4 text-info">Criadas</h4>
+									<div className="accordion pb-3" id="accordionAtrasadas">
+										{activities
+											.filter((activity) => activity.state === 'LATE')
+											.map((activity) => (
+												<AccordionActivities
+													key={activity.id}
+													activity={activity}
+													parent="#accordionAtrasadas"
+													deleteFunction={deleteActivityFunction}
+													target="#ModalFinishActivity"
+													funcOnClickFinish={setActivityToSendFinish}
+												/>
+											))}
+									</div>
+								</>
+							)}
+							{!!activities.filter((activity) => activity.state === 'DONE').length && (
+								<>
+									<h4 className="my-4 text-success">Realizadas</h4>
+									<div className="accordion pb-3" id="accordionRealizadas">
+										{activities
+											.filter((activity) => activity.state === 'DONE')
+											.map((activity) => (
+												<AccordionActivities
+													key={activity.id}
+													activity={activity}
+													parent="#accordionRealizadas"
+													deleteFunction={deleteActivityFunction}
+												/>
+											))}
+									</div>
+								</>
+							)}
+							{!!activities.filter((activity) => activity.state === 'NOT_DONE').length && (
+								<>
+									<h4 className="my-4 text-black-50">Não Realizadas</h4>
+									<div className="accordion pb-3" id="accordionNaoRealizadas">
+										{activities
+											.filter((activity) => activity.state === 'NOT_DONE')
+											.map((activity) => (
+												<AccordionActivities
+													key={activity.id}
+													activity={activity}
+													parent="#accordionNaoRealizadas"
+													deleteFunction={deleteActivityFunction}
+													target="#ModalFinishActivity"
+													funcOnClickFinish={setActivityToSendFinish}
+												/>
+											))}
+									</div>
+								</>
+							)}
+						</div>
+						{/* LISTAGEM DAS ATIVIDADES FIM */}
+					</>
+				</div>
+				{/* MODAL DE FINISH ACTIVITY INICIO */}
+				{!!activities.length && (
+					<div
+						className="modal fade"
+						id="ModalFinishActivity"
+						data-bs-backdrop="static"
+						data-bs-keyboard="false"
+						tabIndex="-1"
+						aria-labelledby="ModalFinishActivity"
+						aria-hidden="true"
+					>
+						<div className="modal-dialog modal-dialog-centered">
+							<div className="modal-content">
+								<div className="modal-header">
+									<h1 className="modal-title fs-5 secondary-color" id="ModalFinishActivityLabel">
+										Finalizar Atividade
+									</h1>
+									<button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+								</div>
+								<div className="modal-body">
+									<CheckBoxInput
+										label="Atividade foi realizada?"
+										value={'Atividade foi realizada?'}
+										onChange={(e) => updateFinishForm('done', e)}
+									/>
+									<TextualInput
+										placeholder="Comentário"
+										label="Comentario"
+										value={sentFinishForm.commentary}
+										onChange={(e) => updateFinishForm('name', e)}
+									/>
+								</div>
+								<div className="modal-footer" data-dismiss="ModalFinishActivity">
+									<Button type="button" text="Cadastrar" onClick={(e) => finishActivityFunction(e)} />
+								</div>
 							</div>
 						</div>
-					)}
-				</div>
+					</div>
+				)}
+				{/* MODAL DE FINISH ACTIVITY FIM */}
+				{/* MODAL CADASTRO DE ATIVIDADE INICIO */}
 				{!!dependent && !!guardians.length && (
 					<div
 						className="modal fade"
@@ -301,6 +434,7 @@ export const DependentActivities = () => {
 						</div>
 					</div>
 				)}
+				{/* MODAL CADASTRO DE ATIVIDADE FIM */}
 			</div>
 		</div>
 	);
