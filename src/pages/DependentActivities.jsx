@@ -4,58 +4,64 @@ import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { TitlePages } from '../components/TitlePages';
 import { AccordionActivities } from '../components/AccordionItemActivities';
+import { TextualInput } from '../components/Inputs/TextualInput';
+import { DateInput } from '../components/Inputs/DateInput';
+import { TimeInput } from '../components/Inputs/TimeInput';
+import { SelectInput } from '../components/Inputs/SelectInput';
 
 const getActivities = (dependentId) => {
 	return api.get('/activity', { params: { dependentId } }).then((res) => {
-		let late = [],
-			created = [],
-			done = [],
-			notDone = [],
-			inProgress = [];
-		res.data.forEach((activity) => {
-			if (activity.state === 'LATE') {
-				late.push(activity);
-			} else if (activity.state === 'CREATED') {
-				created.push(activity);
-			} else if (activity.state === 'IN_PROGRESS') {
-				inProgress.push(activity);
-			} else if (activity.state === 'DONE') {
-				done.push(activity);
-			} else if (activity.state === 'NOT_DONE') {
-				notDone.push(activity);
-			}
-		});
-		return { late, created, inProgress, done, notDone };
+		return res.data;
+	});
+};
+
+const getDependent = (dependentId) => {
+	return api.get('/dependent/' + dependentId).then((res) => {
+		return res.data;
+	});
+};
+
+const getGuardiansByDependentId = (dependentId) => {
+	return api.get('/guard/by-dependent-id/' + dependentId).then((res) => {
+		return res.data.map((guard) => ({ guardianId: guard.guardianId, guardianName: guard.guardianName }));
 	});
 };
 
 export const DependentActivities = () => {
 	const { id } = useParams();
-	const [activities, setActivities] = useState(null);
-	const [dependent, setDependent] = useState(null);
-	const [inProgress, setInProgress] = useState([]);
-	const [late, setLate] = useState([]);
-	const [created, setCreated] = useState([]);
-	const [done, setDone] = useState([]);
-	const [notDone, setNotDone] = useState([]);
+	const [activities, setActivities] = useState([]);
+	const [dependent, setDependent] = useState({});
+	const [guardians, setGuardians] = useState([]);
+	const [sentForm, setSentForm] = useState({
+		name: '',
+		dateStart: '',
+		hourStart: '',
+		dateEnd: '',
+		hourEnd: '',
+		dependentId: id,
+		currentGuardian: '',
+		actor: '',
+		createdBy: sessionStorage.getItem('UserId'),
+		repeat: false,
+		daysToRepeat: [],
+		repeatUntil: '',
+	});
+
+	const updateForm = (inputName, event) => {
+		setSentForm((prevState) => {
+			return { ...prevState, [inputName]: event.target.value };
+		});
+	};
 
 	useEffect(() => {
-		const getDependent = (dependentId) => {
-			return api.get('/dependent/' + dependentId).then((res) => {
-				setDependent(res.data);
-			});
-		};
-		getDependent(id);
-	}, [id]);
-
-	useEffect(() => {
+		getDependent(id).then((dependentResult) => {
+			setDependent(dependentResult);
+		});
+		getGuardiansByDependentId(id).then((guardiansResult) => {
+			setGuardians(guardiansResult);
+		});
 		getActivities(id).then((activities) => {
 			setActivities(activities);
-			setInProgress(activities.inProgress);
-			setLate(activities.late);
-			setCreated(activities.created);
-			setDone(activities.done);
-			setNotDone(activities.notDone);
 		});
 	}, [id]);
 
@@ -76,76 +82,92 @@ export const DependentActivities = () => {
 							<div className="my-2">
 								<span className="badge rounded-pill bg-info">CREATED</span>
 								<span className="p fw-bold text-info"> Criadas: </span>
-								<span className="text-dark">{activities.created.length}</span>
+								<span className="text-dark">
+									{activities.filter((activity) => activity.status === 'CREATED').length}
+								</span>
 							</div>
 							<div className="my-2">
 								<span className="badge rounded-pill bg-warning">IN_PROGRESS</span>
 								<span className="p fw-bold text-warning"> Em Andamento: </span>
-								<span className="text-dark">{activities.inProgress.length}</span>
+								<span className="text-dark">
+									{activities.filter((activity) => activity.status === 'IN_PROGRESS').length}
+								</span>
 							</div>
 							<div className="my-2">
 								<span className="badge rounded-pill bg-danger">LATE</span>
 								<span className="p fw-bold text-danger"> Atrasadas: </span>
-								<span className="text-dark">{activities.late.length}</span>
+								<span className="text-dark">{activities.filter((activity) => activity.status === 'LATE').length}</span>
 							</div>
 							<div className="my-2">
 								<span className="badge rounded-pill bg-success">DONE</span>
 								<span className="p fw-bold text-success"> Realizadas: </span>
-								<span className="text-dark">{activities.done.length}</span>
+								<span className="text-dark">{activities.filter((activity) => activity.status === 'DONE').length}</span>
 							</div>
 							<div className="my-2">
 								<span className="badge rounded-pill bg-secondary">NOT_DONE</span>
 								<span className="p fw-bold text-black-50"> Não Realizadas: </span>
-								<span className="text-dark">{activities.notDone.length}</span>
+								<span className="text-dark">
+									{activities.filter((activity) => activity.status === 'NOT_DONE').length}
+								</span>
 							</div>
 							<div className="">
-								{!!inProgress.length && (
+								{!!activities.filter((activity) => activity.status === 'IN_PROGRESS').length && (
 									<>
 										<h4 className="my-4 text-warning">Em Andamento</h4>
 										<div className="accordion pb-3" id="accordionEmAndamento">
-											{inProgress.map((activity) => (
-												<AccordionActivities key={activity.id} activity={activity} parent="#accordionEmAndamento" />
-											))}
+											{activities
+												.filter((activity) => activity.status === 'IN_PROGRESS')
+												.map((activity) => (
+													<AccordionActivities key={activity.id} activity={activity} parent="#accordionEmAndamento" />
+												))}
 										</div>
 									</>
 								)}
-								{!!created.length && (
+								{!!activities.filter((activity) => activity.status === 'CREATED').length && (
 									<>
 										<h4 className="my-4 text-info">Criadas</h4>
 										<div className="accordion pb-3" id="accordionCriadas">
-											{created.map((activity) => (
-												<AccordionActivities key={activity.id} activity={activity} parent="#accordionCriadas" />
-											))}
+											{activities
+												.filter((activity) => activity.status === 'CREATED')
+												.map((activity) => (
+													<AccordionActivities key={activity.id} activity={activity} parent="#accordionCriadas" />
+												))}
 										</div>
 									</>
 								)}
-								{!!late.length && (
+								{!!activities.filter((activity) => activity.status === 'LATE').length && (
 									<>
 										<h4 className="my-4 text-info">Criadas</h4>
 										<div className="accordion pb-3" id="accordionAtrasadas">
-											{late.map((activity) => (
-												<AccordionActivities key={activity.id} activity={activity} parent="#accordionAtrasadas" />
-											))}
+											{activities
+												.filter((activity) => activity.status === 'LATE')
+												.map((activity) => (
+													<AccordionActivities key={activity.id} activity={activity} parent="#accordionAtrasadas" />
+												))}
 										</div>
 									</>
 								)}
-								{!!done.length && (
+								{!!activities.filter((activity) => activity.status === 'DONE').length && (
 									<>
 										<h4 className="my-4 text-success">Realizadas</h4>
 										<div className="accordion pb-3" id="accordionRealizadas">
-											{done.map((activity) => (
-												<AccordionActivities key={activity.id} activity={activity} parent="#accordionRealizadas" />
-											))}
+											{activities
+												.filter((activity) => activity.status === 'DONE')
+												.map((activity) => (
+													<AccordionActivities key={activity.id} activity={activity} parent="#accordionRealizadas" />
+												))}
 										</div>
 									</>
 								)}
-								{!!notDone.length && (
+								{!!activities.filter((activity) => activity.status === 'NOT_DONE').length && (
 									<>
 										<h4 className="my-4 text-black-50">Não Realizadas</h4>
 										<div className="accordion pb-3" id="accordionNaoRealizadas">
-											{notDone.map((activity) => (
-												<AccordionActivities key={activity.id} activity={activity} parent="#accordionNaoRealizadas" />
-											))}
+											{activities
+												.filter((activity) => activity.status === 'NOT_DONE')
+												.map((activity) => (
+													<AccordionActivities key={activity.id} activity={activity} parent="#accordionNaoRealizadas" />
+												))}
 										</div>
 									</>
 								)}
@@ -170,7 +192,49 @@ export const DependentActivities = () => {
 								</h1>
 								<button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 							</div>
-							<div className="modal-body"></div>
+							<div className="modal-body">
+								<TextualInput
+									placeholder="Título da atividade"
+									label="Título da Atividade"
+									value={sentForm.name}
+									onChange={(e) => updateForm('name', e)}
+								/>
+								<DateInput
+									placeholder=""
+									label="Data de início"
+									value={sentForm.dateStart}
+									onChange={(e) => updateForm('dateStart', e)}
+								/>
+								<TimeInput
+									placeholder=""
+									label="Hora de início"
+									value={sentForm.hourStart}
+									onChange={(e) => updateForm('dateStart', e)}
+								/>
+								<DateInput
+									placeholder=""
+									label="Data de fim"
+									value={sentForm.dateEnd}
+									onChange={(e) => updateForm('dateEnd', e)}
+								/>
+								<TimeInput
+									placeholder=""
+									label="Hora de fim"
+									value={sentForm.hourStart}
+									onChange={(e) => updateForm('dateStart', e)}
+								/>
+								<SelectInput
+									options={[
+										{ optName: 'Escolha um responsável', optValue: '-1', disabled: true },
+										...guardians.map((guardian) => {
+											return { optName: guardian.guardianName, optValue: guardian.guardianId.toString() };
+										}),
+									]}
+									value={sentForm.dependentId}
+									label="Responsável atual"
+									onChange={(e) => updateForm('currentGuardian', e)}
+								/>
+							</div>
 							<div className="modal-footer">
 								<button type="button" className="btn btn-secondary">
 									Cadastrar
