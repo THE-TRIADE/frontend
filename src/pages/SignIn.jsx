@@ -42,7 +42,7 @@ export const SignIn = () => {
 						console.log(res);
 						console.log(res.data.id);
 						sessionStorage.setItem('UserId', res.data.id);
-						navigate('/familygroup');
+						navigate('/');
 					})
 					.catch((err) => console.error(err));
 			} else {

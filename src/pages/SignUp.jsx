@@ -55,7 +55,7 @@ export const SignUp = () => {
 					.then((res) => {
 						console.log(res);
 
-						navigate('/familygroup');
+						navigate('/login');
 					})
 					.catch((err) => console.error(err));
 			} else {

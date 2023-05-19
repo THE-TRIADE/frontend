@@ -6,6 +6,7 @@ import { TextualInput } from '../components/Inputs/TextualInput';
 import { api } from '../config/api';
 import { ButtonOutline } from '../components/ButtonOutline';
 import { DependentForm } from '../components/DependentForm';
+import { useNavigate } from 'react-router-dom';
 
 export const FamilyGroup = () => {
 	const [familyGroupForm, setfamilyGroupForm] = useState({
@@ -31,7 +32,7 @@ export const FamilyGroup = () => {
 			setDependents((ps) => [...ps.slice(0, -1)]);
 		}
 	}, [dependentCount]);
-
+	const navigate = useNavigate();
 	useEffect(() => {
 		if (submit) {
 			const newErrors = validateForm();
@@ -46,8 +47,8 @@ export const FamilyGroup = () => {
 				const newFamilyGroup = { ...familyGroupForm, dependents };
 				api
 					.post('/familyGroup', newFamilyGroup)
-					.then((res) => {
-						console.log(res);
+					.then(() => {
+						navigate('/');
 					})
 					.catch((err) => console.error(err));
 			}
