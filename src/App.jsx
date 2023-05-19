@@ -8,12 +8,14 @@ import { FamilyGroup } from './pages/FamilyGroup';
 import { Spents } from './pages/Spents';
 import { FamilyGroupDetails } from './pages/FamilyGroupDetails';
 import { ManageGuardians } from './pages/ManageGuardians';
+import { DependentActivities } from './pages/DependentActivities';
 
 function App() {
 	return (
 		<BrowserRouter>
 			<Routes>
 				<Route path="/familygroup" element={<FamilyGroup />} />
+				<Route path="/dependentactivities/:id" element={<DependentActivities />} />
 				<Route path="/familygroupdetails/:id" element={<FamilyGroupDetails />} />
 				<Route path="/" element={<Home />} />
 				<Route path="/signup" element={<SignUp />} />
