@@ -23,7 +23,7 @@ const getDependent = (dependentId) => {
 
 const getGuardiansByDependentId = (dependentId) => {
 	return api.get('/guard/by-dependent-id/' + dependentId).then((res) => {
-		return res.data.map((guard) => ({ guardianId: guard.guardianId, guardianName: guard.guardianName }));
+		return res.data.map((guard) => ({ id: guard.guardianId, name: guard.guardianName }));
 	});
 };
 
@@ -227,12 +227,23 @@ export const DependentActivities = () => {
 									options={[
 										{ optName: 'Escolha um responsável', optValue: '-1', disabled: true },
 										...guardians.map((guardian) => {
-											return { optName: guardian.guardianName, optValue: guardian.guardianId.toString() };
+											return { optName: guardian.name, optValue: guardian.id.toString() };
 										}),
 									]}
 									value={sentForm.dependentId}
 									label="Responsável atual"
 									onChange={(e) => updateForm('currentGuardian', e)}
+								/>
+								<SelectInput
+									options={[
+										{ optName: 'Escolha um ator da atividade', optValue: '-1', disabled: true },
+										[...guardians, ...dependent].map((person) => {
+											return { optName: person.name, optValue: person.id.toString() };
+										}),
+									]}
+									value={sentForm.actor}
+									label="Ator da atividade"
+									onChange={(e) => updateForm('actor', e)}
 								/>
 							</div>
 							<div className="modal-footer">
