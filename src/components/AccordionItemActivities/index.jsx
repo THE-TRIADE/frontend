@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
 import './styles.css';
 import { ButtonAction } from '../ButtonAction';
+import { ButtonHeader } from '../ButtonHeader';
 
-export const AccordionActivities = ({ activity, parent, deleteFunction, finishFunction }) => {
+export const AccordionActivities = ({ activity, parent, deleteFunction, target, funcOnClickFinish }) => {
 	return (
 		<div className="accordion-item">
 			<h2 className="accordion-header" id={'heading' + activity.id}>
@@ -47,35 +48,23 @@ export const AccordionActivities = ({ activity, parent, deleteFunction, finishFu
 							Comentário: <span className="text-dark fw-normal">{activity.hourEnd}</span>
 						</p>
 					)}
+
 					<div className="text-end">
-						<ButtonAction text="Excluir" bgColor="bg-danger" onClick={deleteFunction} />
-						<ButtonAction text="Finalizar Atividade" bgColor="bg-success" onClick={finishFunction} />
-					</div>
-				</div>
-			</div>
-			<div
-				className="modal fade"
-				id="ModalFinalizarAtividade"
-				data-bs-backdrop="static"
-				data-bs-keyboard="false"
-				tabIndex="-1"
-				aria-labelledby="ModalFinalizarAtividadeLabel"
-				aria-hidden="true"
-			>
-				<div className="modal-dialog modal-dialog-centered">
-					<div className="modal-content">
-						<div className="modal-header">
-							<h1 className="modal-title fs-5 secondary-color" id="ModalFinalizarAtividadeLabel">
-								Finalizar Atividade
-							</h1>
-							<button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-						</div>
-						<div className="modal-body"></div>
-						<div className="modal-footer">
-							<button type="button" className="btn btn-secondary">
-								Finalizar
-							</button>
-						</div>
+						<ButtonAction text="Excluir" bgColor="bg-danger" onClick={(e) => deleteFunction(e, activity.id)} />
+						{target != null && (
+							<ButtonHeader
+								text="Finalizar Atividade"
+								target={target}
+								bgColor="bg-success"
+								funcOnClick={
+									funcOnClickFinish == null
+										? () => {}
+										: () => {
+												funcOnClickFinish(activity.id);
+										  }
+								}
+							/>
+						)}
 					</div>
 				</div>
 			</div>
@@ -87,5 +76,6 @@ AccordionActivities.propTypes = {
 	activity: PropTypes.object.isRequired,
 	parent: PropTypes.string.isRequired,
 	deleteFunction: PropTypes.func.isRequired,
-	finishFunction: PropTypes.func.isRequired,
+	target: PropTypes.string,
+	funcOnClickFinish: PropTypes.func,
 };
