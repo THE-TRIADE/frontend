@@ -10,14 +10,12 @@ const getActivities = (dependentId) => {
 			created = 0,
 			inProgress = 0;
 		res.data.forEach((activity) => {
-			if (activity.dependentId === dependentId) {
-				if (activity.state === 'LATE') {
-					late++;
-				} else if (activity.state === 'CREATED') {
-					created++;
-				} else if (activity.state === 'IN_PROGRESS') {
-					inProgress++;
-				}
+			if (activity.state === 'LATE') {
+				late++;
+			} else if (activity.state === 'CREATED') {
+				created++;
+			} else if (activity.state === 'IN_PROGRESS') {
+				inProgress++;
 			}
 		});
 		return { late, created, inProgress };
@@ -65,7 +63,7 @@ export const FamilyGroupDetails = () => {
 					<h3 className="mt-5">{familyGroup && familyGroup.name}</h3>
 					<div className="d-flex flex-row justify-content-between my-2">
 						<p className="fw-bold text-secondary pt-3">Responsáveis Parceiros:</p>
-						<Link className="customLink fs-5" to={'/manageguardians/' + id}>
+						<Link className="customLink fs-4" to={'/manageguardians/' + id}>
 							Gerenciar Responsáveis
 						</Link>
 					</div>

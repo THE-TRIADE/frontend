@@ -69,14 +69,13 @@ export const ManageGuardians = () => {
 													<p>
 														<span className="fw-bold text-secondary">Dependente:</span> {guard.dependentName}
 													</p>
-													<p className="">
-														Papel no grupo familiar: <span>{guard.guardianRole}</span>
+													<p>
+														<span className="fw-bold text-secondary">Papel no grupo familiar: </span>
+														{guard.guardianRole}
 													</p>
-													<p className="">
-														Papel no grupo familiar: <span>{guard.guardianRole}</span>
-													</p>
-													<p className="">
-														Dias da semana: <span>{guard.daysOfWeek}</span>
+													<p>
+														<span className="fw-bold text-secondary">Dias da semana: </span>
+														{guard.daysOfWeek}
 													</p>
 												</div>
 												<div className="text-end mb-2 me-2">
