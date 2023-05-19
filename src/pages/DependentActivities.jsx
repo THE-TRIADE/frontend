@@ -13,6 +13,13 @@ import { CheckBoxInput } from '../components/Inputs/CheckBoxInput';
 import { CheckBoxGroupInput } from '../components/Inputs/CheckBoxGroupInput';
 import { dayOfWeekEnum } from './ManageGuardians';
 import { Button } from '../components/Button';
+export const ActivityStateEnum = {
+	created: 'CRIADA',
+	in_progress: 'EM_ANDAMENTO',
+	late: 'ATRASADA',
+	done: 'REALIZADA',
+	not_done: 'NAO_REALIZADA',
+};
 
 const getActivities = (dependentId) => {
 	return api.get('/activity', { params: { dependentId } }).then((res) => {
@@ -152,19 +159,25 @@ export const DependentActivities = () => {
 
 	useEffect(() => {
 		if (trySubmitFinishForm) {
+			console.log(sentFinishForm);
 			api
 				.patch(`/activity/${finishActivityId}/finish`, sentFinishForm)
 				.then((res) => {
 					console.log(res);
 					setActivities((oldList) => {
-						const indexActivity = oldList.findIndex((activity) => activity.id != finishActivityId);
-						oldList[indexActivity] = res.data; // FIX
-						return oldList;
+						const indexActivity = oldList.findIndex((activity) => activity.id == finishActivityId);
+						oldList[indexActivity] = res.data;
+						return [...oldList];
 					});
 				})
 				.catch((err) => console.error(err))
 				.finally(() => {
 					setTrySubmitFinishForm(true);
+					setSentFinishForm({
+						guardianId: sessionStorage.getItem('UserId'),
+						done: false,
+						commentary: '',
+					});
 				});
 		}
 	}, [trySubmitFinishForm]);
@@ -191,35 +204,35 @@ export const DependentActivities = () => {
 						/>
 					)}
 					<>
-						{/* CONTAGEM DAS ATIVIDADES ININIO */}
+						{/* CONTAGEM DAS ATIVIDADES INICIO */}
 						<div className="resumo">
 							<h5 className="my-3">Resumo de Atividades</h5>
 							<div className="my-2">
-								<span className="badge rounded-pill bg-info">CREATED</span>
+								<span className="badge rounded-pill bg-info">{ActivityStateEnum.created}</span>
 								<span className="p fw-bold text-info"> Criadas: </span>
 								<span className="text-dark">
 									{activities.filter((activity) => activity.state === 'CREATED').length}
 								</span>
 							</div>
 							<div className="my-2">
-								<span className="badge rounded-pill bg-warning">IN_PROGRESS</span>
+								<span className="badge rounded-pill bg-warning">{ActivityStateEnum.in_progress}</span>
 								<span className="p fw-bold text-warning"> Em Andamento: </span>
 								<span className="text-dark">
 									{activities.filter((activity) => activity.state === 'IN_PROGRESS').length}
 								</span>
 							</div>
 							<div className="my-2">
-								<span className="badge rounded-pill bg-danger">LATE</span>
+								<span className="badge rounded-pill bg-danger">{ActivityStateEnum.late}</span>
 								<span className="p fw-bold text-danger"> Atrasadas: </span>
 								<span className="text-dark">{activities.filter((activity) => activity.state === 'LATE').length}</span>
 							</div>
 							<div className="my-2">
-								<span className="badge rounded-pill bg-success">DONE</span>
+								<span className="badge rounded-pill bg-success">{ActivityStateEnum.done}</span>
 								<span className="p fw-bold text-success"> Realizadas: </span>
 								<span className="text-dark">{activities.filter((activity) => activity.state === 'DONE').length}</span>
 							</div>
 							<div className="my-2">
-								<span className="badge rounded-pill bg-secondary">NOT_DONE</span>
+								<span className="badge rounded-pill bg-secondary">{ActivityStateEnum.not_done}</span>
 								<span className="p fw-bold text-black-50"> Não Realizadas: </span>
 								<span className="text-dark">
 									{activities.filter((activity) => activity.state === 'NOT_DONE').length}
@@ -348,13 +361,14 @@ export const DependentActivities = () => {
 									<CheckBoxInput
 										label="Atividade foi realizada?"
 										value={'Atividade foi realizada?'}
+										checked={sentFinishForm.done}
 										onChange={(e) => updateFinishForm('done', e)}
 									/>
 									<TextualInput
 										placeholder="Comentário"
-										label="Comentario"
+										label="Comentário"
 										value={sentFinishForm.commentary}
-										onChange={(e) => updateFinishForm('name', e)}
+										onChange={(e) => updateFinishForm('commentary', e)}
 									/>
 								</div>
 								<div className="modal-footer" data-dismiss="ModalFinishActivity">
@@ -441,6 +455,7 @@ export const DependentActivities = () => {
 									<CheckBoxInput
 										label="Repetir atividade"
 										value="Deseja repetir atividade em outros dias?"
+										checked={sentForm.repeat}
 										onChange={(e) => updateForm('repeat', e)}
 									/>
 									{sentForm.repeat && (

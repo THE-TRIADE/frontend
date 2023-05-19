@@ -11,7 +11,7 @@ import { Button } from '../components/Button';
 import { CheckBoxGroupInput } from '../components/Inputs/CheckBoxGroupInput';
 import { Menu } from '../components/Menu';
 
-const guardianRoleEnum = [
+export const guardianRoleEnum = [
 	{ key: 'Pai', value: 'FATHER' },
 	{ key: 'Mãe', value: 'MOTHER' },
 	{ key: 'Parente', value: 'RELATIVE' },

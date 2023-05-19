@@ -1,7 +1,32 @@
 import PropTypes from 'prop-types';
 import '../styles.css';
+import { useEffect, useState } from 'react';
 
 export const CheckBoxGroupInput = ({ label, options, onChange }) => {
+	const [inputValues, setInputValues] = useState([]);
+
+	useEffect(() => {
+		const sendObj = {
+			target: {
+				value: inputValues,
+			},
+		};
+		onChange(sendObj, inputValues);
+	}, [inputValues]);
+
+	const updateCheckBoxGroup = (e, value) => {
+		let values = inputValues;
+		if (e.target.checked) {
+			if (!values.includes(value)) {
+				values.push(value);
+				setInputValues([...values]);
+			}
+		} else {
+			values = values.filter((v) => v != value);
+			setInputValues([...values]);
+		}
+	};
+
 	return (
 		<div className="mt-3">
 			<label className="customLabel">{label}</label>
@@ -13,7 +38,7 @@ export const CheckBoxGroupInput = ({ label, options, onChange }) => {
 							type="checkbox"
 							className="btn-check"
 							id={`ckbox-${option.value}`}
-							onChange={(e) => onChange(e, option.value)}
+							onChange={(e) => updateCheckBoxGroup(e, option.value)}
 							key={`ckbox-${option.value}`}
 						/>
 						<label className="btn btn-outline-info w-100" htmlFor={`ckbox-${option.value}`}>

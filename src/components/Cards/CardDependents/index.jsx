@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import '../styles.css';
+import { ActivityStateEnum } from '../../../pages/DependentActivities';
 
 export const CardDependents = ({ dependent, late, created, in_progress }) => {
 	return (
@@ -11,17 +12,17 @@ export const CardDependents = ({ dependent, late, created, in_progress }) => {
 					</div>
 					<div className="card-body">
 						<div className="my-2">
-							<span className="badge rounded-pill bg-info">CREATED</span>
+							<span className="badge rounded-pill bg-info">{ActivityStateEnum.created}</span>
 							<span className="p fw-bold text-info"> Atividades Criadas: </span>
 							<span className="text-dark">{created}</span>
 						</div>
 						<div className="my-2">
-							<span className="badge rounded-pill bg-warning">IN_PROGRESS</span>
+							<span className="badge rounded-pill bg-warning">{ActivityStateEnum.in_progress}</span>
 							<span className="p fw-bold text-warning"> Atividades Em Andamento: </span>
 							<span className="text-dark">{in_progress}</span>
 						</div>
 						<div className="my-2">
-							<span className="badge rounded-pill bg-danger">LATE</span>
+							<span className="badge rounded-pill bg-danger">{ActivityStateEnum.late}</span>
 							<span className="p fw-bold text-danger"> Atividades Atrasadas: </span>
 							<span className="text-dark">{late}</span>
 						</div>

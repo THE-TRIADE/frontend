@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-export const CheckBoxInput = ({ label, value, onChange }) => {
+export const CheckBoxInput = ({ label, value, checked, onChange }) => {
 	return (
 		<div className="mt-3">
 			<label className="customLabel">{label}</label>
@@ -12,6 +12,7 @@ export const CheckBoxInput = ({ label, value, onChange }) => {
 					id={`ckbox-${value}`}
 					onChange={(e) => onChange(e, value)}
 					key={`ckbox-${value}`}
+					checked={checked}
 				/>
 				<label className="form-check-label w-100" htmlFor={`ckbox-${value}`}>
 					{value}
@@ -24,5 +25,6 @@ export const CheckBoxInput = ({ label, value, onChange }) => {
 CheckBoxInput.propTypes = {
 	label: PropTypes.string.isRequired,
 	value: PropTypes.string.isRequired,
+	checked: PropTypes.bool.isRequired,
 	onChange: PropTypes.func.isRequired,
 };

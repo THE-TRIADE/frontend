@@ -4,6 +4,7 @@ import { api } from '../config/api';
 import { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Menu } from '../components/Menu';
+import { guardianRoleEnum } from './ManageGuardians';
 
 const getActivities = (dependentId) => {
 	return api.get('/activity', { params: { dependentId } }).then((res) => {
@@ -76,7 +77,8 @@ export const FamilyGroupDetails = () => {
 								{guards[dependent.id] &&
 									guards[dependent.id].map((guard) => (
 										<p key={guard.id} className="my-2">
-											{guard.guardianName} : <span>{guard.guardianRole}</span>
+											{guard.guardianName} :{' '}
+											<span>{guardianRoleEnum.find((role) => role.value == guard.guardianRole).key}</span>
 											{/* <span className="text-primary mx-5">{guard.daysOfWeek}</span> */}
 										</p>
 									))}
