@@ -8,6 +8,7 @@ import { CardSpents } from '../components/Cards/CardSpents';
 import { api } from '../config/api';
 import { Button } from '../components/Button';
 import { Menu } from '../components/Menu';
+import { Link } from 'react-router-dom';
 
 export const Spents = () => {
 	const [sentForm, setSentForm] = useState({
@@ -106,6 +107,9 @@ export const Spents = () => {
 				<div className="col-12">
 					<TitlePages text="Gastos" textButton="Cadastrar Gasto" target="#ModalCadastrarGasto" />
 					<div className="row">
+						<Link className="customLink my-3 text-secondary text-end fs-5" to={'/spentsreport'}>
+							Ver resumo de gastos
+						</Link>
 						{spents.map((spent) => (
 							<CardSpents key={spent.id} spent={spent} deleteSpent={deleteSpent} />
 						))}
