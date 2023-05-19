@@ -9,6 +9,7 @@ import { ButtonHeader } from '../components/ButtonHeader';
 import { SelectInput } from '../components/Inputs/SelectInput';
 import { Button } from '../components/Button';
 import { CheckBoxGroupInput } from '../components/Inputs/CheckBoxGroupInput';
+import { Menu } from '../components/Menu';
 
 const guardianRoleEnum = [
 	{ key: 'Pai', value: 'FATHER' },
@@ -133,8 +134,9 @@ export const ManageGuardians = () => {
 
 	return (
 		<div className="app">
+			<Menu />
 			<div className="container">
-				<div className="my-5 d-flex flex-row justify-content-between">
+				<div className="my-5 pt-5 d-flex flex-row justify-content-between">
 					<h3 className="pt-3 ">Gerenciar Responsáveis</h3>
 					<ButtonOutlineSecondary text="Cadastrar Novo Responsável" link="/signup" />
 				</div>

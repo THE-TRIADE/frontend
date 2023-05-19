@@ -9,8 +9,12 @@ export const Menu = () => {
 	};
 
 	return (
-		<nav className="navbar navbar-expand-sm bg-light fixed-top">
+		<nav className="navbar navbar-expand-sm fixed-top">
 			<div className="container-fluid">
+				<a className="navbar-brand mx-5 text-white" href="#">
+					Family Routine
+				</a>
+
 				<button
 					className="navbar-toggler"
 					type="button"
@@ -22,22 +26,16 @@ export const Menu = () => {
 				>
 					<span className="navbar-toggler-icon"></span>
 				</button>
-				<div className="collapse navbar-collapse" id="navbarNav">
+				<div className="collapse navbar-collapse mx-5" id="navbarNav">
 					<ul className="navbar-nav">
-						<li className="nav-item">
-							<a className={`nav-link ${isActive('/Home')}`} aria-current="page" href="/Home">
+						<li className="nav-item mx-3">
+							<a className={`nav-link ${isActive('/')}`} aria-current="page" href="/">
 								{/*Todo href*/}
 								Início
 							</a>
 						</li>
-						<li className="nav-item">
-							<a className={`nav-link ${isActive('/Activities')}`} aria-current="page" href="/Activities">
-								{/*Todo href*/}
-								Atividades
-							</a>
-						</li>
-						<li className="nav-item">
-							<a className={`nav-link ${isActive('/signup')}`} href="/signup">
+						<li className="nav-item mx-3">
+							<a className={`nav-link ${isActive('/spents')}`} href="/spents">
 								{/*Todo href*/}
 								Gastos
 							</a>

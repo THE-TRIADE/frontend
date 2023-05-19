@@ -3,6 +3,7 @@ import { CardDependents } from '../components/Cards/CardDependents';
 import { api } from '../config/api';
 import { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { Menu } from '../components/Menu';
 
 const getActivities = (dependentId) => {
 	return api.get('/activity', { params: { dependentId } }).then((res) => {
@@ -58,9 +59,10 @@ export const FamilyGroupDetails = () => {
 
 	return (
 		<div className="app">
+			<Menu />
 			<div className="container">
 				<div className="row">
-					<h3 className="mt-5">{familyGroup && familyGroup.name}</h3>
+					<h3 className="mt-5 pt-5">{familyGroup && familyGroup.name}</h3>
 					<div className="d-flex flex-row justify-content-between my-2">
 						<p className="fw-bold text-secondary pt-3">Responsáveis Parceiros:</p>
 						<Link className="customLink fs-4" to={'/manageguardians/' + id}>

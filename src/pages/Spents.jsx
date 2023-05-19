@@ -7,6 +7,7 @@ import { SelectInput } from '../components/Inputs/SelectInput';
 import { CardSpents } from '../components/Cards/CardSpents';
 import { api } from '../config/api';
 import { Button } from '../components/Button';
+import { Menu } from '../components/Menu';
 
 export const Spents = () => {
 	const [sentForm, setSentForm] = useState({
@@ -100,6 +101,7 @@ export const Spents = () => {
 
 	return (
 		<div className="container">
+			<Menu />
 			<div className="row">
 				<div className="col-12">
 					<TitlePages text="Gastos" textButton="Cadastrar Gasto" target="#ModalCadastrarGasto" />

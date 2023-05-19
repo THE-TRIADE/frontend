@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { TitlePages } from '../components/TitlePages';
 import { AccordionActivities } from '../components/AccordionItemActivities';
+import { Menu } from '../components/Menu';
 import { TextualInput } from '../components/Inputs/TextualInput';
 import { DateInput } from '../components/Inputs/DateInput';
 import { TimeInput } from '../components/Inputs/TimeInput';
@@ -67,6 +68,7 @@ export const DependentActivities = () => {
 
 	return (
 		<div className="app">
+			<Menu />
 			<div className="container">
 				<div className="row">
 					{dependent && (
