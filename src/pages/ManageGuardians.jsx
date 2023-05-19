@@ -168,7 +168,7 @@ export const ManageGuardians = () => {
 															<span className="fw-bold text-secondary">Papel no grupo familiar: </span>
 															{guardianRoleEnum.find((role) => role.value == guard.guardianRole).key}
 														</p>
-														{!!guard.daysOfWeek.length && (
+														{guard.daysOfWeek != null && !!guard.daysOfWeek.length && (
 															<p>
 																<span className="fw-bold text-secondary">Dias da semana: </span>
 																{guard.daysOfWeek
