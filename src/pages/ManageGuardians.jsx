@@ -18,11 +18,11 @@ const guardianRoleEnum = [
 ];
 
 const dayOfWeekEnum = [
-	{ name: 'Segunda-feira', value: '1' },
-	{ name: 'Terça-feira', value: '2' },
-	{ name: 'Quarta-feira', value: '3' },
-	{ name: 'Quinta-feira', value: '4' },
-	{ name: 'Sexta-feira', value: '5' },
+	{ name: 'Segunda', value: '1' },
+	{ name: 'Terça', value: '2' },
+	{ name: 'Quarta', value: '3' },
+	{ name: 'Quinta', value: '4' },
+	{ name: 'Sexta', value: '5' },
 	{ name: 'Sábado', value: '6' },
 	{ name: 'Domingo', value: '7' },
 ];
