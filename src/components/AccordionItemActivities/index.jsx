@@ -1,6 +1,9 @@
 import PropTypes from 'prop-types';
+import './styles.css';
+import { ButtonHeader } from '../ButtonHeader';
+import { ButtonAction } from '../ButtonAction';
 
-export const AccordionActivities = ({ activity, parent }) => {
+export const AccordionActivities = ({ activity, parent, deleteFunction }) => {
 	return (
 		<div className="accordion-item">
 			<h2 className="accordion-header" id={'heading' + activity.id}>
@@ -22,11 +25,59 @@ export const AccordionActivities = ({ activity, parent }) => {
 				data-bs-parent={parent}
 			>
 				<div className="accordion-body">
-					<strong>This is the second accordion body.</strong> It is hidden by default, until the collapse plugin adds
-					the appropriate classes that we use to style each element. These classes control the overall appearance, as
-					well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding
-					our default variables. s also worth noting that just about any HTML can go within the{' '}
-					<code>.accordion-body</code>, though the transition does limit overflow.
+					<p className=" fw-bold text-primary">
+						Ator: <span className="text-dark fw-normal">{activity.actorName}</span>
+					</p>
+					<p className=" fw-bold text-primary">
+						Criado Por: <span className="text-dark fw-normal">{activity.createdByName}</span>
+					</p>
+					<p className=" fw-bold text-primary">
+						Data de Início: <span className="text-dark fw-normal">{activity.dateStart}</span>
+					</p>
+					<p className=" fw-bold text-primary">
+						Data de Finalização: <span className="text-dark fw-normal">{activity.dateEnd}</span>
+					</p>
+					<p className=" fw-bold text-primary">
+						Horário de Inicio: <span className="text-dark fw-normal">{activity.hourStart}</span>
+					</p>
+					<p className=" fw-bold text-primary">
+						Horário de Finalização: <span className="text-dark fw-normal">{activity.hourEnd}</span>
+					</p>
+					{activity.commentary && (
+						<p className=" fw-bold text-primary">
+							Comentário: <span className="text-dark fw-normal">{activity.hourEnd}</span>
+						</p>
+					)}
+					<div className="text-end">
+						<ButtonAction text="Excluir" bgColor="bg-danger" onClick={deleteFunction} />
+						<ButtonHeader text="Finalizar Atividade" target="#ModalFinalizarAtividade" />
+					</div>
+				</div>
+			</div>
+			<div
+				className="modal fade"
+				id="ModalFinalizarAtividade"
+				data-bs-backdrop="static"
+				data-bs-keyboard="false"
+				tabIndex="-1"
+				aria-labelledby="ModalFinalizarAtividadeLabel"
+				aria-hidden="true"
+			>
+				<div className="modal-dialog modal-dialog-centered">
+					<div className="modal-content">
+						<div className="modal-header">
+							<h1 className="modal-title fs-5 secondary-color" id="ModalFinalizarAtividadeLabel">
+								Finalizar Atividade
+							</h1>
+							<button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div className="modal-body"></div>
+						<div className="modal-footer">
+							<button type="button" className="btn btn-secondary">
+								Finalizar
+							</button>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -36,4 +87,5 @@ export const AccordionActivities = ({ activity, parent }) => {
 AccordionActivities.propTypes = {
 	activity: PropTypes.object.isRequired,
 	parent: PropTypes.string.isRequired,
+	deleteFunction: PropTypes.func.isRequired,
 };

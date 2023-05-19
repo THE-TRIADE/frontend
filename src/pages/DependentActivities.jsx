@@ -102,7 +102,7 @@ export const DependentActivities = () => {
 								{!!inProgress.length && (
 									<>
 										<h4 className="my-4 text-warning">Em Andamento</h4>
-										<div className="accordion" id="accordionEmAndamento">
+										<div className="accordion pb-3" id="accordionEmAndamento">
 											{inProgress.map((activity) => (
 												<AccordionActivities key={activity.id} activity={activity} parent="#accordionEmAndamento" />
 											))}
@@ -112,7 +112,7 @@ export const DependentActivities = () => {
 								{!!created.length && (
 									<>
 										<h4 className="my-4 text-info">Criadas</h4>
-										<div className="accordion" id="accordionCriadas">
+										<div className="accordion pb-3" id="accordionCriadas">
 											{created.map((activity) => (
 												<AccordionActivities key={activity.id} activity={activity} parent="#accordionCriadas" />
 											))}
@@ -122,7 +122,7 @@ export const DependentActivities = () => {
 								{!!late.length && (
 									<>
 										<h4 className="my-4 text-info">Criadas</h4>
-										<div className="accordion" id="accordionAtrasadas">
+										<div className="accordion pb-3" id="accordionAtrasadas">
 											{late.map((activity) => (
 												<AccordionActivities key={activity.id} activity={activity} parent="#accordionAtrasadas" />
 											))}
@@ -132,7 +132,7 @@ export const DependentActivities = () => {
 								{!!done.length && (
 									<>
 										<h4 className="my-4 text-success">Realizadas</h4>
-										<div className="accordion" id="accordionRealizadas">
+										<div className="accordion pb-3" id="accordionRealizadas">
 											{done.map((activity) => (
 												<AccordionActivities key={activity.id} activity={activity} parent="#accordionRealizadas" />
 											))}
@@ -142,7 +142,7 @@ export const DependentActivities = () => {
 								{!!notDone.length && (
 									<>
 										<h4 className="my-4 text-black-50">Não Realizadas</h4>
-										<div className="accordion" id="accordionNaoRealizadas">
+										<div className="accordion pb-3" id="accordionNaoRealizadas">
 											{notDone.map((activity) => (
 												<AccordionActivities key={activity.id} activity={activity} parent="#accordionNaoRealizadas" />
 											))}
