@@ -7,10 +7,14 @@ import { api } from '../config/api';
 import { ButtonOutline } from '../components/ButtonOutline';
 import { DependentForm } from '../components/DependentForm';
 import { useNavigate } from 'react-router-dom';
+import { guardianRoleEnum } from './ManageGuardians';
+import { SelectInput } from '../components/Inputs/SelectInput';
 
 export const FamilyGroup = () => {
 	const [familyGroupForm, setfamilyGroupForm] = useState({
 		name: '',
+		guardianId: sessionStorage.getItem('UserId'),
+		guardianRole: '-1',
 	});
 	const [dependents, setDependents] = useState([]);
 	const [errorMessages, setErrorMessages] = useState({
@@ -116,6 +120,17 @@ export const FamilyGroup = () => {
 								onChange={(e) => updateForm('name', e)}
 							/>
 							{showErrorMessages('name')}
+							<SelectInput
+								options={[
+									{ optName: 'Escolha um papel', optValue: '-1', disabled: true },
+									...guardianRoleEnum.map((role) => {
+										return { optName: role.key, optValue: role.value.toString() };
+									}),
+								]}
+								value={familyGroupForm.guardianRole}
+								label="Papel do responsável"
+								onChange={(e) => updateForm('guardianRole', e)}
+							/>
 							<h5 className="text-center mt-5 text-secondary">Cadastro de dependente(s)</h5>
 
 							<div className="my-3 text-start">
