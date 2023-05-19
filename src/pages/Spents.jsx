@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { TextualInput } from '../components/Inputs/TextualInput';
 import { TitlePages } from '../components/TitlePages';
 import { DateInput } from '../components/Inputs/DateInput';
@@ -36,15 +36,17 @@ export const Spents = () => {
 			name: '',
 			value: '',
 			paidOn: '',
-			guardianId: '',
+			guardianId: sessionStorage.getItem('UserId'),
 			dependentId: '-1',
 			activityId: '',
 		});
 	};
-
+	const [trySubmit, setTrySubmit] = useState(false);
+	const modal = useRef(null);
 	useEffect(() => {
 		const modalElement = document.getElementById('ModalCadastrarGasto');
 		modalElement.addEventListener('hidden.bs.modal', handleFormSubmit);
+
 		const getSpents = () => {
 			api.get('/spent/by-guardian-id/' + sessionStorage.getItem('UserId')).then((res) => {
 				setSpents(res.data);
@@ -62,16 +64,38 @@ export const Spents = () => {
 				setDependents(listDependent);
 			});
 		};
+		getSpents();
+		getDependents();
 		return () => {
-			getSpents();
-			getDependents();
 			modalElement.removeEventListener('hidden.bs.modal', handleFormSubmit);
 		};
 	}, []);
 
-	const testFunc = () => {
-		console.log(sentForm);
-		return;
+	useEffect(() => {
+		if (trySubmit) {
+			const newSpent = { ...sentForm };
+			api
+				.post('/spent', newSpent)
+				.then((res) => {
+					console.log(res);
+					setSpents((oldList) => [...oldList, res.data]);
+				})
+				.catch((err) => console.error(err))
+				.finally(() => {
+					setTrySubmit(false);
+				});
+		}
+	}, [trySubmit]);
+
+	const submitSpent = () => {
+		setTrySubmit(true);
+	};
+
+	const deleteSpent = (id, e) => {
+		e.preventDefault();
+		api.delete(`/spent/${id}`).then(() => {
+			setSpents((oldList) => oldList.filter((spent) => spent.id != id));
+		});
 	};
 
 	return (
@@ -81,7 +105,7 @@ export const Spents = () => {
 					<TitlePages text="Gastos" textButton="Cadastrar Gasto" target="#ModalCadastrarGasto" />
 					<div className="row">
 						{spents.map((spent) => (
-							<CardSpents key={spent.id} spent={spent} />
+							<CardSpents key={spent.id} spent={spent} deleteSpent={deleteSpent} />
 						))}
 					</div>
 					<div
@@ -92,6 +116,7 @@ export const Spents = () => {
 						tabIndex="-1"
 						aria-labelledby="ModalCadastrarGasto"
 						aria-hidden="true"
+						ref={modal}
 					>
 						<div className="modal-dialog modal-dialog-centered">
 							<div className="modal-content">
@@ -132,8 +157,8 @@ export const Spents = () => {
 										onChange={(e) => updateForm('dependentId', e)}
 									/>
 								</div>
-								<div className="modal-footer">
-									<Button type="button" text="Cadastrar" onClick={testFunc} />
+								<div className="modal-footer" data-dismiss="ModalCadastrarGasto">
+									<Button type="button" text="Cadastrar" onClick={submitSpent} />
 								</div>
 							</div>
 						</div>
