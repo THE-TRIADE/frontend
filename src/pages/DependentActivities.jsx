@@ -45,8 +45,8 @@ export const DependentActivities = () => {
 		dateEnd: '',
 		hourEnd: '',
 		dependentId: id,
-		currentGuardian: '',
-		actor: '',
+		currentGuardian: '-1',
+		actor: '-1',
 		createdBy: sessionStorage.getItem('UserId'),
 		repeat: false,
 		daysToRepeat: [],
@@ -126,8 +126,8 @@ export const DependentActivities = () => {
 						dateEnd: '',
 						hourEnd: '',
 						dependentId: id,
-						currentGuardian: '',
-						actor: '',
+						currentGuardian: '-1',
+						actor: '-1',
 						createdBy: sessionStorage.getItem('UserId'),
 						repeat: false,
 						daysToRepeat: [],
@@ -152,13 +152,14 @@ export const DependentActivities = () => {
 
 	useEffect(() => {
 		if (trySubmitFinishForm) {
-			const activity = api
+			api
 				.patch(`/activity/${finishActivityId}/finish`, sentFinishForm)
 				.then((res) => {
 					console.log(res);
 					setActivities((oldList) => {
 						const indexActivity = oldList.findIndex((activity) => activity.id != finishActivityId);
-						return oldList.splice(indexActivity, 1, activity);
+						oldList[indexActivity] = res.data; // FIX
+						return oldList;
 					});
 				})
 				.catch((err) => console.error(err))
@@ -315,8 +316,6 @@ export const DependentActivities = () => {
 													activity={activity}
 													parent="#accordionNaoRealizadas"
 													deleteFunction={deleteActivityFunction}
-													target="#ModalFinishActivity"
-													funcOnClickFinish={setActivityToSendFinish}
 												/>
 											))}
 									</div>
