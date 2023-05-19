@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { TextualInput } from '../components/Inputs/TextualInput';
 import { TitlePages } from '../components/TitlePages';
 import { DateInput } from '../components/Inputs/DateInput';
@@ -36,15 +36,17 @@ export const Spents = () => {
 			name: '',
 			value: '',
 			paidOn: '',
-			guardianId: '',
+			guardianId: sessionStorage.getItem('UserId'),
 			dependentId: '-1',
 			activityId: '',
 		});
 	};
-
+	const [trySubmit, setTrySubmit] = useState(false);
+	const modal = useRef(null);
 	useEffect(() => {
 		const modalElement = document.getElementById('ModalCadastrarGasto');
 		modalElement.addEventListener('hidden.bs.modal', handleFormSubmit);
+
 		const getSpents = () => {
 			api.get('/spent/by-guardian-id/' + sessionStorage.getItem('UserId')).then((res) => {
 				setSpents(res.data);
@@ -52,29 +54,48 @@ export const Spents = () => {
 		};
 
 		const getDependents = () => {
-			setDependents(() => []);
 			api.get('/guardian/' + sessionStorage.getItem('UserId')).then((res) => {
-				res.data.guards.map((x) => {
-					setDependents((oldList) => [
-						...oldList,
-						{
-							dependentName: x.dependentName,
-							dependentId: x.dependentId,
-						},
-					]);
+				const listDependent = res.data.guards.map((guard) => {
+					return {
+						dependentName: guard.dependentName,
+						dependentId: guard.dependentId,
+					};
 				});
+				setDependents(listDependent);
 			});
 		};
+		getSpents();
+		getDependents();
 		return () => {
-			getSpents();
-			getDependents();
 			modalElement.removeEventListener('hidden.bs.modal', handleFormSubmit);
 		};
 	}, []);
 
-	const testFunc = () => {
-		console.log(sentForm);
-		return;
+	useEffect(() => {
+		if (trySubmit) {
+			const newSpent = { ...sentForm };
+			api
+				.post('/spent', newSpent)
+				.then((res) => {
+					console.log(res);
+					setSpents((oldList) => [...oldList, res.data]);
+				})
+				.catch((err) => console.error(err))
+				.finally(() => {
+					setTrySubmit(false);
+				});
+		}
+	}, [trySubmit]);
+
+	const submitSpent = () => {
+		setTrySubmit(true);
+	};
+
+	const deleteSpent = (id, e) => {
+		e.preventDefault();
+		api.delete(`/spent/${id}`).then(() => {
+			setSpents((oldList) => oldList.filter((spent) => spent.id != id));
+		});
 	};
 
 	return (
@@ -84,7 +105,7 @@ export const Spents = () => {
 					<TitlePages text="Gastos" textButton="Cadastrar Gasto" target="#ModalCadastrarGasto" />
 					<div className="row">
 						{spents.map((spent) => (
-							<CardSpents key={spent.id} spent={spent} />
+							<CardSpents key={spent.id} spent={spent} deleteSpent={deleteSpent} />
 						))}
 					</div>
 					<div
@@ -95,6 +116,7 @@ export const Spents = () => {
 						tabIndex="-1"
 						aria-labelledby="ModalCadastrarGasto"
 						aria-hidden="true"
+						ref={modal}
 					>
 						<div className="modal-dialog modal-dialog-centered">
 							<div className="modal-content">
@@ -126,8 +148,8 @@ export const Spents = () => {
 									<SelectInput
 										options={[
 											{ optName: 'escolha um dependente', optValue: '-1', disabled: true },
-											...dependents.map((x) => {
-												return { optName: x.dependentName, optValue: x.dependentId.toString() };
+											...dependents.map((dependent) => {
+												return { optName: dependent.dependentName, optValue: dependent.dependentId.toString() };
 											}),
 										]}
 										value={sentForm.dependentId}
@@ -135,8 +157,8 @@ export const Spents = () => {
 										onChange={(e) => updateForm('dependentId', e)}
 									/>
 								</div>
-								<div className="modal-footer">
-									<Button type="button" text="Cadastrar" onClick={testFunc} />
+								<div className="modal-footer" data-dismiss="ModalCadastrarGasto">
+									<Button type="button" text="Cadastrar" onClick={submitSpent} />
 								</div>
 							</div>
 						</div>

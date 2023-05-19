@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import '../styles.css';
+import { ButtonAction } from '../../ButtonAction';
 
-export const CardSpents = ({ spent }) => {
+export const CardSpents = ({ spent, deleteSpent }) => {
 	return (
 		<div className="col-12 col-md-4 mb-3 mb-md-0 mt-3">
 			<a href="" className="text-decoration-none">
@@ -24,6 +25,9 @@ export const CardSpents = ({ spent }) => {
 								<p>{spent.activityName}</p>
 							</>
 						)}
+						<div className="text-end mb-2 me-2">
+							<ButtonAction text="Excluir" bgColor="bg-danger" onClick={(e) => deleteSpent(spent.id, e)} />
+						</div>
 					</div>
 				</div>
 			</a>
@@ -33,4 +37,5 @@ export const CardSpents = ({ spent }) => {
 
 CardSpents.propTypes = {
 	spent: PropTypes.object.isRequired,
+	deleteSpent: PropTypes.func.isRequired,
 };
