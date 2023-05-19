@@ -3,6 +3,7 @@ import { CardFamilyGroup } from '../components/Cards/CardFamilyGroup';
 import { api } from '../config/api';
 import { useEffect } from 'react';
 import { ButtonOutlineSecondary } from '../components/ButtonOutlineSecondary';
+import { Menu } from '../components/Menu';
 
 export const Home = () => {
 	const [familyGroups, setFamilyGroups] = useState([]);
@@ -22,8 +23,9 @@ export const Home = () => {
 	};
 	return (
 		<div className="app">
+			<Menu />
 			<div className="container">
-				<div className="my-5 d-flex flex-row justify-content-between">
+				<div className="my-5 pt-5 d-flex flex-row justify-content-between">
 					<h3 className="pt-3">Grupos Familiares</h3>
 					<ButtonOutlineSecondary text="Cadastrar Grupo Familiar" link="/familygroup" />
 				</div>

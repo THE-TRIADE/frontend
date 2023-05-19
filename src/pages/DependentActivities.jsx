@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { TitlePages } from '../components/TitlePages';
 import { AccordionActivities } from '../components/AccordionItemActivities';
+import { Menu } from '../components/Menu';
 
 const getActivities = (dependentId) => {
 	return api.get('/activity', { params: { dependentId } }).then((res) => {
@@ -61,6 +62,7 @@ export const DependentActivities = () => {
 
 	return (
 		<div className="app">
+			<Menu />
 			<div className="container">
 				<div className="row">
 					{dependent && (
