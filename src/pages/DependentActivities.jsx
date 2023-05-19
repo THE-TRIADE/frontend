@@ -9,6 +9,9 @@ import { TextualInput } from '../components/Inputs/TextualInput';
 import { DateInput } from '../components/Inputs/DateInput';
 import { TimeInput } from '../components/Inputs/TimeInput';
 import { SelectInput } from '../components/Inputs/SelectInput';
+import { CheckBoxInput } from '../components/Inputs/CheckBoxInput';
+import { CheckBoxGroupInput } from '../components/Inputs/CheckBoxGroupInput';
+import { dayOfWeekEnum } from './ManageGuardians';
 
 const getActivities = (dependentId) => {
 	return api.get('/activity', { params: { dependentId } }).then((res) => {
@@ -49,8 +52,14 @@ export const DependentActivities = () => {
 	});
 
 	const updateForm = (inputName, event) => {
+		const { checked, value } = event.target;
+
 		setSentForm((prevState) => {
-			return { ...prevState, [inputName]: event.target.value };
+			if (inputName == 'repeat') {
+				return { ...prevState, [inputName]: checked };
+			} else {
+				return { ...prevState, [inputName]: value };
+			}
 		});
 	};
 
@@ -59,7 +68,10 @@ export const DependentActivities = () => {
 			setDependent(dependentResult);
 		});
 		getGuardiansByDependentId(id).then((guardiansResult) => {
-			setGuardians(guardiansResult);
+			const guardiansDisjuction = guardiansResult.filter(
+				(guardian, index, self) => index === self.findIndex((g) => g.id === guardian.id),
+			);
+			setGuardians(guardiansDisjuction);
 		});
 		getActivities(id).then((activities) => {
 			setActivities(activities);
@@ -72,6 +84,9 @@ export const DependentActivities = () => {
 	useEffect(() => {
 		console.log(activities);
 	}, [activities]);
+	useEffect(() => {
+		console.log(guardians);
+	}, [guardians]);
 
 	return (
 		<div className="app">
@@ -184,86 +199,108 @@ export const DependentActivities = () => {
 						</div>
 					)}
 				</div>
-				<div
-					className="modal fade"
-					id="ModalCadastrarAtividades"
-					data-bs-backdrop="static"
-					data-bs-keyboard="false"
-					tabIndex="-1"
-					aria-labelledby="ModalCadastrarAtividadesLabel"
-					aria-hidden="true"
-				>
-					<div className="modal-dialog modal-dialog-centered">
-						<div className="modal-content">
-							<div className="modal-header">
-								<h1 className="modal-title fs-5 secondary-color" id="ModalCadastrarAtividadesLabel">
-									Cadastrar Nova Atividade
-								</h1>
-								<button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-							</div>
-							<div className="modal-body">
-								<TextualInput
-									placeholder="Título da atividade"
-									label="Título da Atividade"
-									value={sentForm.name}
-									onChange={(e) => updateForm('name', e)}
-								/>
-								<DateInput
-									placeholder=""
-									label="Data de início"
-									value={sentForm.dateStart}
-									onChange={(e) => updateForm('dateStart', e)}
-								/>
-								<TimeInput
-									placeholder=""
-									label="Hora de início"
-									value={sentForm.hourStart}
-									onChange={(e) => updateForm('dateStart', e)}
-								/>
-								<DateInput
-									placeholder=""
-									label="Data de fim"
-									value={sentForm.dateEnd}
-									onChange={(e) => updateForm('dateEnd', e)}
-								/>
-								<TimeInput
-									placeholder=""
-									label="Hora de fim"
-									value={sentForm.hourStart}
-									onChange={(e) => updateForm('dateStart', e)}
-								/>
-								<SelectInput
-									options={[
-										{ optName: 'Escolha um responsável', optValue: '-1', disabled: true },
-										...guardians.map((guardian) => {
-											return { optName: guardian.name, optValue: guardian.id.toString() };
-										}),
-									]}
-									value={sentForm.dependentId}
-									label="Responsável atual"
-									onChange={(e) => updateForm('currentGuardian', e)}
-								/>
-								<SelectInput
-									options={[
-										{ optName: 'Escolha um ator da atividade', optValue: '-1', disabled: true },
-										...[...guardians, dependent],
-										// .map((person) => {
-										// return { optName: person.name, optValue: person.id.toString() };
-										// }),
-									]}
-									value={sentForm.actor}
-									label="Ator da atividade"
-									onChange={(e) => updateForm('actor', e)}
-								/>
-							</div>
-							<div className="modal-footer">
-								<button type="button" className="btn btn-secondary">
-									Cadastrar
-								</button>
+				{!!dependent && !!guardians.length && (
+					<div
+						className="modal fade"
+						id="ModalCadastrarAtividades"
+						data-bs-backdrop="static"
+						data-bs-keyboard="false"
+						tabIndex="-1"
+						aria-labelledby="ModalCadastrarAtividadesLabel"
+						aria-hidden="true"
+					>
+						<div className="modal-dialog modal-dialog-centered">
+							<div className="modal-content">
+								<div className="modal-header">
+									<h1 className="modal-title fs-5 secondary-color" id="ModalCadastrarAtividadesLabel">
+										Cadastrar Nova Atividade
+									</h1>
+									<button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+								</div>
+								<div className="modal-body">
+									<TextualInput
+										placeholder="Título da atividade"
+										label="Título da Atividade"
+										value={sentForm.name}
+										onChange={(e) => updateForm('name', e)}
+									/>
+									<DateInput
+										placeholder=""
+										label="Data de início"
+										value={sentForm.dateStart}
+										onChange={(e) => updateForm('dateStart', e)}
+									/>
+									<TimeInput
+										placeholder=""
+										label="Hora de início"
+										value={sentForm.hourStart}
+										onChange={(e) => updateForm('dateStart', e)}
+									/>
+									<DateInput
+										placeholder=""
+										label="Data de fim"
+										value={sentForm.dateEnd}
+										onChange={(e) => updateForm('dateEnd', e)}
+									/>
+									<TimeInput
+										placeholder=""
+										label="Hora de fim"
+										value={sentForm.hourStart}
+										onChange={(e) => updateForm('dateStart', e)}
+									/>
+									<SelectInput
+										options={[
+											{ optName: 'Escolha um responsável', optValue: '-1', disabled: true },
+											...guardians.map((guardian) => {
+												return { optName: guardian.name, optValue: guardian.id.toString() };
+											}),
+										]}
+										value={sentForm.dependentId}
+										label="Responsável atual"
+										onChange={(e) => updateForm('currentGuardian', e)}
+									/>
+									<SelectInput
+										options={[
+											{ optName: 'Escolha um ator da atividade', optValue: '-1', disabled: true },
+											...[...guardians, dependent].map((person) => ({
+												optName: person.name,
+												optValue: person.id.toString(),
+											})),
+										]}
+										value={sentForm.actor}
+										label="Ator da atividade"
+										onChange={(e) => updateForm('actor', e)}
+									/>
+									<CheckBoxInput
+										label="Repetir atividade"
+										value="Deseja repetir atividade em outros dias?"
+										onChange={(e) => updateForm('repeat', e)}
+									/>
+									{sentForm.repeat && (
+										<>
+											<CheckBoxGroupInput
+												label="Dias da semana que irão repetir"
+												options={dayOfWeekEnum}
+												onChange={(e) => updateForm('daysToRepeat', e)}
+											/>
+											<DateInput
+												placeholder=""
+												label="Repetir até"
+												value={sentForm.repeatUntil}
+												onChange={(e) => updateForm('repeatUntil', e)}
+											/>
+										</>
+									)}
+								</div>
+								<div className="modal-footer">
+									<button type="button" className="btn btn-secondary">
+										Cadastrar
+									</button>
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
+				)}
 			</div>
 		</div>
 	);

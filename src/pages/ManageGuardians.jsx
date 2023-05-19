@@ -18,7 +18,7 @@ const guardianRoleEnum = [
 	{ key: 'Provisório', value: 'TEMPORARY' },
 ];
 
-const dayOfWeekEnum = [
+export const dayOfWeekEnum = [
 	{ name: 'Segunda', value: '1' },
 	{ name: 'Terça', value: '2' },
 	{ name: 'Quarta', value: '3' },
