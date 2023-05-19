@@ -177,40 +177,6 @@ export const DependentActivities = () => {
 		setFinishActivityId(finishActivityIdToSet);
 	};
 
-	const deleteActivityFunction = (e, activityId) => {
-		e.preventDefault();
-		api.delete(`/activity/${activityId}`).then(() => {
-			setActivities((oldList) => oldList.filter((activity) => activity.id != activityId));
-		});
-	};
-
-	useEffect(() => {
-		if (trySubmitFinishForm) {
-			const activity = api
-				.patch(`/activity/${finishActivityId}/finish`, sentFinishForm)
-				.then((res) => {
-					console.log(res);
-					setActivities((oldList) => {
-						const indexActivity = oldList.findIndex((activity) => activity.id != finishActivityId);
-						return oldList.splice(indexActivity, 1, activity);
-					});
-				})
-				.catch((err) => console.error(err))
-				.finally(() => {
-					setTrySubmitFinishForm(true);
-				});
-		}
-	}, [trySubmitFinishForm]);
-
-	const finishActivityFunction = (e) => {
-		e.preventDefault();
-		setTrySubmitFinishForm(true);
-	};
-
-	const setActivityToSendFinish = (finishActivityIdToSet) => {
-		setFinishActivityId(finishActivityIdToSet);
-	};
-
 	return (
 		<div className="app">
 			<Menu />
