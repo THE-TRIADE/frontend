@@ -81,7 +81,6 @@ export const ManageGuardians = () => {
 		const getGuards = (dependentId) => {
 			api.get('/guard/by-dependent-id/' + dependentId).then((res) => {
 				setGuards((prevGuards) => {
-					console.log(`guards, looking at dependent ${dependentId}:`, [...prevGuards, ...res.data]);
 					const newGuards = res.data.filter(
 						(newGuard) => !prevGuards.some((prevGuard) => prevGuard.id === newGuard.id),
 					);
@@ -107,7 +106,6 @@ export const ManageGuardians = () => {
 			api
 				.post('/guard', newGuard)
 				.then((res) => {
-					console.log(res);
 					setGuards((oldList) => {
 						const newArray = oldList;
 						newArray.push(res.data);
