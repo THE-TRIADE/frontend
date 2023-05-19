@@ -9,6 +9,7 @@ import { Spents } from './pages/Spents';
 import { FamilyGroupDetails } from './pages/FamilyGroupDetails';
 import { ManageGuardians } from './pages/ManageGuardians';
 import { DependentActivities } from './pages/DependentActivities';
+import { SpentsReports } from './pages/SpentsReport';
 
 function App() {
 	return (
@@ -21,6 +22,7 @@ function App() {
 				<Route path="/signup" element={<SignUp />} />
 				<Route path="/manageguardians/:id" element={<ManageGuardians />} />
 				<Route path="/spents" element={<Spents />} />
+				<Route path="/spentsreport" element={<SpentsReports />} />
 				<Route path="/login" element={<SignIn />} />
 				<Route path="/forgotpassword" element={<ForgotPassword />} />
 				<Route path="*" element={<NotFound />} />

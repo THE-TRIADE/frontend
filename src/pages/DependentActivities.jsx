@@ -37,6 +37,7 @@ export const DependentActivities = () => {
 	const [activities, setActivities] = useState([]);
 	const [dependent, setDependent] = useState({});
 	const [guardians, setGuardians] = useState([]);
+	const [submitActivity, setSubmitActivity] = useState(false);
 	const [sentForm, setSentForm] = useState({
 		name: '',
 		dateStart: '',
@@ -99,14 +100,82 @@ export const DependentActivities = () => {
 	}, [id]);
 
 	useEffect(() => {
-		console.log(dependent);
-	}, [dependent]);
+		if (submitActivity) {
+			const newActivity = { ...sentForm };
+			if (!newActivity.repeat) {
+				newActivity.daysToRepeat = [];
+				newActivity.repeatUntil = null;
+			}
+			api
+				.post('/activity', newActivity)
+				.then((res) => {
+					setActivities((oldList) => {
+						const newArray = oldList;
+						if (!oldList.includes(res.data)) {
+							newArray.push(res.data);
+						}
+						return newArray;
+					});
+				})
+				.catch((err) => console.error(err))
+				.finally(() => {
+					setSentForm({
+						name: '',
+						dateStart: '',
+						hourStart: '',
+						dateEnd: '',
+						hourEnd: '',
+						dependentId: id,
+						currentGuardian: '',
+						actor: '',
+						createdBy: sessionStorage.getItem('UserId'),
+						repeat: false,
+						daysToRepeat: [],
+						repeatUntil: '',
+					});
+
+					setSubmitActivity(false);
+				});
+		}
+	}, [submitActivity]);
+
+	const submitActivityForm = () => {
+		setSubmitActivity(true);
+	};
+
+	const deleteActivityFunction = (e, activityId) => {
+		e.preventDefault();
+		api.delete(`/activity/${activityId}`).then(() => {
+			setActivities((oldList) => oldList.filter((activity) => activity.id != activityId));
+		});
+	};
+
 	useEffect(() => {
-		console.log(activities);
-	}, [activities]);
-	useEffect(() => {
-		console.log(guardians);
-	}, [guardians]);
+		if (trySubmitFinishForm) {
+			const activity = api
+				.patch(`/activity/${finishActivityId}/finish`, sentFinishForm)
+				.then((res) => {
+					console.log(res);
+					setActivities((oldList) => {
+						const indexActivity = oldList.findIndex((activity) => activity.id != finishActivityId);
+						return oldList.splice(indexActivity, 1, activity);
+					});
+				})
+				.catch((err) => console.error(err))
+				.finally(() => {
+					setTrySubmitFinishForm(true);
+				});
+		}
+	}, [trySubmitFinishForm]);
+
+	const finishActivityFunction = (e) => {
+		e.preventDefault();
+		setTrySubmitFinishForm(true);
+	};
+
+	const setActivityToSendFinish = (finishActivityIdToSet) => {
+		setFinishActivityId(finishActivityIdToSet);
+	};
 
 	const deleteActivityFunction = (e, activityId) => {
 		e.preventDefault();
@@ -234,7 +303,7 @@ export const DependentActivities = () => {
 							)}
 							{!!activities.filter((activity) => activity.state === 'LATE').length && (
 								<>
-									<h4 className="my-4 text-info">Criadas</h4>
+									<h4 className="my-4 text-danger">Atrasadas</h4>
 									<div className="accordion pb-3" id="accordionAtrasadas">
 										{activities
 											.filter((activity) => activity.state === 'LATE')
@@ -367,7 +436,7 @@ export const DependentActivities = () => {
 										placeholder=""
 										label="Hora de início"
 										value={sentForm.hourStart}
-										onChange={(e) => updateForm('dateStart', e)}
+										onChange={(e) => updateForm('hourStart', e)}
 									/>
 									<DateInput
 										placeholder=""
@@ -378,8 +447,8 @@ export const DependentActivities = () => {
 									<TimeInput
 										placeholder=""
 										label="Hora de fim"
-										value={sentForm.hourStart}
-										onChange={(e) => updateForm('dateStart', e)}
+										value={sentForm.hourEnd}
+										onChange={(e) => updateForm('hourEnd', e)}
 									/>
 									<SelectInput
 										options={[
@@ -388,7 +457,7 @@ export const DependentActivities = () => {
 												return { optName: guardian.name, optValue: guardian.id.toString() };
 											}),
 										]}
-										value={sentForm.dependentId}
+										value={sentForm.currentGuardian}
 										label="Responsável atual"
 										onChange={(e) => updateForm('currentGuardian', e)}
 									/>
@@ -426,7 +495,7 @@ export const DependentActivities = () => {
 									)}
 								</div>
 								<div className="modal-footer">
-									<button type="button" className="btn btn-secondary">
+									<button type="button" className="btn btn-secondary" onClick={submitActivityForm}>
 										Cadastrar
 									</button>
 								</div>
