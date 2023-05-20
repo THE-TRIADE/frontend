@@ -172,7 +172,7 @@ export const DependentActivities = () => {
 				})
 				.catch((err) => console.error(err))
 				.finally(() => {
-					setTrySubmitFinishForm(true);
+					setTrySubmitFinishForm(false);
 					setSentFinishForm({
 						guardianId: sessionStorage.getItem('UserId'),
 						done: false,
