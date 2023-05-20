@@ -61,21 +61,6 @@ export const ManageGuardians = () => {
 		});
 	};
 
-	const updateDayOfWeek = (event, dayOfWeek) => {
-		const { checked } = event.target;
-		if (checked) {
-			setSentForm((prevState) => {
-				const newDaysOfWeek = [...prevState.daysOfWeek, dayOfWeek];
-				return { ...prevState, daysOfWeek: newDaysOfWeek };
-			});
-		} else {
-			setSentForm((prevState) => {
-				const newDaysOfWeek = prevState.daysOfWeek.filter((thisDay) => thisDay != dayOfWeek);
-				return { ...prevState, daysOfWeek: newDaysOfWeek };
-			});
-		}
-	};
-
 	useEffect(() => {
 		getGuardians();
 
@@ -247,7 +232,7 @@ export const ManageGuardians = () => {
 								<CheckBoxGroupInput
 									label="Dias da semana da guarda"
 									options={dayOfWeekEnum}
-									onChange={updateDayOfWeek}
+									onChange={(e) => updateForm('daysOfWeek', e)}
 								/>
 							</div>
 							<div className="modal-footer" data-dismiss="ModalCadastrarGasto">
