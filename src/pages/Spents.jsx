@@ -153,7 +153,7 @@ export const Spents = () => {
 									/>
 									<SelectInput
 										options={[
-											{ optName: 'escolha um dependente', optValue: '-1', disabled: true },
+											{ optName: 'Escolha um dependente', optValue: '-1', disabled: true },
 											...dependents.map((dependent) => {
 												return { optName: dependent.dependentName, optValue: dependent.dependentId.toString() };
 											}),
