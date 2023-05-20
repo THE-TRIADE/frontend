@@ -360,7 +360,7 @@ export const DependentActivities = () => {
 								<div className="modal-body">
 									<CheckBoxInput
 										label="Atividade foi realizada?"
-										value={'Atividade foi realizada?'}
+										value={'Atividade foi realizada'}
 										checked={sentFinishForm.done}
 										onChange={(e) => updateFinishForm('done', e)}
 									/>
