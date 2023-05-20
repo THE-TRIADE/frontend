@@ -45,7 +45,7 @@ export const AccordionActivities = ({ activity, parent, deleteFunction, target, 
 					</p>
 					{activity.commentary && (
 						<p className=" fw-bold text-primary">
-							Comentário: <span className="text-dark fw-normal">{activity.hourEnd}</span>
+							Comentário: <span className="text-dark fw-normal">{activity.commentary}</span>
 						</p>
 					)}
 
