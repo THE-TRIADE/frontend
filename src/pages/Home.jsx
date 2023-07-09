@@ -1,26 +1,42 @@
-import { useCallback, useState } from 'react';
-import { CardFamilyGroup } from '../components/Cards/CardFamilyGroup';
-import { api } from '../config/api';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ButtonOutlineSecondary } from '../components/ButtonOutlineSecondary';
+import { CardFamilyGroup } from '../components/Cards/CardFamilyGroup';
 import { Menu } from '../components/Menu';
+import { api } from '../config/api';
+import { useNavigate } from 'react-router-dom';
 
 export const Home = () => {
 	const [familyGroups, setFamilyGroups] = useState([]);
+	const navigate = useNavigate();
+
 	const getAllFamilyGroups = useCallback(() => {
 		let id = sessionStorage.getItem('UserId');
-		api.get('/guardian/' + id).then((res) => {
-			setFamilyGroups(res.data.familyGroups);
-		});
+		api
+			.get('/familyGroup', {
+				params: {
+					guardianId: id,
+				},
+			})
+			.then((res) => {
+				setFamilyGroups(res.data);
+			});
+	}, []);
+
+	useEffect(() => {
+		if (sessionStorage.getItem('UserId') == null) {
+			navigate('/login');
+		}
 	}, []);
 
 	useEffect(() => {
 		getAllFamilyGroups();
 	}, [getAllFamilyGroups]);
+
 	const deleteFamilyGroup = (e, id) => {
 		e.preventDefault();
 		api.delete('/familyGroup/' + id).then(() => getAllFamilyGroups());
 	};
+
 	return (
 		<div className="app">
 			<Menu />
