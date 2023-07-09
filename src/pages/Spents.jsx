@@ -101,7 +101,7 @@ export const Spents = () => {
 	};
 
 	return (
-		<div className="container">
+		<div className="container pb-5">
 			<Menu />
 			<div className="row">
 				<div className="col-12">

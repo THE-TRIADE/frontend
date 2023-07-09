@@ -24,8 +24,10 @@ export const DependentForm = ({ counter, updateDependent, updateDependentCount }
 
 	return (
 		<>
-			<b className="text-start h5">Dependente {counter}</b>
-			{counter > 1 && <ButtonOutline onClick={() => updateDependentCount((ps) => ps - 1)} text="Excluir" />}
+			<div className="pt-4 d-flex flex-row justify-content-between">
+				<b className="text-start h5">Dependente {counter}</b>
+				{counter > 1 && <ButtonOutline onClick={() => updateDependentCount((ps) => ps - 1)} text="Excluir" />}
+			</div>
 			<TextualInput
 				placeholder="Nome"
 				label="Nome do dependente"

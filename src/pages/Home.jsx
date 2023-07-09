@@ -25,7 +25,7 @@ export const Home = () => {
 		<div className="app">
 			<Menu />
 			<div className="container">
-				<div className="my-5 pt-5 d-flex flex-row justify-content-between">
+				<div className="my-5 pt-5 d-flex flex-column flex-sm-row justify-content-between">
 					<h3 className="pt-3">Grupos Familiares</h3>
 					<ButtonOutlineSecondary text="Cadastrar Grupo Familiar" link="/familygroup" />
 				</div>

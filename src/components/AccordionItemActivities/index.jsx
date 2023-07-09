@@ -32,16 +32,16 @@ export const AccordionActivities = ({ activity, parent, deleteFunction, target, 
 						Criado Por: <span className="text-dark fw-normal">{activity.createdByName}</span>
 					</p>
 					<p className=" fw-bold text-primary">
-						Data de Início: <span className="text-dark fw-normal">{activity.dateStart}</span>
+						Data de Início: <span className="text-dark fw-normal">{new Date(activity.dateStart).toLocaleDateString("pt-BR",{dateStyle:"short",timeZone: "UTC"})}</span>
 					</p>
 					<p className=" fw-bold text-primary">
-						Data de Finalização: <span className="text-dark fw-normal">{activity.dateEnd}</span>
+						Data de Finalização: <span className="text-dark fw-normal">{new Date(activity.dateEnd).toLocaleDateString("pt-BR",{dateStyle:"short",timeZone: "UTC"})}</span>
 					</p>
 					<p className=" fw-bold text-primary">
-						Horário de Inicio: <span className="text-dark fw-normal">{activity.hourStart}</span>
+						Horário de Inicio: <span className="text-dark fw-normal">{new Date("0-" + activity.hourStart).toLocaleTimeString("pt-BR",{timeStyle:"short"})}</span>
 					</p>
 					<p className=" fw-bold text-primary">
-						Horário de Finalização: <span className="text-dark fw-normal">{activity.hourEnd}</span>
+						Horário de Finalização: <span className="text-dark fw-normal">{new Date("0-" + activity.hourEnd).toLocaleTimeString("pt-BR",{timeStyle:"short"})}</span>
 					</p>
 					{activity.commentary && (
 						<p className=" fw-bold text-primary">

@@ -171,7 +171,6 @@ export const SignUp = () => {
 					<CustomLink to="/login" text="Voltar para página de login" />
 				</div>
 			</div>
-			<FooterWave />
 		</div>
 	);
 };

@@ -53,7 +53,7 @@ b {
 .secondary-color {
 	color: #cb8fff;
 }
-.app svg {
+.app .svg  {
 	width: 100%;
 	position: absolute;
 	bottom: 0;
@@ -61,4 +61,13 @@ b {
 
 b > button.buttonOutline {
 	color: red;
+}
+.bg-aqua{
+	background-color: #03a7b8!important;
+	color: white!important;
+}
+@media print {
+	.hide-print {
+		display: none!important;
+	}
 }

@@ -121,12 +121,12 @@ export const ManageGuardians = () => {
 		<div className="app">
 			<Menu />
 			<div className="container">
-				<div className="my-5 pt-5 d-flex flex-row justify-content-between">
+				<div className="my-5 pt-5 d-flex flex-row flex-column flex-sm-row justify-content-between">
 					<h3 className="pt-3 ">Gerenciar Responsáveis</h3>
 					<ButtonOutlineSecondary text="Cadastrar Novo Responsável" link="/signup" />
 				</div>
 				<div className="row">
-					<div className="d-flex flex-row justify-content-between">
+					<div className="d-flex flex-row flex-column flex-sm-row justify-content-between">
 						<h5 className="text-primary pt-3">Relações de Responsáveis com Dependentes</h5>
 						<ButtonHeader text="Cadastrar Nova Relação" target="#ModalCadastrarGuarda" />
 					</div>

@@ -245,7 +245,19 @@ export const DependentActivities = () => {
 						<div className="">
 							{!!activities.filter((activity) => activity.state === 'IN_PROGRESS').length && (
 								<>
-									<h4 className="my-4 text-warning">Em Andamento</h4>
+									<h4 className="my-4 text-warning">
+										<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+												 stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+												 className="lucide lucide-alarm-clock">
+											<circle cx="12" cy="13" r="8"/>
+											<path d="M12 9v4l2 2"/>
+											<path d="M5 3 2 6"/>
+											<path d="m22 6-3-3"/>
+											<path d="M6.38 18.7 4 21"/>
+											<path d="M17.64 18.67 20 21"/>
+										</svg>
+										<span className='ps-3 '>Em Andamento</span>
+									</h4>
 									<div className="accordion pb-3" id="accordionEmAndamento">
 										{activities
 											.filter((activity) => activity.state === 'IN_PROGRESS')
@@ -264,7 +276,15 @@ export const DependentActivities = () => {
 							)}
 							{!!activities.filter((activity) => activity.state === 'CREATED').length && (
 								<>
-									<h4 className="my-4 text-info">Criadas</h4>
+									<h4 className="my-4 text-info">
+										<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+												 stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+												 className="lucide lucide-edit">
+											<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+											<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+										</svg>
+										<span className='ps-3'>Criadas</span>
+									</h4>
 									<div className="accordion pb-3" id="accordionCriadas">
 										{activities
 											.filter((activity) => activity.state === 'CREATED')
@@ -283,7 +303,19 @@ export const DependentActivities = () => {
 							)}
 							{!!activities.filter((activity) => activity.state === 'LATE').length && (
 								<>
-									<h4 className="my-4 text-danger">Atrasadas</h4>
+									<h4 className="my-4 text-danger">
+										<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+												 stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+												 className="lucide lucide-alarm-clock-off">
+											<path d="M6.87 6.87a8 8 0 1 0 11.26 11.26"/>
+											<path d="M19.9 14.25a8 8 0 0 0-9.15-9.15"/>
+											<path d="m22 6-3-3"/>
+											<path d="M6.26 18.67 4 21"/>
+											<path d="m2 2 20 20"/>
+											<path d="M4 4 2 6"/>
+										</svg>
+										<span className='ps-3 '>Atrasadas</span>
+									</h4>
 									<div className="accordion pb-3" id="accordionAtrasadas">
 										{activities
 											.filter((activity) => activity.state === 'LATE')
@@ -302,7 +334,15 @@ export const DependentActivities = () => {
 							)}
 							{!!activities.filter((activity) => activity.state === 'DONE').length && (
 								<>
-									<h4 className="my-4 text-success">Realizadas</h4>
+									<h4 className="my-4 text-success">
+										<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+												 stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+												 className="lucide lucide-check-square">
+											<polyline points="9 11 12 14 22 4"/>
+											<path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+										</svg>
+										<span className='ps-3 '>Realizadas</span>
+									</h4>
 									<div className="accordion pb-3" id="accordionRealizadas">
 										{activities
 											.filter((activity) => activity.state === 'DONE')
@@ -319,7 +359,16 @@ export const DependentActivities = () => {
 							)}
 							{!!activities.filter((activity) => activity.state === 'NOT_DONE').length && (
 								<>
-									<h4 className="my-4 text-black-50">Não Realizadas</h4>
+									<h4 className="my-4 text-black-50">
+										<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+												 stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+												 className="lucide lucide-x-square">
+											<rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+											<path d="m15 9-6 6"/>
+											<path d="m9 9 6 6"/>
+										</svg>
+										<span className='ps-3 '>Não Realizadas</span>
+									</h4>
 									<div className="accordion pb-3" id="accordionNaoRealizadas">
 										{activities
 											.filter((activity) => activity.state === 'NOT_DONE')

@@ -9,7 +9,7 @@ export const Menu = () => {
 	};
 
 	return (
-		<nav className="navbar navbar-expand-sm fixed-top">
+		<nav className="navbar navbar-expand-sm fixed-top hide-print">
 			<div className="container-fluid">
 				<a className="navbar-brand mx-5 text-white" href="#">
 					Family Routine

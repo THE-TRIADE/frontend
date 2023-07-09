@@ -1,6 +1,6 @@
 export const FooterWave = () => {
 	return (
-		<svg viewBox="0 0 1278 111" fill="none" xmlns="http://www.w3.org/2000/svg">
+		<svg className='d-none d-sm-block svg' viewBox="0 0 1278 111" fill="none" xmlns="http://www.w3.org/2000/svg">
 			<path
 				fillRule="evenodd"
 				clipRule="evenodd"

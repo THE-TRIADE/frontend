@@ -66,8 +66,8 @@ export const FamilyGroupDetails = () => {
 					<h3 className="mt-5 pt-5">{familyGroup && familyGroup.name}</h3>
 					<div className="d-flex flex-row justify-content-between my-2">
 						<p className="fw-bold text-secondary pt-3">Responsáveis Parceiros:</p>
-						<Link className="customLink fs-4" to={'/manageguardians/' + id}>
-							Gerenciar Responsáveis
+						<Link className="customLink fs-5" to={'/manageguardians/' + id}>
+						Gerenciar Responsáveis
 						</Link>
 					</div>
 					{familyGroup &&
