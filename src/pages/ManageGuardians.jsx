@@ -55,10 +55,23 @@ export const ManageGuardians = () => {
 		});
 	};
 
-	const deleteGuard = (guardId) => {
-		api.delete('/guard/' + guardId).then(() => {
-			setGuards((prevState) => prevState.filter((guard) => guard.id != guardId));
-		});
+	const deleteGuard = (dependentId, guardianId) => {
+		api
+			.delete('/guard', {
+				params: {
+					dependentId,
+					guardianId,
+				},
+			})
+			.then(() => {
+				setGuards((prevState) => {
+					const removedGuardIndex = prevState.findIndex(
+						(guard) => guard.dependentId == dependentId && guard.guardianId == guardianId,
+					);
+					const newState = prevState.filter((guard, index) => index != removedGuardIndex);
+					return newState;
+				});
+			});
 	};
 
 	useEffect(() => {
@@ -68,7 +81,11 @@ export const ManageGuardians = () => {
 			api.get('/guard/by-dependent-id/' + dependentId).then((res) => {
 				setGuards((prevGuards) => {
 					const newGuards = res.data.filter(
-						(newGuard) => !prevGuards.some((prevGuard) => prevGuard.id === newGuard.id),
+						(newGuard) =>
+							!prevGuards.some(
+								(prevGuard) =>
+									prevGuard.dependentId === newGuard.dependentId && prevGuard.guardianId === newGuard.guardianId,
+							),
 					);
 					return [...prevGuards, ...newGuards];
 				});
@@ -111,6 +128,10 @@ export const ManageGuardians = () => {
 				});
 		}
 	}, [trySubmit]);
+
+	useEffect(() => {
+		console.log('Guards', guards);
+	}, [guards]);
 
 	const submitGuard = (event) => {
 		event.preventDefault();
@@ -170,7 +191,11 @@ export const ManageGuardians = () => {
 														)}
 													</div>
 													<div className="text-end mb-2 me-2">
-														<ButtonAction text="Excluir" bgColor="bg-danger" onClick={() => deleteGuard(guard.id)} />
+														<ButtonAction
+															text="Excluir"
+															bgColor="bg-danger"
+															onClick={() => deleteGuard(guard.dependentId, guard.guardianId)}
+														/>
 													</div>
 												</div>
 											</div>
