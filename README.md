@@ -51,11 +51,18 @@ Após, baixar as dependências do projeto:
 npm install
 ```
 
-Após, rodar o servidor de desenvolvimento:
+Após, buildar o projeto:
 
 ```bash
-npm run dev
+npm run build
 ```
+
+Por fim, rodar o projeto:
+
+```bash
+npm run preview
+```
+
 
 ## Documentação oficial do React.js
 - [React.js Documentation](https://react.dev/) - learn about React.js features and API.
