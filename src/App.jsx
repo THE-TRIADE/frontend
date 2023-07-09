@@ -1,14 +1,14 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Home } from './pages/Home';
-import { SignUp } from './pages/SignUp';
-import { SignIn } from './pages/SignIn';
-import { ForgotPassword } from './pages/ForgotPassword';
-import { NotFound } from './pages/NotFound';
-import { FamilyGroup } from './pages/FamilyGroup';
-import { Spents } from './pages/Spents';
-import { FamilyGroupDetails } from './pages/FamilyGroupDetails';
-import { ManageGuardians } from './pages/ManageGuardians';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { DependentActivities } from './pages/DependentActivities';
+import { FamilyGroup } from './pages/FamilyGroup';
+import { FamilyGroupDetails } from './pages/FamilyGroupDetails';
+import { ForgotPassword } from './pages/ForgotPassword';
+import { Home } from './pages/Home';
+import { ManageGuardians } from './pages/ManageGuardians';
+import { NotFound } from './pages/NotFound';
+import { SignIn } from './pages/SignIn';
+import { SignUp } from './pages/SignUp';
+import { Spents } from './pages/Spents';
 import { SpentsReports } from './pages/SpentsReport';
 
 function App() {
