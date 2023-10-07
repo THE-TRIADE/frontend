@@ -51,37 +51,48 @@ export const SpentsReports = () => {
 									<div className="table-responsive">
 										<table className="table table-striped table-light table-bordered">
 											<thead>
-											<tr>
-												<th scope="col">Nome</th>
-												<th scope="col">Valor</th>
-												<th scope="col">Pago Em</th>
-												<th scope="col">Responsável</th>
-											</tr>
+												<tr>
+													<th scope="col">Nome</th>
+													<th scope="col">Valor</th>
+													<th scope="col">Pago Em</th>
+													<th scope="col">Responsável</th>
+												</tr>
 											</thead>
 											<tbody>
-											{spents.filter(spent => dependent.dependentId === spent.dependentId).map((spent) => {
-													return (
-														<tr key={spent.id}>
-															<td>{spent.name}</td>
-															<td>R$ {(spent.value / 100).toFixed(2).replace('.', ',')}</td>
-															<td>{new Date(spent.paidOn).toLocaleDateString("pt-BR", { dateFormat: "short", timeZone: "UTC" })}</td>
-															<td>{spent.guardianName}</td>
-														</tr>
-													);
-											})}
+												{spents
+													.filter((spent) => dependent.dependentId === spent.dependentId)
+													.map((spent) => {
+														return (
+															<tr key={spent.id}>
+																<td>{spent.name}</td>
+																<td>R$ {(spent.value / 100).toFixed(2).replace('.', ',')}</td>
+																<td>
+																	{new Date(spent.paidOn).toLocaleDateString('pt-BR', {
+																		dateFormat: 'short',
+																		timeZone: 'UTC',
+																	})}
+																</td>
+																<td>{spent.guardianName}</td>
+															</tr>
+														);
+													})}
 											</tbody>
 										</table>
 									</div>
 									<p className="text-end">
 										Total:{' '}
 										<span>
-											R$ {(spents.reduce((acc, spent) => {
-											if (dependent.dependentId === spent.dependentId) {
-												return acc + spent.value;
-											}
-											return acc;
-										}, 0) / 100).toFixed(2).replace('.', ',')}
-
+											R${' '}
+											{(
+												spents.reduce((acc, spent) => {
+													if (dependent.dependentId === spent.dependentId) {
+														return acc + spent.value;
+													}
+													return acc;
+												}, 0) / 100
+											)
+												.toFixed(2)
+												.replace('.', ',')}
 										</span>
 									</p>
 								</Fragment>
