@@ -10,7 +10,7 @@ import { CustomSpan } from '../components/CustomSpan';
 
 import { api } from '../config/api';
 import { useNavigate } from 'react-router-dom';
-import { FooterWave } from '../components/FooterWave';
+import { toast } from 'react-toastify';
 
 export const SignUp = () => {
 	const [signUpForm, setSignUpForm] = useState({
@@ -53,11 +53,14 @@ export const SignUp = () => {
 				api
 					.post('/guardian', newGuardian)
 					.then((res) => {
+						toast.success('Cadastrado com sucesso.');
 						console.log(res);
-
 						navigate('/login');
 					})
-					.catch((err) => console.error(err));
+					.catch((err) => {
+						toast.error('Falha ao cadastrar.');
+						console.error(err);
+					});
 			} else {
 				setTrySignUp(false);
 			}

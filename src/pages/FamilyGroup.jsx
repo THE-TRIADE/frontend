@@ -9,6 +9,7 @@ import { DependentForm } from '../components/DependentForm';
 import { useNavigate } from 'react-router-dom';
 import { guardianRoleEnum } from './ManageGuardians';
 import { SelectInput } from '../components/Inputs/SelectInput';
+import { toast } from 'react-toastify';
 
 export const FamilyGroup = () => {
 	const [familyGroupForm, setfamilyGroupForm] = useState({
@@ -22,6 +23,7 @@ export const FamilyGroup = () => {
 	});
 	const [dependentCount, setDependentCount] = useState(1);
 	const [submit, setSubmit] = useState(false);
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		clearValidationFields();
@@ -36,7 +38,7 @@ export const FamilyGroup = () => {
 			setDependents((ps) => [...ps.slice(0, -1)]);
 		}
 	}, [dependentCount]);
-	const navigate = useNavigate();
+
 	useEffect(() => {
 		if (submit) {
 			const newErrors = validateForm();
@@ -52,9 +54,13 @@ export const FamilyGroup = () => {
 				api
 					.post('/familyGroup', newFamilyGroup)
 					.then(() => {
+						toast.success('Grupo familiar criado com sucesso.');
 						navigate('/');
 					})
-					.catch((err) => console.error(err));
+					.catch((err) => {
+						console.error(err);
+						toast.error('Falha ao criar grupo familiar.');
+					});
 			}
 		}
 		setSubmit(false);

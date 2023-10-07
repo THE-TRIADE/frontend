@@ -10,6 +10,7 @@ import { SelectInput } from '../components/Inputs/SelectInput';
 import { Button } from '../components/Button';
 import { CheckBoxGroupInput } from '../components/Inputs/CheckBoxGroupInput';
 import { Menu } from '../components/Menu';
+import { toast } from 'react-toastify';
 
 export const guardianRoleEnum = [
 	{ key: 'Pai', value: 'FATHER' },
@@ -71,6 +72,11 @@ export const ManageGuardians = () => {
 					const newState = prevState.filter((guard, index) => index != removedGuardIndex);
 					return newState;
 				});
+				toast.success('Guarda excluida com sucesso.');
+			})
+			.catch((err) => {
+				toast.error('Falha ao excluir guarda.');
+				console.log(err);
 			});
 	};
 
@@ -114,8 +120,12 @@ export const ManageGuardians = () => {
 						newArray.push(res.data);
 						return newArray;
 					});
+					toast.success('Guarda criada com sucesso');
 				})
-				.catch((err) => console.error(err))
+				.catch((err) => {
+					toast.error('Falha ao criar guarda.');
+					console.error(err);
+				})
 				.finally(() => {
 					setSentForm({
 						daysOfWeek: [],
@@ -123,7 +133,6 @@ export const ManageGuardians = () => {
 						dependentId: '-1',
 						guardianId: sessionStorage.getItem('UserId'),
 					});
-
 					setTrySubmit(false);
 				});
 		}
@@ -260,7 +269,7 @@ export const ManageGuardians = () => {
 									onChange={(e) => updateForm('daysOfWeek', e)}
 								/>
 							</div>
-							<div className="modal-footer" data-dismiss="ModalCadastrarGasto">
+							<div className="modal-footer" data-bs-dismiss="modal">
 								<Button type="button" text="Cadastrar" onClick={submitGuard} />
 							</div>
 						</div>

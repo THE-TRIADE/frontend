@@ -13,6 +13,7 @@ import { CheckBoxInput } from '../components/Inputs/CheckBoxInput';
 import { CheckBoxGroupInput } from '../components/Inputs/CheckBoxGroupInput';
 import { dayOfWeekEnum } from './ManageGuardians';
 import { Button } from '../components/Button';
+import { toast } from 'react-toastify';
 export const ActivityStateEnum = {
 	created: 'CRIADA',
 	in_progress: 'EM_ANDAMENTO',
@@ -116,6 +117,7 @@ export const DependentActivities = () => {
 			api
 				.post('/activity', newActivity)
 				.then((res) => {
+					toast.success('Atividade criada com sucesso');
 					setActivities((oldList) => {
 						const newArray = oldList;
 						if (!oldList.includes(res.data)) {
@@ -124,7 +126,10 @@ export const DependentActivities = () => {
 						return newArray;
 					});
 				})
-				.catch((err) => console.error(err))
+				.catch((err) => {
+					toast.error('Falha ao criar atividade');
+					console.error(err);
+				})
 				.finally(() => {
 					setSentForm({
 						name: '',
@@ -164,13 +169,17 @@ export const DependentActivities = () => {
 				.patch(`/activity/${finishActivityId}/finish`, sentFinishForm)
 				.then((res) => {
 					console.log(res);
+					toast.success('Atividade finalizada com sucesso');
 					setActivities((oldList) => {
 						const indexActivity = oldList.findIndex((activity) => activity.id == finishActivityId);
 						oldList[indexActivity] = res.data;
 						return [...oldList];
 					});
 				})
-				.catch((err) => console.error(err))
+				.catch((err) => {
+					toast.error('Falha ao finalizar atividade');
+					console.error(err);
+				})
 				.finally(() => {
 					setTrySubmitFinishForm(false);
 					setSentFinishForm({
@@ -465,7 +474,7 @@ export const DependentActivities = () => {
 										onChange={(e) => updateFinishForm('commentary', e)}
 									/>
 								</div>
-								<div className="modal-footer" data-dismiss="ModalFinishActivity">
+								<div className="modal-footer" data-bs-dismiss="modal">
 									<Button type="button" text="Cadastrar" onClick={(e) => finishActivityFunction(e)} />
 								</div>
 							</div>
@@ -568,10 +577,8 @@ export const DependentActivities = () => {
 										</>
 									)}
 								</div>
-								<div className="modal-footer">
-									<button type="button" className="btn btn-secondary" onClick={submitActivityForm}>
-										Cadastrar
-									</button>
+								<div className="modal-footer" data-bs-dismiss="modal">
+									<Button text="Cadastrar" onClick={submitActivityForm} />
 								</div>
 							</div>
 						</div>

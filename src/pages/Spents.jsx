@@ -2,13 +2,13 @@ import { useState, useEffect, useRef } from 'react';
 import { TextualInput } from '../components/Inputs/TextualInput';
 import { TitlePages } from '../components/TitlePages';
 import { DateInput } from '../components/Inputs/DateInput';
-// import { api } from '../config/api';
 import { SelectInput } from '../components/Inputs/SelectInput';
 import { CardSpents } from '../components/Cards/CardSpents';
 import { api } from '../config/api';
 import { Button } from '../components/Button';
 import { Menu } from '../components/Menu';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 export const Spents = () => {
 	const [sentForm, setSentForm] = useState({
@@ -28,8 +28,12 @@ export const Spents = () => {
 	]);
 
 	const updateForm = (inputName, event) => {
+		let newValue = event.target.value;
 		setSentForm((prevState) => {
-			return { ...prevState, [inputName]: event.target.value };
+			if (inputName == 'value') {
+				newValue = newValue.replace(/\D/g, '');
+			}
+			return { ...prevState, [inputName]: newValue };
 		});
 	};
 	const handleFormSubmit = (event) => {
@@ -79,10 +83,14 @@ export const Spents = () => {
 			api
 				.post('/spent', newSpent)
 				.then((res) => {
+					toast.success('Gasto criado com sucesso');
 					console.log(res);
 					setSpents((oldList) => [...oldList, res.data]);
 				})
-				.catch((err) => console.error(err))
+				.catch((err) => {
+					toast.error('Falha ao criar gasto');
+					console.error(err);
+				})
 				.finally(() => {
 					setTrySubmit(false);
 				});
@@ -95,9 +103,24 @@ export const Spents = () => {
 
 	const deleteSpent = (id, e) => {
 		e.preventDefault();
-		api.delete(`/spent/${id}`).then(() => {
-			setSpents((oldList) => oldList.filter((spent) => spent.id != id));
-		});
+		api
+			.delete(`/spent/${id}`)
+			.then(() => {
+				toast.success('Gasto excluido com sucesso');
+				setSpents((oldList) => oldList.filter((spent) => spent.id != id));
+			})
+			.catch((err) => {
+				toast.error('Falha ao excluir gasto.');
+				console.log(err);
+			});
+	};
+
+	const valueMask = (value) => {
+		const formattedValue = (Number(value) / 100).toFixed(2);
+		const [intSlice, decimalSlice] = formattedValue.split('.');
+		const intSliceFormatted = intSlice.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+		const maskedValue = `R$${intSliceFormatted},${decimalSlice}`;
+		return maskedValue;
 	};
 
 	return (
@@ -142,7 +165,7 @@ export const Spents = () => {
 									<TextualInput
 										placeholder="Valor do gasto"
 										label="Valor"
-										value={sentForm.value}
+										value={valueMask(sentForm.value)}
 										onChange={(e) => updateForm('value', e)}
 									/>
 									<DateInput
@@ -163,7 +186,7 @@ export const Spents = () => {
 										onChange={(e) => updateForm('dependentId', e)}
 									/>
 								</div>
-								<div className="modal-footer" data-dismiss="ModalCadastrarGasto">
+								<div className="modal-footer" data-bs-dismiss="modal">
 									<Button type="button" text="Cadastrar" onClick={submitSpent} />
 								</div>
 							</div>

@@ -4,6 +4,7 @@ import { CardFamilyGroup } from '../components/Cards/CardFamilyGroup';
 import { Menu } from '../components/Menu';
 import { api } from '../config/api';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 export const Home = () => {
 	const [familyGroups, setFamilyGroups] = useState([]);
@@ -34,7 +35,16 @@ export const Home = () => {
 
 	const deleteFamilyGroup = (e, id) => {
 		e.preventDefault();
-		api.delete('/familyGroup/' + id).then(() => getAllFamilyGroups());
+		api
+			.delete('/familyGroup/' + id)
+			.then(() => {
+				toast.success('Grupo familiar excluido com sucesso.');
+				getAllFamilyGroups();
+			})
+			.catch((err) => {
+				toast.error('Falha ao excluir grupo familiar.');
+				console.log(err);
+			});
 	};
 
 	return (
