@@ -14,6 +14,7 @@ import { CheckBoxGroupInput } from '../components/Inputs/CheckBoxGroupInput';
 import { dayOfWeekEnum } from './ManageGuardians';
 import { Button } from '../components/Button';
 import { toast } from 'react-toastify';
+import { CustomSpan } from '../components/CustomSpan';
 export const ActivityStateEnum = {
 	created: 'CRIADA',
 	in_progress: 'EM_ANDAMENTO',
@@ -67,6 +68,19 @@ export const DependentActivities = () => {
 		commentary: '',
 	});
 	const [trySubmitFinishForm, setTrySubmitFinishForm] = useState(false);
+	const [activityErrorMessages, setActivityErrorMessages] = useState({
+		name: null,
+		dateStart: null,
+		hourStart: null,
+		dateEnd: null,
+		hourEnd: null,
+		dependentId: null,
+		currentGuardian: null,
+		actor: null,
+		createdBy: null,
+		daysToRepeat: null,
+		repeatUntil: null,
+	});
 
 	const updateForm = (inputName, event) => {
 		const { checked, value } = event.target;
@@ -110,48 +124,58 @@ export const DependentActivities = () => {
 	useEffect(() => {
 		if (submitActivity) {
 			const newActivity = { ...sentForm };
+			const newErrorMessages = validateForm();
 			if (!newActivity.repeat) {
 				newActivity.daysToRepeat = [];
 				newActivity.repeatUntil = null;
 			}
-			api
-				.post('/activity', newActivity)
-				.then((res) => {
-					toast.success('Atividade criada com sucesso');
-					setActivities((oldList) => {
-						const newArray = oldList;
-						if (!oldList.includes(res.data)) {
-							newArray.push(res.data);
-						}
-						return newArray;
+			let isValid = true;
+			Object.values(newErrorMessages).forEach((errors) => {
+				if (errors !== null) {
+					isValid = false;
+				}
+			});
+			if (isValid) {
+				api
+					.post('/activity', newActivity)
+					.then((res) => {
+						toast.success('Atividade criada com sucesso');
+						setActivities((oldList) => {
+							const newArray = oldList;
+							if (!oldList.includes(res.data)) {
+								newArray.push(res.data);
+							}
+							return newArray;
+						});
+					})
+					.catch((err) => {
+						toast.error('Falha ao criar atividade');
+						console.error(err);
+					})
+					.finally(() => {
+						setSentForm({
+							name: '',
+							dateStart: '',
+							hourStart: '',
+							dateEnd: '',
+							hourEnd: '',
+							dependentId: id,
+							currentGuardian: '-1',
+							actor: '-1',
+							createdBy: sessionStorage.getItem('UserId'),
+							repeat: false,
+							daysToRepeat: [],
+							repeatUntil: '',
+						});
+						setSubmitActivity(false);
 					});
-				})
-				.catch((err) => {
-					toast.error('Falha ao criar atividade');
-					console.error(err);
-				})
-				.finally(() => {
-					setSentForm({
-						name: '',
-						dateStart: '',
-						hourStart: '',
-						dateEnd: '',
-						hourEnd: '',
-						dependentId: id,
-						currentGuardian: '-1',
-						actor: '-1',
-						createdBy: sessionStorage.getItem('UserId'),
-						repeat: false,
-						daysToRepeat: [],
-						repeatUntil: '',
-					});
-
-					setSubmitActivity(false);
-				});
+			}
 		}
+		setSubmitActivity(false);
 	}, [submitActivity]);
 
 	const submitActivityForm = () => {
+		clearValidationFields();
 		setSubmitActivity(true);
 	};
 
@@ -198,6 +222,54 @@ export const DependentActivities = () => {
 
 	const setActivityToSendFinish = (finishActivityIdToSet) => {
 		setFinishActivityId(finishActivityIdToSet);
+	};
+
+	const isEmpty = (text) => text.trim() === '';
+
+	const validateForm = () => {
+		const newErrorMessages = { ...activityErrorMessages };
+
+		for (const [key, value] of Object.entries(sentForm)) {
+			console.log('Chave', key);
+			if (key != 'daysToRepeat' && key != 'repeatUntil' && key != 'repeat') {
+				console.log('Chave entrou no if', key);
+				if (isEmpty(value) || value == '-1') {
+					newErrorMessages[key] = 'Este campo não pode ser vazio';
+				}
+			}
+		}
+		if (sentForm.repeat) {
+			if (isEmpty(sentForm.repeatUntil) || sentForm.repeatUntil == '-1') {
+				newErrorMessages['repeatUntil'] = 'Este campo não pode ser vazio';
+			}
+			if (!sentForm.daysToRepeat.length) {
+				newErrorMessages['daysToRepeat'] = 'Este campo não pode ser vazio';
+			}
+		}
+		setActivityErrorMessages(newErrorMessages);
+		return newErrorMessages;
+	};
+
+	const clearValidationFields = () => {
+		setActivityErrorMessages({
+			name: null,
+			dateStart: null,
+			hourStart: null,
+			dateEnd: null,
+			hourEnd: null,
+			dependentId: null,
+			currentGuardian: null,
+			actor: null,
+			createdBy: null,
+			daysToRepeat: null,
+			repeatUntil: null,
+		});
+	};
+
+	const showErrorMessages = (field) => {
+		if (activityErrorMessages[field] !== null) {
+			return <CustomSpan key={'error-' + field} text={activityErrorMessages[field]} />;
+		}
 	};
 
 	return (
@@ -475,7 +547,7 @@ export const DependentActivities = () => {
 									/>
 								</div>
 								<div className="modal-footer" data-bs-dismiss="modal">
-									<Button type="button" text="Cadastrar" onClick={(e) => finishActivityFunction(e)} />
+									<Button type="button" text="Finalizar" onClick={(e) => finishActivityFunction(e)} />
 								</div>
 							</div>
 						</div>
@@ -507,31 +579,41 @@ export const DependentActivities = () => {
 										label="Título da Atividade"
 										value={sentForm.name}
 										onChange={(e) => updateForm('name', e)}
+										required
 									/>
+									{showErrorMessages('name')}
 									<DateInput
 										placeholder=""
 										label="Data de início"
 										value={sentForm.dateStart}
 										onChange={(e) => updateForm('dateStart', e)}
+										required
 									/>
+									{showErrorMessages('dateStart')}
 									<TimeInput
 										placeholder=""
 										label="Hora de início"
 										value={sentForm.hourStart}
 										onChange={(e) => updateForm('hourStart', e)}
+										required
 									/>
+									{showErrorMessages('hourStart')}
 									<DateInput
 										placeholder=""
 										label="Data de fim"
 										value={sentForm.dateEnd}
 										onChange={(e) => updateForm('dateEnd', e)}
+										required
 									/>
+									{showErrorMessages('dateEnd')}
 									<TimeInput
 										placeholder=""
 										label="Hora de fim"
 										value={sentForm.hourEnd}
 										onChange={(e) => updateForm('hourEnd', e)}
+										required
 									/>
+									{showErrorMessages('hourEnd')}
 									<SelectInput
 										options={[
 											{ optName: 'Escolha um responsável', optValue: '-1', disabled: true },
@@ -542,7 +624,9 @@ export const DependentActivities = () => {
 										value={sentForm.currentGuardian}
 										label="Responsável atual"
 										onChange={(e) => updateForm('currentGuardian', e)}
+										required
 									/>
+									{showErrorMessages('currentGuardian')}
 									<SelectInput
 										options={[
 											{ optName: 'Escolha um ator da atividade', optValue: '-1', disabled: true },
@@ -554,7 +638,9 @@ export const DependentActivities = () => {
 										value={sentForm.actor}
 										label="Ator da atividade"
 										onChange={(e) => updateForm('actor', e)}
+										required
 									/>
+									{showErrorMessages('actor')}
 									<CheckBoxInput
 										label="Repetir atividade"
 										value="Deseja repetir atividade em outros dias?"
@@ -567,17 +653,21 @@ export const DependentActivities = () => {
 												label="Dias da semana que irão repetir"
 												options={dayOfWeekEnum}
 												onChange={(e) => updateForm('daysToRepeat', e)}
+												required
 											/>
+											{showErrorMessages('daysToRepeat')}
 											<DateInput
 												placeholder=""
 												label="Repetir até"
 												value={sentForm.repeatUntil}
 												onChange={(e) => updateForm('repeatUntil', e)}
+												required
 											/>
+											{showErrorMessages('repeatUntil')}
 										</>
 									)}
 								</div>
-								<div className="modal-footer" data-bs-dismiss="modal">
+								<div className="modal-footer">
 									<Button text="Cadastrar" onClick={submitActivityForm} />
 								</div>
 							</div>

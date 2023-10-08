@@ -124,6 +124,7 @@ export const FamilyGroup = () => {
 								label="Nome do grupo familiar"
 								value={familyGroupForm.name}
 								onChange={(e) => updateForm('name', e)}
+								required
 							/>
 							{showErrorMessages('name')}
 							<SelectInput
@@ -135,6 +136,7 @@ export const FamilyGroup = () => {
 								]}
 								value={familyGroupForm.guardianRole}
 								label="Papel do responsável"
+								required
 								onChange={(e) => updateForm('guardianRole', e)}
 							/>
 							<h5 className="text-center mt-5 text-secondary">Cadastro de dependente(s)</h5>

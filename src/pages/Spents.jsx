@@ -161,18 +161,21 @@ export const Spents = () => {
 										label="Nome"
 										value={sentForm.name}
 										onChange={(e) => updateForm('name', e)}
+										required
 									/>
 									<TextualInput
 										placeholder="Valor do gasto"
 										label="Valor"
 										value={valueMask(sentForm.value)}
 										onChange={(e) => updateForm('value', e)}
+										required
 									/>
 									<DateInput
 										placeholder=""
 										label="Pago em"
 										value={sentForm.paidOn}
 										onChange={(e) => updateForm('paidOn', e)}
+										required
 									/>
 									<SelectInput
 										options={[
@@ -184,6 +187,7 @@ export const Spents = () => {
 										value={sentForm.dependentId}
 										label="Dependente"
 										onChange={(e) => updateForm('dependentId', e)}
+										required
 									/>
 								</div>
 								<div className="modal-footer" data-bs-dismiss="modal">

@@ -11,6 +11,7 @@ import { Button } from '../components/Button';
 import { CheckBoxGroupInput } from '../components/Inputs/CheckBoxGroupInput';
 import { Menu } from '../components/Menu';
 import { toast } from 'react-toastify';
+import { CustomSpan } from '../components/CustomSpan';
 
 export const guardianRoleEnum = [
 	{ key: 'Pai', value: 'FATHER' },
@@ -43,6 +44,11 @@ export const ManageGuardians = () => {
 	});
 	const [guardians, setGuardians] = useState([]);
 	const [trySubmit, setTrySubmit] = useState(false);
+	const [guardErrorMessages, setGuardErrorMessages] = useState({
+		guardianRole: null,
+		dependentId: null,
+		guardianId: null,
+	});
 
 	const updateForm = (inputName, event) => {
 		setSentForm((prevState) => {
@@ -112,30 +118,42 @@ export const ManageGuardians = () => {
 			if (!newGuard.daysOfWeek.length) {
 				newGuard.daysOfWeek = null;
 			}
-			api
-				.post('/guard', newGuard)
-				.then((res) => {
-					setGuards((oldList) => {
-						const newArray = oldList;
-						newArray.push(res.data);
-						return newArray;
+			const newErrorMessages = validateForm();
+			let isValid = true;
+			Object.values(newErrorMessages).forEach((errors) => {
+				if (errors !== null) {
+					isValid = false;
+				}
+			});
+			if (isValid) {
+				api
+					.post('/guard', newGuard)
+					.then((res) => {
+						setGuards((oldList) => {
+							const newArray = oldList;
+							newArray.push(res.data);
+							return newArray;
+						});
+						toast.success('Guarda criada com sucesso');
+						// FIXME Feche o modal
+						// document.getElementById('ModalCadastrarGuarda').modal('hide');
+					})
+					.catch((err) => {
+						toast.error('Falha ao criar guarda.');
+						console.error(err);
+					})
+					.finally(() => {
+						setSentForm({
+							daysOfWeek: [],
+							guardianRole: '-1',
+							dependentId: '-1',
+							guardianId: sessionStorage.getItem('UserId'),
+						});
+						setTrySubmit(false);
 					});
-					toast.success('Guarda criada com sucesso');
-				})
-				.catch((err) => {
-					toast.error('Falha ao criar guarda.');
-					console.error(err);
-				})
-				.finally(() => {
-					setSentForm({
-						daysOfWeek: [],
-						guardianRole: '-1',
-						dependentId: '-1',
-						guardianId: sessionStorage.getItem('UserId'),
-					});
-					setTrySubmit(false);
-				});
+			}
 		}
+		setTrySubmit(false);
 	}, [trySubmit]);
 
 	useEffect(() => {
@@ -144,7 +162,38 @@ export const ManageGuardians = () => {
 
 	const submitGuard = (event) => {
 		event.preventDefault();
+		clearValidationFields();
 		setTrySubmit(true);
+	};
+
+	const isEmpty = (text) => text.trim() === '';
+
+	const validateForm = () => {
+		const newErrorMessages = { ...guardErrorMessages };
+
+		for (const [key, value] of Object.entries(sentForm)) {
+			if (key != 'daysOfWeek') {
+				if (isEmpty(value) || value == '-1') {
+					newErrorMessages[key] = 'Este campo não pode ser vazio';
+				}
+			}
+		}
+		setGuardErrorMessages(newErrorMessages);
+		return newErrorMessages;
+	};
+
+	const clearValidationFields = () => {
+		setGuardErrorMessages({
+			guardianRole: null,
+			dependentId: null,
+			guardianId: null,
+		});
+	};
+
+	const showErrorMessages = (field) => {
+		if (guardErrorMessages[field] !== null) {
+			return <CustomSpan key={'error-' + field} text={guardErrorMessages[field]} />;
+		}
 	};
 
 	return (
@@ -239,8 +288,10 @@ export const ManageGuardians = () => {
 									]}
 									value={sentForm.dependentId}
 									label="Dependente"
+									required
 									onChange={(e) => updateForm('dependentId', e)}
 								/>
+								{showErrorMessages('dependentId')}
 								<SelectInput
 									options={[
 										{ optName: 'Responsaveis', optValue: '-1', disabled: true },
@@ -250,8 +301,10 @@ export const ManageGuardians = () => {
 									]}
 									value={sentForm.guardianId}
 									label="Responsável"
+									required
 									onChange={(e) => updateForm('guardianId', e)}
 								/>
+								{showErrorMessages('guardianId')}
 								<SelectInput
 									options={[
 										{ optName: 'Escolha um papel', optValue: '-1', disabled: true },
@@ -261,15 +314,17 @@ export const ManageGuardians = () => {
 									]}
 									value={sentForm.guardianRole}
 									label="Papel do responsável"
+									required
 									onChange={(e) => updateForm('guardianRole', e)}
 								/>
+								{showErrorMessages('guardianRole')}
 								<CheckBoxGroupInput
 									label="Dias da semana da guarda"
 									options={dayOfWeekEnum}
 									onChange={(e) => updateForm('daysOfWeek', e)}
 								/>
 							</div>
-							<div className="modal-footer" data-bs-dismiss="modal">
+							<div className="modal-footer">
 								<Button type="button" text="Cadastrar" onClick={submitGuard} />
 							</div>
 						</div>
