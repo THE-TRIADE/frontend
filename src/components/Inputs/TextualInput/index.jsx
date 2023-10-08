@@ -1,10 +1,19 @@
 import PropTypes from 'prop-types';
 import '../styles.css';
 
-export const TextualInput = ({ label, value, onChange, placeholder }) => {
+export const TextualInput = ({ label, value, onChange, placeholder, required = false }) => {
 	return (
 		<div className="mt-3">
-			<label className="customLabel">{label}</label>
+			<label className="customLabel">
+				{required ? (
+					<>
+						{label}
+						<b>*</b>
+					</>
+				) : (
+					label
+				)}
+			</label>
 			<input
 				name="inputCustom"
 				type="text"
@@ -22,4 +31,5 @@ TextualInput.propTypes = {
 	value: PropTypes.string.isRequired,
 	onChange: PropTypes.func.isRequired,
 	placeholder: PropTypes.string.isRequired,
+	required: PropTypes.bool,
 };

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import '../styles.css';
 import { useEffect, useState } from 'react';
 
-export const CheckBoxGroupInput = ({ label, options, onChange }) => {
+export const CheckBoxGroupInput = ({ label, options, onChange, required = false }) => {
 	const [inputValues, setInputValues] = useState([]);
 
 	useEffect(() => {
@@ -29,7 +29,16 @@ export const CheckBoxGroupInput = ({ label, options, onChange }) => {
 
 	return (
 		<div className="mt-3">
-			<label className="customLabel">{label}</label>
+			<label className="customLabel">
+				{required ? (
+					<>
+						{label}
+						<b>*</b>
+					</>
+				) : (
+					label
+				)}
+			</label>
 			<div className="btn-group row my-3 text-center" role="group">
 				{options.map((option) => (
 					<div className="col-6 col-sm-3 mt-2" key={`ckbox-${option.value}`}>
@@ -60,4 +69,5 @@ CheckBoxGroupInput.propTypes = {
 		}),
 	),
 	onChange: PropTypes.func.isRequired,
+	required: PropTypes.bool,
 };

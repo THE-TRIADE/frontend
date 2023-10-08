@@ -1,10 +1,19 @@
 import PropTypes from 'prop-types';
 import '../styles.css';
 
-export const SelectInput = ({ options, onChange, value, label }) => {
+export const SelectInput = ({ options, onChange, value, label, required = false }) => {
 	return (
 		<div className="mt-3">
-			<label className="customLabel">{label}</label>
+			<label className="customLabel">
+				{required ? (
+					<>
+						{label}
+						<b>*</b>
+					</>
+				) : (
+					label
+				)}
+			</label>
 			<select className="selectCustom form-select mt-2 mb-2" value={value} onChange={onChange}>
 				{options.map((o) => (
 					<option value={o.optValue} key={o.optName} disabled={o.disabled === null ? false : o.disabled}>
@@ -27,4 +36,5 @@ SelectInput.propTypes = {
 	).isRequired,
 	value: PropTypes.string.isRequired,
 	onChange: PropTypes.func.isRequired,
+	required: PropTypes.bool,
 };

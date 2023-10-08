@@ -33,18 +33,21 @@ export const DependentForm = ({ counter, updateDependent, updateDependentCount }
 				label="Nome do dependente"
 				value={dependent.name}
 				onChange={(e) => updateForm('name', e)}
+				required
 			/>
 			<CpfInput
 				placeholder="CPF"
 				value={dependent.cpf}
 				label="CPF do dependente"
 				onChange={(e) => updateForm('cpf', e)}
+				required
 			/>
 			<DateInput
 				label="Data de Nascimento"
 				placeholder="00/00/0000"
 				value={dependent.birthDate}
 				onChange={(e) => updateForm('birthDate', e)}
+				required
 			/>
 		</>
 	);

@@ -1,9 +1,18 @@
 import PropTypes from 'prop-types';
 
-export const CheckBoxInput = ({ label, value, checked, onChange }) => {
+export const CheckBoxInput = ({ label, value, checked, onChange, required = false }) => {
 	return (
 		<div className="mt-3">
-			<label className="customLabel">{label}</label>
+			<label className="customLabel">
+				{required ? (
+					<>
+						{label}
+						<b>*</b>
+					</>
+				) : (
+					label
+				)}
+			</label>
 			<div className="form-check my-3">
 				<input
 					name="inputCustom"
@@ -27,4 +36,5 @@ CheckBoxInput.propTypes = {
 	value: PropTypes.string.isRequired,
 	checked: PropTypes.bool.isRequired,
 	onChange: PropTypes.func.isRequired,
+	required: PropTypes.bool,
 };
