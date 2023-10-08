@@ -60,7 +60,8 @@ export const SignUp = () => {
 					.catch((err) => {
 						toast.error('Falha ao cadastrar.');
 						console.error(err);
-					});
+					})
+					.finally(() => setTrySignUp(false));
 			} else {
 				setTrySignUp(false);
 			}
@@ -141,27 +142,27 @@ export const SignUp = () => {
 				</p>
 				<div className="row text-start">
 					<div className="col-12">
-						<TextualLoginInput placeholder="Nome" value={signUpForm.name} onChange={(e) => updateForm('name', e)} />
+						<TextualLoginInput placeholder="Nome*" value={signUpForm.name} onChange={(e) => updateForm('name', e)} />
 						{showErrorMessages('name')}
-						<EmailLoginInput placeholder="E-mail" value={signUpForm.email} onChange={(e) => updateForm('email', e)} />
+						<EmailLoginInput placeholder="E-mail*" value={signUpForm.email} onChange={(e) => updateForm('email', e)} />
 						{showErrorMessages('email')}
-						<CpfLoginInput placeholder="CPF" value={signUpForm.cpf} onChange={(e) => updateForm('cpf', e)} />
+						<CpfLoginInput placeholder="CPF*" value={signUpForm.cpf} onChange={(e) => updateForm('cpf', e)} />
 						{showErrorMessages('cpf')}
 						<DateLoginInput
-							placeholder="Data de Nascimento"
+							placeholder="Data de Nascimento*"
 							value={signUpForm.birthDate}
 							onChange={(e) => updateForm('birthDate', e)}
 						/>
 						{showErrorMessages('birthDate')}
 						<PasswordLoginInput
-							placeholder="Senha"
+							placeholder="Senha*"
 							value={signUpForm.password}
 							onChange={(e) => updateForm('password', e)}
 						/>
 						{showErrorMessages('password')}
 						<PasswordLoginInput
 							value={signUpForm.passwordConfirmation}
-							placeholder="Confirmar Senha"
+							placeholder="Confirmar Senha*"
 							onChange={(e) => updateForm('passwordConfirmation', e)}
 						/>
 						{showErrorMessages('passwordConfirmation')}

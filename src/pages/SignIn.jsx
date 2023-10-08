@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { api } from '../config/api';
 import { CustomSpan } from '../components/CustomSpan';
 import { FooterWave } from '../components/FooterWave';
+import { toast } from 'react-toastify';
 
 export const SignIn = () => {
 	const [login, setLogin] = useState({
@@ -39,12 +40,15 @@ export const SignIn = () => {
 				api
 					.post('/guardian/login', login)
 					.then((res) => {
-						console.log(res);
-						console.log(res.data.id);
+						toast.success('Usuário autenticado com sucesso.');
 						sessionStorage.setItem('UserId', res.data.id);
 						navigate('/');
 					})
-					.catch((err) => console.error(err));
+					.catch((err) => {
+						console.error(err);
+						toast.error('Falha ao autenticar.');
+					})
+					.finally(() => setTrySignUp(false));
 			} else {
 				setTrySignUp(false);
 			}
