@@ -7,11 +7,14 @@ import { useParams } from 'react-router-dom';
 import { ButtonAction } from '../components/ButtonAction';
 import { ButtonHeader } from '../components/ButtonHeader';
 import { SelectInput } from '../components/Inputs/SelectInput';
-import { Button } from '../components/Button';
+// import { Button } from '../components/Button';
 import { CheckBoxGroupInput } from '../components/Inputs/CheckBoxGroupInput';
 import { Menu } from '../components/Menu';
 import { toast } from 'react-toastify';
 import { CustomSpan } from '../components/CustomSpan';
+
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 
 export const guardianRoleEnum = [
 	{ key: 'Pai', value: 'FATHER' },
@@ -42,6 +45,10 @@ export const ManageGuardians = () => {
 		dependentId: '-1',
 		guardianId: sessionStorage.getItem('UserId'),
 	});
+	const [show, setShow] = useState(false);
+
+	const handleClose = () => setShow(false);
+	const handleShow = () => setShow(true);
 	const [guardians, setGuardians] = useState([]);
 	const [trySubmit, setTrySubmit] = useState(false);
 	const [guardErrorMessages, setGuardErrorMessages] = useState({
@@ -135,8 +142,7 @@ export const ManageGuardians = () => {
 							return newArray;
 						});
 						toast.success('Guarda criada com sucesso');
-						// FIXME Feche o modal
-						// document.getElementById('ModalCadastrarGuarda').modal('hide');
+						handleClose();
 					})
 					.catch((err) => {
 						toast.error('Falha ao criar guarda.');
@@ -204,10 +210,13 @@ export const ManageGuardians = () => {
 					<h3 className="pt-3 ">Gerenciar Responsáveis</h3>
 					<ButtonOutlineSecondary text="Cadastrar Novo Responsável" link="/signup" />
 				</div>
+
 				<div className="row">
 					<div className="d-flex flex-row flex-column flex-sm-row justify-content-between">
 						<h5 className="text-primary pt-3">Relações de Responsáveis com Dependentes</h5>
-						<ButtonHeader text="Cadastrar Nova Relação" target="#ModalCadastrarGuarda" />
+						<Button className="custom-button" onClick={handleShow}>
+							Cadastrar Nova Relação
+						</Button>
 					</div>
 					{familyGroup &&
 						familyGroup.dependents.map((dependent) => (
@@ -261,75 +270,69 @@ export const ManageGuardians = () => {
 							</Fragment>
 						))}
 				</div>
-				<div
-					className="modal fade"
-					id="ModalCadastrarGuarda"
-					data-bs-backdrop="static"
-					data-bs-keyboard="false"
-					tabIndex="-1"
-					aria-labelledby="ModalCadastrarGuardaLabel"
-					aria-hidden="true"
-				>
-					<div className="modal-dialog modal-dialog-centered">
-						<div className="modal-content">
-							<div className="modal-header">
-								<h1 className="modal-title fs-5 secondary-color" id="ModalCadastrarGuardaLabel">
-									Cadastrar Nova Relação
-								</h1>
-								<button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-							</div>
-							<div className="modal-body">
-								<SelectInput
-									options={[
-										{ optName: 'Escolha um dependente', optValue: '-1', disabled: true },
-										...familyGroup.dependents.map((dependent) => {
-											return { optName: dependent.name, optValue: dependent.id.toString() };
-										}),
-									]}
-									value={sentForm.dependentId}
-									label="Dependente"
-									required
-									onChange={(e) => updateForm('dependentId', e)}
-								/>
-								{showErrorMessages('dependentId')}
-								<SelectInput
-									options={[
-										{ optName: 'Responsaveis', optValue: '-1', disabled: true },
-										...guardians.map((guardian) => {
-											return { optName: guardian.name, optValue: guardian.id.toString() };
-										}),
-									]}
-									value={sentForm.guardianId}
-									label="Responsável"
-									required
-									onChange={(e) => updateForm('guardianId', e)}
-								/>
-								{showErrorMessages('guardianId')}
-								<SelectInput
-									options={[
-										{ optName: 'Escolha um papel', optValue: '-1', disabled: true },
-										...guardianRoleEnum.map((role) => {
-											return { optName: role.key, optValue: role.value.toString() };
-										}),
-									]}
-									value={sentForm.guardianRole}
-									label="Papel do responsável"
-									required
-									onChange={(e) => updateForm('guardianRole', e)}
-								/>
-								{showErrorMessages('guardianRole')}
-								<CheckBoxGroupInput
-									label="Dias da semana da guarda"
-									options={dayOfWeekEnum}
-									onChange={(e) => updateForm('daysOfWeek', e)}
-								/>
-							</div>
-							<div className="modal-footer">
-								<Button type="button" text="Cadastrar" onClick={submitGuard} />
-							</div>
-						</div>
-					</div>
-				</div>
+				<Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
+					<Modal.Header closeButton>
+						<Modal.Title>
+							<h1 className="modal-title fs-5 secondary-color" id="ModalCadastrarGuardaLabel">
+								Cadastrar Nova Relação
+							</h1>
+						</Modal.Title>
+					</Modal.Header>
+					<Modal.Body>
+						<SelectInput
+							options={[
+								{ optName: 'Escolha um dependente', optValue: '-1', disabled: true },
+								...familyGroup.dependents.map((dependent) => {
+									return { optName: dependent.name, optValue: dependent.id.toString() };
+								}),
+							]}
+							value={sentForm.dependentId}
+							label="Dependente"
+							required
+							onChange={(e) => updateForm('dependentId', e)}
+						/>
+						{showErrorMessages('dependentId')}
+						<SelectInput
+							options={[
+								{ optName: 'Responsaveis', optValue: '-1', disabled: true },
+								...guardians.map((guardian) => {
+									return { optName: guardian.name, optValue: guardian.id.toString() };
+								}),
+							]}
+							value={sentForm.guardianId}
+							label="Responsável"
+							required
+							onChange={(e) => updateForm('guardianId', e)}
+						/>
+						{showErrorMessages('guardianId')}
+						<SelectInput
+							options={[
+								{ optName: 'Escolha um papel', optValue: '-1', disabled: true },
+								...guardianRoleEnum.map((role) => {
+									return { optName: role.key, optValue: role.value.toString() };
+								}),
+							]}
+							value={sentForm.guardianRole}
+							label="Papel do responsável"
+							required
+							onChange={(e) => updateForm('guardianRole', e)}
+						/>
+						{showErrorMessages('guardianRole')}
+						<CheckBoxGroupInput
+							label="Dias da semana da guarda"
+							options={dayOfWeekEnum}
+							onChange={(e) => updateForm('daysOfWeek', e)}
+						/>
+					</Modal.Body>
+					<Modal.Footer>
+						<Button variant="secondary" onClick={handleClose}>
+							Fechar
+						</Button>
+						<Button className="custom-button" onClick={submitGuard}>
+							Cadastrar
+						</Button>
+					</Modal.Footer>
+				</Modal>
 			</div>
 		</div>
 	);

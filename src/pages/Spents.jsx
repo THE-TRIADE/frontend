@@ -1,58 +1,91 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { TextualInput } from '../components/Inputs/TextualInput';
-import { TitlePages } from '../components/TitlePages';
 import { DateInput } from '../components/Inputs/DateInput';
 import { SelectInput } from '../components/Inputs/SelectInput';
 import { CardSpents } from '../components/Cards/CardSpents';
 import { api } from '../config/api';
-import { Button } from '../components/Button';
 import { Menu } from '../components/Menu';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import { CustomSpan } from '../components/CustomSpan';
 
 export const Spents = () => {
 	const [sentForm, setSentForm] = useState({
 		name: '',
 		value: '',
 		paidOn: '',
-		guardianId: sessionStorage.getItem('UserId'),
 		dependentId: '-1',
-		activityId: '',
 	});
 	const [spents, setSpents] = useState([]);
-	const [dependents, setDependents] = useState([
-		{
-			dependentName: '',
-			dependentId: '',
-		},
-	]);
+	const [dependents, setDependents] = useState([]);
+	const [errorMessages, setErrorMessages] = useState({
+		name: null,
+		value: null,
+		paidOn: null,
+		dependentId: null,
+	});
+
+	const isEmpty = (text) => text.trim() === '';
+
+	const validateForm = () => {
+		const newErrorMessages = { name: null, value: null, paidOn: null, dependentId: null };
+		let isValid = true;
+
+		if (isEmpty(sentForm.name)) {
+			newErrorMessages.name = 'Este campo não pode ser vazio';
+			isValid = false;
+		}
+
+		if (isEmpty(sentForm.value)) {
+			newErrorMessages.value = 'Este campo não pode ser vazio';
+			isValid = false;
+		}
+		if (isEmpty(sentForm.paidOn)) {
+			newErrorMessages.paidOn = 'Este campo não pode ser vazio';
+			isValid = false;
+		}
+		if (isEmpty(sentForm.dependentId) || sentForm.dependentId === '-1') {
+			newErrorMessages.dependentId = 'Por favor, selecione um dependente';
+			isValid = false;
+		}
+
+		setErrorMessages(newErrorMessages);
+		return isValid;
+	};
+
+	const [show, setShow] = useState(false);
+
+	const handleClose = () => {
+		setShow(false);
+		clearValidationFields();
+	};
+	const handleShow = () => setShow(true);
 
 	const updateForm = (inputName, event) => {
 		let newValue = event.target.value;
 		setSentForm((prevState) => {
-			if (inputName == 'value') {
+			if (inputName === 'value') {
 				newValue = newValue.replace(/\D/g, '');
 			}
 			return { ...prevState, [inputName]: newValue };
 		});
 	};
-	const handleFormSubmit = (event) => {
-		event.preventDefault();
-		setSentForm({
-			name: '',
-			value: '',
-			paidOn: '',
-			guardianId: sessionStorage.getItem('UserId'),
-			dependentId: '-1',
-			activityId: '',
+
+	const clearValidationFields = () => {
+		setErrorMessages({
+			name: null,
+			value: null,
+			paidOn: null,
+			dependentId: null,
 		});
 	};
+
 	const [trySubmit, setTrySubmit] = useState(false);
 	const modal = useRef(null);
-	useEffect(() => {
-		const modalElement = document.getElementById('ModalCadastrarGasto');
-		modalElement.addEventListener('hidden.bs.modal', handleFormSubmit);
 
+	useEffect(() => {
 		const getSpents = () => {
 			api.get('/spent/by-guardian-id/' + sessionStorage.getItem('UserId')).then((res) => {
 				setSpents(res.data);
@@ -70,21 +103,20 @@ export const Spents = () => {
 				setDependents(listDependent);
 			});
 		};
+
 		getSpents();
 		getDependents();
-		return () => {
-			modalElement.removeEventListener('hidden.bs.modal', handleFormSubmit);
-		};
 	}, []);
 
 	useEffect(() => {
+		clearValidationFields();
 		if (trySubmit) {
-			const newSpent = { ...sentForm };
+			const newSpent = { ...sentForm, guardianId: sessionStorage.getItem('UserId') };
 			api
 				.post('/spent', newSpent)
 				.then((res) => {
 					toast.success('Gasto criado com sucesso');
-					console.log(res);
+					handleClose();
 					setSpents((oldList) => [...oldList, res.data]);
 				})
 				.catch((err) => {
@@ -98,7 +130,11 @@ export const Spents = () => {
 	}, [trySubmit]);
 
 	const submitSpent = () => {
-		setTrySubmit(true);
+		console.log('entrou na funcao');
+		if (validateForm()) {
+			console.log('é valido');
+			setTrySubmit(true);
+		}
 	};
 
 	const deleteSpent = (id, e) => {
@@ -106,8 +142,8 @@ export const Spents = () => {
 		api
 			.delete(`/spent/${id}`)
 			.then(() => {
-				toast.success('Gasto excluido com sucesso');
-				setSpents((oldList) => oldList.filter((spent) => spent.id != id));
+				toast.success('Gasto excluído com sucesso');
+				setSpents((oldList) => oldList.filter((spent) => spent.id !== id));
 			})
 			.catch((err) => {
 				toast.error('Falha ao excluir gasto.');
@@ -128,7 +164,12 @@ export const Spents = () => {
 			<Menu />
 			<div className="row">
 				<div className="col-12">
-					<TitlePages text="Gastos" textButton="Cadastrar Gasto" target="#ModalCadastrarGasto" />
+					<div className="my-5 pt-5 d-flex flex-row flex-column flex-sm-row justify-content-between">
+						<h3 className="text-primary pt-3">Gastos</h3>
+						<Button className="custom-button" onClick={handleShow}>
+							Cadastrar Gasto
+						</Button>
+					</div>
 					<div className="row">
 						<Link className="customLink my-3 text-secondary text-end fs-5" to={'/spentsreport'}>
 							Ver resumo de gastos
@@ -137,65 +178,62 @@ export const Spents = () => {
 							<CardSpents key={spent.id} spent={spent} deleteSpent={deleteSpent} />
 						))}
 					</div>
-					<div
-						className="modal fade"
-						id="ModalCadastrarGasto"
-						data-bs-backdrop="static"
-						data-bs-keyboard="false"
-						tabIndex="-1"
-						aria-labelledby="ModalCadastrarGasto"
-						aria-hidden="true"
-						ref={modal}
-					>
-						<div className="modal-dialog modal-dialog-centered">
-							<div className="modal-content">
-								<div className="modal-header">
-									<h1 className="modal-title fs-5 secondary-color" id="ModalCadastrarGasto">
-										Cadastrar Gasto
-									</h1>
-									<button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-								</div>
-								<div className="modal-body">
-									<TextualInput
-										placeholder="Nome do gasto"
-										label="Nome"
-										value={sentForm.name}
-										onChange={(e) => updateForm('name', e)}
-										required
-									/>
-									<TextualInput
-										placeholder="Valor do gasto"
-										label="Valor"
-										value={valueMask(sentForm.value)}
-										onChange={(e) => updateForm('value', e)}
-										required
-									/>
-									<DateInput
-										placeholder=""
-										label="Pago em"
-										value={sentForm.paidOn}
-										onChange={(e) => updateForm('paidOn', e)}
-										required
-									/>
-									<SelectInput
-										options={[
-											{ optName: 'Escolha um dependente', optValue: '-1', disabled: true },
-											...dependents.map((dependent) => {
-												return { optName: dependent.dependentName, optValue: dependent.dependentId.toString() };
-											}),
-										]}
-										value={sentForm.dependentId}
-										label="Dependente"
-										onChange={(e) => updateForm('dependentId', e)}
-										required
-									/>
-								</div>
-								<div className="modal-footer" data-bs-dismiss="modal">
-									<Button type="button" text="Cadastrar" onClick={submitSpent} />
-								</div>
-							</div>
-						</div>
-					</div>
+					<Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
+						<Modal.Header closeButton>
+							<Modal.Title>
+								<h1 className="modal-title fs-5 secondary-color" id="ModalCadastrarGasto">
+									Cadastrar Gasto
+								</h1>
+							</Modal.Title>
+						</Modal.Header>
+						<Modal.Body>
+							<TextualInput
+								placeholder="Nome do gasto"
+								label="Nome"
+								value={sentForm.name}
+								onChange={(e) => updateForm('name', e)}
+								required
+							/>
+							{errorMessages.name && <CustomSpan text={errorMessages.name} />}
+							<TextualInput
+								placeholder="Valor do gasto"
+								label="Valor"
+								value={valueMask(sentForm.value)}
+								onChange={(e) => updateForm('value', e)}
+								required
+							/>
+							{errorMessages.value && <CustomSpan text={errorMessages.value} />}
+							<DateInput
+								placeholder=""
+								label="Pago em"
+								value={sentForm.paidOn}
+								onChange={(e) => updateForm('paidOn', e)}
+								required
+							/>
+							{errorMessages.paidOn && <CustomSpan text={errorMessages.paidOn} />}
+							<SelectInput
+								options={[
+									{ optName: 'Escolha um dependente', optValue: '-1', disabled: true },
+									...dependents.map((dependent) => {
+										return { optName: dependent.dependentName, optValue: dependent.dependentId.toString() };
+									}),
+								]}
+								value={sentForm.dependentId}
+								label="Dependente"
+								onChange={(e) => updateForm('dependentId', e)}
+								required
+							/>
+							{errorMessages.dependentId && <CustomSpan text={errorMessages.dependentId} />}
+						</Modal.Body>
+						<Modal.Footer>
+							<Button variant="secondary" onClick={handleClose}>
+								Fechar
+							</Button>
+							<Button className="custom-button" onClick={submitSpent}>
+								Cadastrar
+							</Button>
+						</Modal.Footer>
+					</Modal>
 				</div>
 			</div>
 		</div>
