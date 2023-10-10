@@ -12,9 +12,13 @@ import { SelectInput } from '../components/Inputs/SelectInput';
 import { CheckBoxInput } from '../components/Inputs/CheckBoxInput';
 import { CheckBoxGroupInput } from '../components/Inputs/CheckBoxGroupInput';
 import { dayOfWeekEnum } from './ManageGuardians';
-import { Button } from '../components/Button';
+// import { Button } from '../components/Button';
 import { toast } from 'react-toastify';
 import { CustomSpan } from '../components/CustomSpan';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import { ButtonFinishActivity } from '../components/ButtonFinsihActivity';
+
 export const ActivityStateEnum = {
 	created: 'CRIADA',
 	in_progress: 'EM_ANDAMENTO',
@@ -140,6 +144,7 @@ export const DependentActivities = () => {
 					.post('/activity', newActivity)
 					.then((res) => {
 						toast.success('Atividade criada com sucesso');
+						handleClose();
 						setActivities((oldList) => {
 							const newArray = oldList;
 							if (!oldList.includes(res.data)) {
@@ -225,7 +230,10 @@ export const DependentActivities = () => {
 	};
 
 	const isEmpty = (text) => text.trim() === '';
+	const [show, setShow] = useState(false);
 
+	const handleClose = () => setShow(false);
+	const handleShow = () => setShow(true);
 	const validateForm = () => {
 		const newErrorMessages = { ...activityErrorMessages };
 
@@ -278,11 +286,12 @@ export const DependentActivities = () => {
 			<div className="container">
 				<div className="row">
 					{!!dependent && (
-						<TitlePages
-							text={'Atividades de ' + dependent.name}
-							textButton="Cadastrar Atividade"
-							target="#ModalCadastrarAtividades"
-						/>
+						<div className="my-5 pt-5 d-flex flex-column flex-sm-row justify-content-between">
+							<h3 className="pt-3 ">{'Atividades de ' + dependent.name}</h3>
+							<Button className="custom-button" onClick={handleShow}>
+								Cadastrar Nova Atividade
+							</Button>
+						</div>
 					)}
 					<>
 						{/* CONTAGEM DAS ATIVIDADES INICIO */}
@@ -547,7 +556,7 @@ export const DependentActivities = () => {
 									/>
 								</div>
 								<div className="modal-footer" data-bs-dismiss="modal">
-									<Button type="button" text="Finalizar" onClick={(e) => finishActivityFunction(e)} />
+									<ButtonFinishActivity type="button" text="Finalizar" onClick={(e) => finishActivityFunction(e)} />
 								</div>
 							</div>
 						</div>
@@ -556,123 +565,117 @@ export const DependentActivities = () => {
 				{/* MODAL DE FINISH ACTIVITY FIM */}
 				{/* MODAL CADASTRO DE ATIVIDADE INICIO */}
 				{!!dependent && !!guardians.length && (
-					<div
-						className="modal fade"
-						id="ModalCadastrarAtividades"
-						data-bs-backdrop="static"
-						data-bs-keyboard="false"
-						tabIndex="-1"
-						aria-labelledby="ModalCadastrarAtividadesLabel"
-						aria-hidden="true"
-					>
-						<div className="modal-dialog modal-dialog-centered">
-							<div className="modal-content">
-								<div className="modal-header">
-									<h1 className="modal-title fs-5 secondary-color" id="ModalCadastrarAtividadesLabel">
-										Cadastrar Nova Atividade
-									</h1>
-									<button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-								</div>
-								<div className="modal-body">
-									<TextualInput
-										placeholder="Título da atividade"
-										label="Título da Atividade"
-										value={sentForm.name}
-										onChange={(e) => updateForm('name', e)}
+					<Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
+						<Modal.Header closeButton>
+							<Modal.Title>
+								<h1 className="modal-title fs-5 secondary-color" id="ModalCadastrarAtividades">
+									Cadastrar Nova Atividade
+								</h1>
+							</Modal.Title>
+						</Modal.Header>
+						<Modal.Body>
+							<TextualInput
+								placeholder="Título da atividade"
+								label="Título da Atividade"
+								value={sentForm.name}
+								onChange={(e) => updateForm('name', e)}
+								required
+							/>
+							{showErrorMessages('name')}
+							<DateInput
+								placeholder=""
+								label="Data de início"
+								value={sentForm.dateStart}
+								onChange={(e) => updateForm('dateStart', e)}
+								required
+							/>
+							{showErrorMessages('dateStart')}
+							<TimeInput
+								placeholder=""
+								label="Hora de início"
+								value={sentForm.hourStart}
+								onChange={(e) => updateForm('hourStart', e)}
+								required
+							/>
+							{showErrorMessages('hourStart')}
+							<DateInput
+								placeholder=""
+								label="Data de fim"
+								value={sentForm.dateEnd}
+								onChange={(e) => updateForm('dateEnd', e)}
+								required
+							/>
+							{showErrorMessages('dateEnd')}
+							<TimeInput
+								placeholder=""
+								label="Hora de fim"
+								value={sentForm.hourEnd}
+								onChange={(e) => updateForm('hourEnd', e)}
+								required
+							/>
+							{showErrorMessages('hourEnd')}
+							<SelectInput
+								options={[
+									{ optName: 'Escolha um responsável', optValue: '-1', disabled: true },
+									...guardians.map((guardian) => {
+										return { optName: guardian.name, optValue: guardian.id.toString() };
+									}),
+								]}
+								value={sentForm.currentGuardian}
+								label="Responsável atual"
+								onChange={(e) => updateForm('currentGuardian', e)}
+								required
+							/>
+							{showErrorMessages('currentGuardian')}
+							<SelectInput
+								options={[
+									{ optName: 'Escolha um ator da atividade', optValue: '-1', disabled: true },
+									...[...guardians, dependent].map((person) => ({
+										optName: person.name,
+										optValue: person.id.toString(),
+									})),
+								]}
+								value={sentForm.actor}
+								label="Ator da atividade"
+								onChange={(e) => updateForm('actor', e)}
+								required
+							/>
+							{showErrorMessages('actor')}
+							<CheckBoxInput
+								label="Repetir atividade"
+								value="Deseja repetir atividade em outros dias?"
+								checked={sentForm.repeat}
+								onChange={(e) => updateForm('repeat', e)}
+							/>
+							{sentForm.repeat && (
+								<>
+									<CheckBoxGroupInput
+										label="Dias da semana que irão repetir"
+										options={dayOfWeekEnum}
+										onChange={(e) => updateForm('daysToRepeat', e)}
 										required
 									/>
-									{showErrorMessages('name')}
+									{showErrorMessages('daysToRepeat')}
 									<DateInput
 										placeholder=""
-										label="Data de início"
-										value={sentForm.dateStart}
-										onChange={(e) => updateForm('dateStart', e)}
+										label="Repetir até"
+										value={sentForm.repeatUntil}
+										onChange={(e) => updateForm('repeatUntil', e)}
 										required
 									/>
-									{showErrorMessages('dateStart')}
-									<TimeInput
-										placeholder=""
-										label="Hora de início"
-										value={sentForm.hourStart}
-										onChange={(e) => updateForm('hourStart', e)}
-										required
-									/>
-									{showErrorMessages('hourStart')}
-									<DateInput
-										placeholder=""
-										label="Data de fim"
-										value={sentForm.dateEnd}
-										onChange={(e) => updateForm('dateEnd', e)}
-										required
-									/>
-									{showErrorMessages('dateEnd')}
-									<TimeInput
-										placeholder=""
-										label="Hora de fim"
-										value={sentForm.hourEnd}
-										onChange={(e) => updateForm('hourEnd', e)}
-										required
-									/>
-									{showErrorMessages('hourEnd')}
-									<SelectInput
-										options={[
-											{ optName: 'Escolha um responsável', optValue: '-1', disabled: true },
-											...guardians.map((guardian) => {
-												return { optName: guardian.name, optValue: guardian.id.toString() };
-											}),
-										]}
-										value={sentForm.currentGuardian}
-										label="Responsável atual"
-										onChange={(e) => updateForm('currentGuardian', e)}
-										required
-									/>
-									{showErrorMessages('currentGuardian')}
-									<SelectInput
-										options={[
-											{ optName: 'Escolha um ator da atividade', optValue: '-1', disabled: true },
-											...[...guardians, dependent].map((person) => ({
-												optName: person.name,
-												optValue: person.id.toString(),
-											})),
-										]}
-										value={sentForm.actor}
-										label="Ator da atividade"
-										onChange={(e) => updateForm('actor', e)}
-										required
-									/>
-									{showErrorMessages('actor')}
-									<CheckBoxInput
-										label="Repetir atividade"
-										value="Deseja repetir atividade em outros dias?"
-										checked={sentForm.repeat}
-										onChange={(e) => updateForm('repeat', e)}
-									/>
-									{sentForm.repeat && (
-										<>
-											<CheckBoxGroupInput
-												label="Dias da semana que irão repetir"
-												options={dayOfWeekEnum}
-												onChange={(e) => updateForm('daysToRepeat', e)}
-												required
-											/>
-											{showErrorMessages('daysToRepeat')}
-											<DateInput
-												placeholder=""
-												label="Repetir até"
-												value={sentForm.repeatUntil}
-												onChange={(e) => updateForm('repeatUntil', e)}
-												required
-											/>
-											{showErrorMessages('repeatUntil')}
-										</>
-									)}
-								</div>
-								<div className="modal-footer">
-									<Button text="Cadastrar" onClick={submitActivityForm} />
-								</div>
-							</div>
-						</div>
-					</div>
+									{showErrorMessages('repeatUntil')}
+								</>
+							)}
+						</Modal.Body>
+						<Modal.Footer>
+							<Button variant="secondary" onClick={handleClose}>
+								Fechar
+							</Button>
+							<Button className="custom-button" onClick={submitActivityForm}>
+								Cadastrar
+							</Button>
+						</Modal.Footer>
+					</Modal>
 				)}
 				{/* MODAL CADASTRO DE ATIVIDADE FIM */}
 			</div>
