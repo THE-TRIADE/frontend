@@ -24,6 +24,19 @@ body,
 #root {
 	height: 100%;
 }
+a {
+	text-decoration: none;
+}
+.fc-col-header-cell-cushion {
+	color: #03a7b8;
+}
+.fc-daygrid-day-number {
+	color: #322e36;
+}
+.fc-h-event {
+	background-color: #cb8fff;
+	border: 1px solid #cb8fff;
+}
 .app {
 	display: flex;
 	flex-direction: column;

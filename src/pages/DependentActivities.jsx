@@ -27,21 +27,27 @@ export const ActivityStateEnum = {
 };
 
 const getActivities = async (dependentId) => {
-	return await api().get('/activity', { params: { dependentId } }).then((res) => {
-		return res.data;
-	});
+	return await api()
+		.get('/activity', { params: { dependentId } })
+		.then((res) => {
+			return res.data;
+		});
 };
 
 const getDependent = async (dependentId) => {
-	return await api().get('/dependent/' + dependentId).then((res) => {
-		return res.data;
-	});
+	return await api()
+		.get('/dependent/' + dependentId)
+		.then((res) => {
+			return res.data;
+		});
 };
 
 const getGuardiansByDependentId = async (dependentId) => {
-	return await api().get('/guard/by-dependent-id/' + dependentId).then((res) => {
-		return res.data.map((guard) => ({ id: guard.guardianId, name: guard.guardianName }));
-	});
+	return await api()
+		.get('/guard/by-dependent-id/' + dependentId)
+		.then((res) => {
+			return res.data.map((guard) => ({ id: guard.guardianId, name: guard.guardianName }));
+		});
 };
 
 export const DependentActivities = () => {
@@ -109,13 +115,13 @@ export const DependentActivities = () => {
 			}
 		});
 	};
-	
+
 	useEffect(() => {
 		if (sessionStorage.getItem('token') == null) {
 			navigate('/login');
 		}
 	}, []);
-	
+
 	useEffect(() => {
 		getDependent(id).then((dependentResult) => {
 			setDependent(dependentResult);
@@ -192,9 +198,11 @@ export const DependentActivities = () => {
 
 	const deleteActivityFunction = (e, activityId) => {
 		e.preventDefault();
-		api().delete(`/activity/${activityId}`).then(() => {
-			setActivities((oldList) => oldList.filter((activity) => activity.id != activityId));
-		});
+		api()
+			.delete(`/activity/${activityId}`)
+			.then(() => {
+				setActivities((oldList) => oldList.filter((activity) => activity.id != activityId));
+			});
 	};
 
 	useEffect(() => {
@@ -300,6 +308,12 @@ export const DependentActivities = () => {
 						</div>
 					)}
 					<>
+						<div className="">
+							{' '}
+							<a className="customLink" href={'/frontend/calendar/' + dependent.id}>
+								Ver calendário
+							</a>
+						</div>
 						{/* CONTAGEM DAS ATIVIDADES INICIO */}
 						<div className="resumo">
 							<h5 className="my-3">Resumo de Atividades</h5>

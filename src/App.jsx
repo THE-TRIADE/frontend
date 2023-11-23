@@ -10,6 +10,7 @@ import { SignIn } from './pages/SignIn';
 import { SignUp } from './pages/SignUp';
 import { Spents } from './pages/Spents';
 import { SpentsReports } from './pages/SpentsReport';
+import { Calendar } from './pages/Calendar';
 
 function App() {
 	return (
@@ -24,6 +25,7 @@ function App() {
 				<Route path="/spents" element={<Spents />} />
 				<Route path="/spentsreport" element={<SpentsReports />} />
 				<Route path="/login" element={<SignIn />} />
+				<Route path="/calendar/:id" element={<Calendar />} />
 				<Route path="/forgotpassword" element={<ForgotPassword />} />
 				<Route path="*" element={<NotFound />} />
 			</Routes>
