@@ -31,7 +31,7 @@ export const Calendar = () => {
 		<div className="app justify-content-center pb-5">
 			<Menu />
 			<div className="container mt-5 pt-5">
-				<Link to className="customLink" href={'/frontend/dependentactivities/' + id}>
+				<Link to={'/dependentactivities/' + id} className="customLink">
 					Voltar
 				</Link>
 			</div>

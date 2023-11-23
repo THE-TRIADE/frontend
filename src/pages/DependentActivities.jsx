@@ -310,7 +310,7 @@ export const DependentActivities = () => {
 					<>
 						<div className="">
 							{' '}
-							<Link to className="customLink" href={'/frontend/calendar/' + dependent.id}>
+							<Link to={'/calendar/' + dependent.id} className="customLink">
 								Ver calendário
 							</Link>
 						</div>
