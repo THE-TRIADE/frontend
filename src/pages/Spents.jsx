@@ -10,8 +10,10 @@ import { toast } from 'react-toastify';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { CustomSpan } from '../components/CustomSpan';
+import { useNavigate } from 'react-router-dom';
 
 export const Spents = () => {
+	const navigate = useNavigate();
 	const [sentForm, setSentForm] = useState({
 		name: '',
 		value: '',
@@ -86,14 +88,20 @@ export const Spents = () => {
 	const modal = useRef(null);
 
 	useEffect(() => {
+		if (sessionStorage.getItem('token') == null) {
+			navigate('/login');
+		}
+	}, []);
+
+	useEffect(() => {
 		const getSpents = () => {
-			api.get('/spent/by-guardian-id/' + sessionStorage.getItem('UserId')).then((res) => {
+			api().get('/spent/by-guardian-id/' + sessionStorage.getItem('UserId')).then((res) => {
 				setSpents(res.data);
 			});
 		};
 
 		const getDependents = () => {
-			api.get('/guardian/' + sessionStorage.getItem('UserId')).then((res) => {
+			api().get('/guardian/' + sessionStorage.getItem('UserId')).then((res) => {
 				const listDependent = res.data.guards.map((guard) => {
 					return {
 						dependentName: guard.dependentName,
@@ -112,7 +120,7 @@ export const Spents = () => {
 		clearValidationFields();
 		if (trySubmit) {
 			const newSpent = { ...sentForm, guardianId: sessionStorage.getItem('UserId') };
-			api
+			api()
 				.post('/spent', newSpent)
 				.then((res) => {
 					toast.success('Gasto criado com sucesso');
@@ -139,7 +147,7 @@ export const Spents = () => {
 
 	const deleteSpent = (id, e) => {
 		e.preventDefault();
-		api
+		api()
 			.delete(`/spent/${id}`)
 			.then(() => {
 				toast.success('Gasto excluído com sucesso');

@@ -1,23 +1,22 @@
-import { useState } from 'react';
-import { api } from '../config/api';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { TitlePages } from '../components/TitlePages';
 import { AccordionActivities } from '../components/AccordionItemActivities';
-import { Menu } from '../components/Menu';
-import { TextualInput } from '../components/Inputs/TextualInput';
-import { DateInput } from '../components/Inputs/DateInput';
-import { TimeInput } from '../components/Inputs/TimeInput';
-import { SelectInput } from '../components/Inputs/SelectInput';
-import { CheckBoxInput } from '../components/Inputs/CheckBoxInput';
 import { CheckBoxGroupInput } from '../components/Inputs/CheckBoxGroupInput';
+import { CheckBoxInput } from '../components/Inputs/CheckBoxInput';
+import { DateInput } from '../components/Inputs/DateInput';
+import { SelectInput } from '../components/Inputs/SelectInput';
+import { TextualInput } from '../components/Inputs/TextualInput';
+import { TimeInput } from '../components/Inputs/TimeInput';
+import { Menu } from '../components/Menu';
+import { api } from '../config/api';
 import { dayOfWeekEnum } from './ManageGuardians';
 // import { Button } from '../components/Button';
-import { toast } from 'react-toastify';
-import { CustomSpan } from '../components/CustomSpan';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { ButtonFinishActivity } from '../components/ButtonFinsihActivity';
+import { CustomSpan } from '../components/CustomSpan';
 
 export const ActivityStateEnum = {
 	created: 'CRIADA',
@@ -28,24 +27,25 @@ export const ActivityStateEnum = {
 };
 
 const getActivities = async (dependentId) => {
-	return await api.get('/activity', { params: { dependentId } }).then((res) => {
+	return await api().get('/activity', { params: { dependentId } }).then((res) => {
 		return res.data;
 	});
 };
 
 const getDependent = async (dependentId) => {
-	return await api.get('/dependent/' + dependentId).then((res) => {
+	return await api().get('/dependent/' + dependentId).then((res) => {
 		return res.data;
 	});
 };
 
 const getGuardiansByDependentId = async (dependentId) => {
-	return await api.get('/guard/by-dependent-id/' + dependentId).then((res) => {
+	return await api().get('/guard/by-dependent-id/' + dependentId).then((res) => {
 		return res.data.map((guard) => ({ id: guard.guardianId, name: guard.guardianName }));
 	});
 };
 
 export const DependentActivities = () => {
+	const navigate = useNavigate();
 	const { id } = useParams();
 	const [activities, setActivities] = useState([]);
 	const [dependent, setDependent] = useState({});
@@ -109,7 +109,13 @@ export const DependentActivities = () => {
 			}
 		});
 	};
-
+	
+	useEffect(() => {
+		if (sessionStorage.getItem('token') == null) {
+			navigate('/login');
+		}
+	}, []);
+	
 	useEffect(() => {
 		getDependent(id).then((dependentResult) => {
 			setDependent(dependentResult);
@@ -140,7 +146,7 @@ export const DependentActivities = () => {
 				}
 			});
 			if (isValid) {
-				api
+				api()
 					.post('/activity', newActivity)
 					.then((res) => {
 						toast.success('Atividade criada com sucesso');
@@ -186,7 +192,7 @@ export const DependentActivities = () => {
 
 	const deleteActivityFunction = (e, activityId) => {
 		e.preventDefault();
-		api.delete(`/activity/${activityId}`).then(() => {
+		api().delete(`/activity/${activityId}`).then(() => {
 			setActivities((oldList) => oldList.filter((activity) => activity.id != activityId));
 		});
 	};
@@ -194,7 +200,7 @@ export const DependentActivities = () => {
 	useEffect(() => {
 		if (trySubmitFinishForm) {
 			console.log(sentFinishForm);
-			api
+			api()
 				.patch(`/activity/${finishActivityId}/finish`, sentFinishForm)
 				.then((res) => {
 					console.log(res);

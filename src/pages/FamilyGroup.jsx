@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { Button } from '../components/Button';
+import { ButtonOutline } from '../components/ButtonOutline';
 import { CustomSpan } from '../components/CustomSpan';
+import { DependentForm } from '../components/DependentForm';
+import { SelectInput } from '../components/Inputs/SelectInput';
 import { TextualInput } from '../components/Inputs/TextualInput';
 import { api } from '../config/api';
-import { ButtonOutline } from '../components/ButtonOutline';
-import { DependentForm } from '../components/DependentForm';
-import { useNavigate } from 'react-router-dom';
 import { guardianRoleEnum } from './ManageGuardians';
-import { SelectInput } from '../components/Inputs/SelectInput';
-import { toast } from 'react-toastify';
 
 export const FamilyGroup = () => {
 	const [familyGroupForm, setFamilyGroupForm] = useState({
@@ -25,6 +25,12 @@ export const FamilyGroup = () => {
 	const [dependentCount, setDependentCount] = useState(1);
 	const [submit, setSubmit] = useState(false);
 	const navigate = useNavigate();
+
+	useEffect(() => {
+		if (sessionStorage.getItem('token') == null) {
+			navigate('/login');
+		}
+	}, []);
 
 	const validateForm = () => {
 		let isValid = true;
@@ -76,7 +82,7 @@ export const FamilyGroup = () => {
 
 		if (validateForm()) {
 			const newFamilyGroup = { ...familyGroupForm, dependents };
-			api
+			api()
 				.post('/familyGroup', newFamilyGroup)
 				.then(() => {
 					toast.success('Grupo familiar criado com sucesso.');
