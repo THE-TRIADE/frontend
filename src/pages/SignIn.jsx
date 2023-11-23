@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { Button } from '../components/Button';
 import { CustomLink } from '../components/CustomLink';
-import { EmailLoginInput } from '../components/LoginInputs/EmailLoginInput';
-import { PasswordLoginInput } from '../components/LoginInputs/PasswordLoginInput';
-import { useNavigate } from 'react-router-dom';
-import { api } from '../config/api';
 import { CustomSpan } from '../components/CustomSpan';
 import { FooterWave } from '../components/FooterWave';
-import { toast } from 'react-toastify';
+import { EmailLoginInput } from '../components/LoginInputs/EmailLoginInput';
+import { PasswordLoginInput } from '../components/LoginInputs/PasswordLoginInput';
+import { api } from '../config/api';
 
 export const SignIn = () => {
 	const [login, setLogin] = useState({
@@ -37,11 +37,12 @@ export const SignIn = () => {
 			});
 
 			if (isValid) {
-				api
+				api(false)
 					.post('/guardian/login', login)
 					.then((res) => {
 						toast.success('Usuário autenticado com sucesso.');
 						sessionStorage.setItem('UserId', res.data.id);
+						sessionStorage.setItem('token', res.data.token);
 						navigate('/');
 					})
 					.catch((err) => {

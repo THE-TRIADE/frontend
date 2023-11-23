@@ -50,7 +50,7 @@ export const SignUp = () => {
 			if (isValid) {
 				const newGuardian = { ...signUpForm };
 				delete newGuardian.passwordConfirmation;
-				api
+				api(false)
 					.post('/guardian', newGuardian)
 					.then((res) => {
 						toast.success('Cadastrado com sucesso.');

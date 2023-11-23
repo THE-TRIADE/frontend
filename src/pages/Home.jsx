@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { ButtonOutlineSecondary } from '../components/ButtonOutlineSecondary';
 import { CardFamilyGroup } from '../components/Cards/CardFamilyGroup';
 import { Menu } from '../components/Menu';
 import { api } from '../config/api';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
 
 export const Home = () => {
 	const [familyGroups, setFamilyGroups] = useState([]);
@@ -12,7 +12,7 @@ export const Home = () => {
 
 	const getAllFamilyGroups = useCallback(() => {
 		let id = sessionStorage.getItem('UserId');
-		api
+		api()
 			.get('/familyGroup', {
 				params: {
 					guardianId: id,
@@ -24,7 +24,7 @@ export const Home = () => {
 	}, []);
 
 	useEffect(() => {
-		if (sessionStorage.getItem('UserId') == null) {
+		if (sessionStorage.getItem('token') == null) {
 			navigate('/login');
 		}
 	}, []);
@@ -35,7 +35,7 @@ export const Home = () => {
 
 	const deleteFamilyGroup = (e, id) => {
 		e.preventDefault();
-		api
+		api()
 			.delete('/familyGroup/' + id)
 			.then(() => {
 				toast.success('Grupo familiar excluido com sucesso.');

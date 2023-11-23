@@ -1,13 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { CardDependents } from '../components/Cards/CardDependents';
-import { api } from '../config/api';
-import { useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
 import { Menu } from '../components/Menu';
+import { api } from '../config/api';
 import { guardianRoleEnum } from './ManageGuardians';
 
 const getActivities = (dependentId) => {
-	return api.get('/activity', { params: { dependentId } }).then((res) => {
+	return api().get('/activity', { params: { dependentId } }).then((res) => {
 		let late = 0,
 			created = 0,
 			inProgress = 0;
@@ -25,14 +24,21 @@ const getActivities = (dependentId) => {
 };
 
 export const FamilyGroupDetails = () => {
+	const navigate = useNavigate();
 	const { id } = useParams();
 	const [familyGroup, setFamilyGroup] = useState(null);
 	const [guards, setGuards] = useState([]);
 	const [activities, setActivities] = useState({});
 
 	useEffect(() => {
+		if (sessionStorage.getItem('token') == null) {
+			navigate('/login');
+		}
+	}, []);
+
+	useEffect(() => {
 		const getFamilyGroup = () => {
-			api.get('/familyGroup/' + id).then((res) => {
+			api().get('/familyGroup/' + id).then((res) => {
 				setFamilyGroup(res.data);
 			});
 		};
@@ -41,7 +47,7 @@ export const FamilyGroupDetails = () => {
 
 	useEffect(() => {
 		const getGuards = (dependentId) => {
-			api.get('/guard/by-dependent-id/' + dependentId).then((res) => {
+			api().get('/guard/by-dependent-id/' + dependentId).then((res) => {
 				setGuards((prevGuards) => ({
 					...prevGuards,
 					[dependentId]: res.data,
