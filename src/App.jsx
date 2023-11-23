@@ -13,7 +13,7 @@ import { SpentsReports } from './pages/SpentsReport';
 
 function App() {
 	return (
-		<BrowserRouter>
+		<BrowserRouter basename="/frontend/">
 			<Routes>
 				<Route path="/familygroup" element={<FamilyGroup />} />
 				<Route path="/dependentactivities/:id" element={<DependentActivities />} />
