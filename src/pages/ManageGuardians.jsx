@@ -1,17 +1,16 @@
-import { Fragment, useState } from 'react';
-import { api } from '../config/api';
-import { useEffect } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { ButtonOutlineSecondary } from '../components/ButtonOutlineSecondary';
+import { api } from '../config/api';
 
 import { useParams } from 'react-router-dom';
 import { ButtonAction } from '../components/ButtonAction';
-import { ButtonHeader } from '../components/ButtonHeader';
 import { SelectInput } from '../components/Inputs/SelectInput';
 // import { Button } from '../components/Button';
-import { CheckBoxGroupInput } from '../components/Inputs/CheckBoxGroupInput';
-import { Menu } from '../components/Menu';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { CustomSpan } from '../components/CustomSpan';
+import { CheckBoxGroupInput } from '../components/Inputs/CheckBoxGroupInput';
+import { Menu } from '../components/Menu';
 
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
@@ -34,6 +33,7 @@ export const dayOfWeekEnum = [
 ];
 
 export const ManageGuardians = () => {
+	const navigate = useNavigate();
 	const { id } = useParams();
 	const [familyGroup, setFamilyGroup] = useState({
 		dependents: [],
@@ -64,13 +64,13 @@ export const ManageGuardians = () => {
 	};
 
 	const getGuardians = () => {
-		api.get('/guardian').then((res) => {
+		api().get('/guardian').then((res) => {
 			setGuardians(res.data);
 		});
 	};
 
 	const deleteGuard = (dependentId, guardianId) => {
-		api
+		api()
 			.delete('/guard', {
 				params: {
 					dependentId,
@@ -94,10 +94,16 @@ export const ManageGuardians = () => {
 	};
 
 	useEffect(() => {
+		if (sessionStorage.getItem('token') == null) {
+			navigate('/login');
+		}
+	}, []);
+
+	useEffect(() => {
 		getGuardians();
 
 		const getGuards = (dependentId) => {
-			api.get('/guard/by-dependent-id/' + dependentId).then((res) => {
+			api().get('/guard/by-dependent-id/' + dependentId).then((res) => {
 				setGuards((prevGuards) => {
 					const newGuards = res.data.filter(
 						(newGuard) =>
@@ -110,7 +116,7 @@ export const ManageGuardians = () => {
 				});
 			});
 		};
-		api.get('/familyGroup/' + id).then((res) => {
+		api().get('/familyGroup/' + id).then((res) => {
 			setFamilyGroup(res.data);
 			setGuards([]);
 			res.data.dependents.forEach((dependent) => {
@@ -133,7 +139,7 @@ export const ManageGuardians = () => {
 				}
 			});
 			if (isValid) {
-				api
+				api()
 					.post('/guard', newGuard)
 					.then((res) => {
 						setGuards((oldList) => {

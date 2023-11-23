@@ -1,24 +1,33 @@
-import { useState, useEffect, Fragment } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 // import { api } from '../config/api';
-import { api } from '../config/api';
-import { Menu } from '../components/Menu';
 import { ButtonAction } from '../components/ButtonAction';
+import { Menu } from '../components/Menu';
+import { api } from '../config/api';
+import { useNavigate } from 'react-router-dom';
 
 export const SpentsReports = () => {
+	const navigate = useNavigate();
 	const [spents, setSpents] = useState([]);
 	const [dependents, setDependents] = useState([]);
 	const printWindow = () => {
 		window.print();
 	};
+
+	useEffect(() => {
+		if (sessionStorage.getItem('token') == null) {
+			navigate('/login');
+		}
+	}, []);
+
 	useEffect(() => {
 		const getSpents = () => {
-			api.get('/spent/by-guardian-id/' + sessionStorage.getItem('UserId')).then((res) => {
+			api().get('/spent/by-guardian-id/' + sessionStorage.getItem('UserId')).then((res) => {
 				setSpents(res.data);
 			});
 		};
 
 		const getDependents = () => {
-			api.get('/guardian/' + sessionStorage.getItem('UserId')).then((res) => {
+			api().get('/guardian/' + sessionStorage.getItem('UserId')).then((res) => {
 				const listDependent = res.data.guards.map((guard) => {
 					return {
 						dependentName: guard.dependentName,
