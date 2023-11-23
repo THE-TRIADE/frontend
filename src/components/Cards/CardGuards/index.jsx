@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import '../styles.css';
+import { Link } from 'react-router-dom';
 
 export const CardGuards = ({ guard }) => {
 	return (
@@ -10,9 +11,9 @@ export const CardGuards = ({ guard }) => {
 						Responsável: <span>{guard.guardianName}</span>
 					</h5>
 					<p className="card-text">With supporting text below as a natural lead-in to additional content.</p>
-					<a href="#" className="btn btn-primary">
+					<Link to="#" className="btn btn-primary">
 						Go somewhere
-					</a>
+					</Link>
 				</div>
 			</div>
 		</div>

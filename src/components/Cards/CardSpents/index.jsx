@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types';
-import '../styles.css';
+import { Link } from 'react-router-dom';
 import { ButtonAction } from '../../ButtonAction';
+import '../styles.css';
 
 export const CardSpents = ({ spent, deleteSpent }) => {
 	return (
 		<div className="col-12 col-md-4 mb-3 mb-md-0 mt-3">
-			<a href="" className="text-decoration-none">
+			<Link to="" className="text-decoration-none">
 				<div className="card h-100">
 					<div className="card-header bg-aqua text-center">
 						<h5 className="fw-bold">{spent.name}</h5>
@@ -30,7 +31,7 @@ export const CardSpents = ({ spent, deleteSpent }) => {
 						</div>
 					</div>
 				</div>
-			</a>
+			</Link>
 		</div>
 	);
 };

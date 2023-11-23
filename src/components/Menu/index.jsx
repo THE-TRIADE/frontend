@@ -1,5 +1,5 @@
+import { Link, useLocation } from 'react-router-dom';
 import './styles.css';
-import { useLocation } from 'react-router-dom';
 
 export const Menu = () => {
 	const location = useLocation();
@@ -11,9 +11,9 @@ export const Menu = () => {
 	return (
 		<nav className="navbar navbar-expand-sm fixed-top hide-print">
 			<div className="container-fluid">
-				<a className="navbar-brand mx-5 text-white" href="#">
+				<Link className="navbar-brand mx-5 text-white" to="/">
 					Family Routine
-				</a>
+				</Link>
 
 				<button
 					className="navbar-toggler"
@@ -29,16 +29,16 @@ export const Menu = () => {
 				<div className="collapse navbar-collapse mx-5" id="navbarNav">
 					<ul className="navbar-nav">
 						<li className="nav-item mx-3">
-							<a className={`nav-link ${isActive('/')}`} aria-current="page" href="/">
+							<Link className={`nav-link ${isActive('/')}`} aria-current="page" to="/">
 								{/*Todo href*/}
 								Início
-							</a>
+							</Link>
 						</li>
 						<li className="nav-item mx-3">
-							<a className={`nav-link ${isActive('/spents')}`} href="/spents">
+							<Link className={`nav-link ${isActive('/spents')}`} to="/spents">
 								{/*Todo href*/}
 								Gastos
-							</a>
+							</Link>
 						</li>
 					</ul>
 				</div>

@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types';
 import './styles.css';
+import { Link } from 'react-router-dom';
 
 export const ButtonOutlineSecondary = ({ text, link }) => {
 	return (
-		<a href={link} className="buttonOutlineSecondary pt-3 pb-3 pb-sm-0 text-center">
+		<Link to={link} className="buttonOutlineSecondary pt-3 pb-3 pb-sm-0 text-center">
 			{text}
-		</a>
+		</Link>
 	);
 };
 
