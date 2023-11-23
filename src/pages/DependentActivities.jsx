@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { AccordionActivities } from '../components/AccordionItemActivities';
 import { CheckBoxGroupInput } from '../components/Inputs/CheckBoxGroupInput';
 import { CheckBoxInput } from '../components/Inputs/CheckBoxInput';
@@ -310,9 +310,9 @@ export const DependentActivities = () => {
 					<>
 						<div className="">
 							{' '}
-							<a className="customLink" href={'/frontend/calendar/' + dependent.id}>
+							<Link to className="customLink" href={'/frontend/calendar/' + dependent.id}>
 								Ver calendário
-							</a>
+							</Link>
 						</div>
 						{/* CONTAGEM DAS ATIVIDADES INICIO */}
 						<div className="resumo">

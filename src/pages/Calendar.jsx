@@ -1,7 +1,7 @@
 import { Menu } from '../components/Menu';
 import CalendarComponent from './CalendarComponent';
 import { api } from '../config/api';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useState } from 'react';
 const getActivities = async (dependentId) => {
@@ -31,9 +31,9 @@ export const Calendar = () => {
 		<div className="app justify-content-center pb-5">
 			<Menu />
 			<div className="container mt-5 pt-5">
-				<a className="customLink" href={'/frontend/dependentactivities/' + id}>
+				<Link to className="customLink" href={'/frontend/dependentactivities/' + id}>
 					Voltar
-				</a>
+				</Link>
 			</div>
 			<div className="container mx-5 pt-3">
 				<div className="row">
