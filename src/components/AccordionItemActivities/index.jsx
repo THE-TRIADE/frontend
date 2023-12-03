@@ -3,7 +3,7 @@ import './styles.css';
 import { ButtonAction } from '../ButtonAction';
 import { ButtonHeader } from '../ButtonHeader';
 
-export const AccordionActivities = ({ activity, parent, deleteFunction, target, funcOnClickFinish }) => {
+export const AccordionActivities = ({ activity, parent, deleteFunction, target, funcOnClickFinish, editFunction }) => {
 	return (
 		<div className="accordion-item">
 			<h2 className="accordion-header" id={'heading' + activity.id}>
@@ -64,6 +64,8 @@ export const AccordionActivities = ({ activity, parent, deleteFunction, target, 
 					)}
 
 					<div className="text-end">
+						<ButtonAction text="Editar" bgColor="bg-info" onClick={editFunction} />
+
 						<ButtonAction text="Excluir" bgColor="bg-danger" onClick={(e) => deleteFunction(e, activity.id)} />
 						{target != null && (
 							<ButtonHeader
@@ -90,6 +92,7 @@ AccordionActivities.propTypes = {
 	activity: PropTypes.object.isRequired,
 	parent: PropTypes.string.isRequired,
 	deleteFunction: PropTypes.func.isRequired,
+	editFunction: PropTypes.func.isRequired,
 	target: PropTypes.string,
 	funcOnClickFinish: PropTypes.func,
 };

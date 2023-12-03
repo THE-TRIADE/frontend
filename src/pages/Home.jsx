@@ -5,10 +5,21 @@ import { ButtonOutlineSecondary } from '../components/ButtonOutlineSecondary';
 import { CardFamilyGroup } from '../components/Cards/CardFamilyGroup';
 import { Menu } from '../components/Menu';
 import { api } from '../config/api';
-
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 export const Home = () => {
 	const [familyGroups, setFamilyGroups] = useState([]);
 	const navigate = useNavigate();
+	const [show, setShow] = useState(false);
+
+	const handleClose = () => setShow(false);
+	const handleShow = () => setShow(true);
+	const [editFamilyGroup, setEditFamilyGroup] = useState(null);
+	const editFunction = (e, familyGroup) => {
+		e.preventDefault();
+		setEditFamilyGroup(familyGroup);
+		handleShow();
+	};
 
 	const getAllFamilyGroups = useCallback(() => {
 		let id = sessionStorage.getItem('UserId');
@@ -61,10 +72,34 @@ export const Home = () => {
 							key={familyGroup.id}
 							familyGroup={familyGroup}
 							deleteFunction={(e) => deleteFamilyGroup(e, familyGroup.id)}
+							editFunction={(e) => editFunction(e, familyGroup)}
 						/>
 					))}
 				</div>
 			</div>
+			<Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
+				<Modal.Header closeButton>
+					<Modal.Title>
+						<h1 className="modal-title fs-5 secondary-color" id="ModalCadastrarGuardaLabel">
+							Editar Grupo Familiar
+						</h1>
+					</Modal.Title>
+				</Modal.Header>
+				<Modal.Body>
+					{editFamilyGroup && (
+						<div>
+							<label className="customLabel">Nome do grupo familiar:</label>
+							<input type="text" className="inputCustom form-control mt-2 mb-2" defaultValue={editFamilyGroup.name} />
+						</div>
+					)}
+				</Modal.Body>
+				<Modal.Footer>
+					<Button variant="secondary" onClick={handleClose}>
+						Fechar
+					</Button>
+					<Button className="custom-button">Editar</Button>
+				</Modal.Footer>
+			</Modal>
 		</div>
 	);
 };

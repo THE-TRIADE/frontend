@@ -1,12 +1,11 @@
 import { Fragment, useEffect, useState } from 'react';
 import { ButtonOutlineSecondary } from '../components/ButtonOutlineSecondary';
 import { api } from '../config/api';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
-import { useParams } from 'react-router-dom';
 import { ButtonAction } from '../components/ButtonAction';
 import { SelectInput } from '../components/Inputs/SelectInput';
 // import { Button } from '../components/Button';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { CustomSpan } from '../components/CustomSpan';
 import { CheckBoxGroupInput } from '../components/Inputs/CheckBoxGroupInput';
@@ -62,11 +61,23 @@ export const ManageGuardians = () => {
 			return { ...prevState, [inputName]: event.target.value };
 		});
 	};
+	const [showEdit, setShowEdit] = useState(false);
+
+	const handleCloseEdit = () => setShowEdit(false);
+	const handleShowEdit = () => setShowEdit(true);
+	const [editGuard, setEditGuard] = useState(null);
+	const editFunction = (e, guard) => {
+		e.preventDefault();
+		setEditGuard(guard);
+		handleShowEdit();
+	};
 
 	const getGuardians = () => {
-		api().get('/guardian').then((res) => {
-			setGuardians(res.data);
-		});
+		api()
+			.get('/guardian')
+			.then((res) => {
+				setGuardians(res.data);
+			});
 	};
 
 	const deleteGuard = (dependentId, guardianId) => {
@@ -103,26 +114,30 @@ export const ManageGuardians = () => {
 		getGuardians();
 
 		const getGuards = (dependentId) => {
-			api().get('/guard/by-dependent-id/' + dependentId).then((res) => {
-				setGuards((prevGuards) => {
-					const newGuards = res.data.filter(
-						(newGuard) =>
-							!prevGuards.some(
-								(prevGuard) =>
-									prevGuard.dependentId === newGuard.dependentId && prevGuard.guardianId === newGuard.guardianId,
-							),
-					);
-					return [...prevGuards, ...newGuards];
+			api()
+				.get('/guard/by-dependent-id/' + dependentId)
+				.then((res) => {
+					setGuards((prevGuards) => {
+						const newGuards = res.data.filter(
+							(newGuard) =>
+								!prevGuards.some(
+									(prevGuard) =>
+										prevGuard.dependentId === newGuard.dependentId && prevGuard.guardianId === newGuard.guardianId,
+								),
+						);
+						return [...prevGuards, ...newGuards];
+					});
+				});
+		};
+		api()
+			.get('/familyGroup/' + id)
+			.then((res) => {
+				setFamilyGroup(res.data);
+				setGuards([]);
+				res.data.dependents.forEach((dependent) => {
+					getGuards(dependent.id);
 				});
 			});
-		};
-		api().get('/familyGroup/' + id).then((res) => {
-			setFamilyGroup(res.data);
-			setGuards([]);
-			res.data.dependents.forEach((dependent) => {
-				getGuards(dependent.id);
-			});
-		});
 	}, []);
 
 	useEffect(() => {
@@ -212,7 +227,53 @@ export const ManageGuardians = () => {
 		<div className="app">
 			<Menu />
 			<div className="container">
-				<div className="my-5 pt-5 d-flex flex-row flex-column flex-sm-row justify-content-between">
+				<div className="d-flex mt-5 pt-5">
+					<Link to={'/'} className="customLink">
+						Grupo Familiar{' '}
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="16"
+							height="16"
+							fill="currentColor"
+							className="bi bi-chevron-double-right"
+							viewBox="0 0 16 16"
+						>
+							<path
+								fill-rule="evenodd"
+								d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708z"
+							/>
+							<path
+								fill-rule="evenodd"
+								d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708z"
+							/>
+						</svg>
+					</Link>
+
+					<Link to={'/familygroupdetails/' + id} className="customLink ms-1">
+						Detalhes do Grupo Familiar{' '}
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="16"
+							height="16"
+							fill="currentColor"
+							className="bi bi-chevron-double-right"
+							viewBox="0 0 16 16"
+						>
+							<path
+								fill-rule="evenodd"
+								d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708z"
+							/>
+							<path
+								fill-rule="evenodd"
+								d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708z"
+							/>
+						</svg>
+					</Link>
+					<Link to={'/manageguardians/' + id} className="customLink text-secondary ms-1">
+						Gerenciar Responsáveis
+					</Link>
+				</div>
+				<div className="my-5 d-flex flex-row flex-column flex-sm-row justify-content-between">
 					<h3 className="pt-3 ">Gerenciar Responsáveis</h3>
 					<ButtonOutlineSecondary text="Cadastrar Novo Responsável" link="/signup" />
 				</div>
@@ -263,7 +324,9 @@ export const ManageGuardians = () => {
 															</p>
 														)}
 													</div>
-													<div className="text-end mb-2 me-2">
+													<div className="d-flex justify-content-end">
+														<ButtonAction text="Editar" bgColor="bg-info" onClick={editFunction} />
+
 														<ButtonAction
 															text="Excluir"
 															bgColor="bg-danger"
@@ -337,6 +400,22 @@ export const ManageGuardians = () => {
 						<Button className="custom-button" onClick={submitGuard}>
 							Cadastrar
 						</Button>
+					</Modal.Footer>
+				</Modal>
+				<Modal show={showEdit} onHide={handleClose} backdrop="static" keyboard={false}>
+					<Modal.Header closeButton>
+						<Modal.Title>
+							<h1 className="modal-title fs-5 secondary-color" id="ModalCadastrarGuardaLabel">
+								Editar Relação
+							</h1>
+						</Modal.Title>
+					</Modal.Header>
+					<Modal.Body></Modal.Body>
+					<Modal.Footer>
+						<Button variant="secondary" onClick={handleCloseEdit}>
+							Fechar
+						</Button>
+						<Button className="custom-button">Editar</Button>
 					</Modal.Footer>
 				</Modal>
 			</div>

@@ -91,7 +91,17 @@ export const DependentActivities = () => {
 		daysToRepeat: null,
 		repeatUntil: null,
 	});
+	const [showEdit, setShowEdit] = useState(false);
 
+	const handleCloseEdit = () => setShowEdit(false);
+	const handleShowEdit = () => setShowEdit(true);
+	const [editActivity, setEditActivity] = useState(null);
+	const editFunction = (e, activity) => {
+		console.log('	cliquei');
+		e.preventDefault();
+		setEditActivity(activity);
+		handleShowEdit();
+	};
 	const updateForm = (inputName, event) => {
 		const { checked, value } = event.target;
 
@@ -298,9 +308,55 @@ export const DependentActivities = () => {
 		<div className="app">
 			<Menu />
 			<div className="container">
+				<div className="d-flex mt-5 pt-5">
+					<Link to={'/'} className="customLink">
+						Grupo Familiar{' '}
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="16"
+							height="16"
+							fill="currentColor"
+							className="bi bi-chevron-double-right"
+							viewBox="0 0 16 16"
+						>
+							<path
+								fill-rule="evenodd"
+								d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708z"
+							/>
+							<path
+								fill-rule="evenodd"
+								d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708z"
+							/>
+						</svg>
+					</Link>
+
+					<Link to={'/familygroupdetails/' + dependent.familyGroupId} className="customLink ms-1">
+						Detalhes do Grupo Familiar{' '}
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="16"
+							height="16"
+							fill="currentColor"
+							className="bi bi-chevron-double-right"
+							viewBox="0 0 16 16"
+						>
+							<path
+								fill-rule="evenodd"
+								d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708z"
+							/>
+							<path
+								fill-rule="evenodd"
+								d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708z"
+							/>
+						</svg>
+					</Link>
+					<Link to={'/dependentactivities/' + id} className="customLink text-secondary ms-1">
+						{'Atividades de ' + dependent.name}
+					</Link>
+				</div>
 				<div className="row">
 					{!!dependent && (
-						<div className="my-5 pt-5 d-flex flex-column flex-sm-row justify-content-between">
+						<div className="my-5 d-flex flex-column flex-sm-row justify-content-between">
 							<h3 className="pt-3 ">{'Atividades de ' + dependent.name}</h3>
 							<Button className="custom-button" onClick={handleShow}>
 								Cadastrar Nova Atividade
@@ -462,6 +518,7 @@ export const DependentActivities = () => {
 													activity={activity}
 													parent="#accordionAtrasadas"
 													deleteFunction={deleteActivityFunction}
+													editFunction={(e) => editFunction(e, activity)}
 													target="#ModalFinishActivity"
 													funcOnClickFinish={setActivityToSendFinish}
 												/>
@@ -698,6 +755,22 @@ export const DependentActivities = () => {
 					</Modal>
 				)}
 				{/* MODAL CADASTRO DE ATIVIDADE FIM */}
+				<Modal show={showEdit} onHide={handleClose} backdrop="static" keyboard={false}>
+					<Modal.Header closeButton>
+						<Modal.Title>
+							<h1 className="modal-title fs-5 secondary-color" id="ModalCadastrarGuardaLabel">
+								Editar Atividade
+							</h1>
+						</Modal.Title>
+					</Modal.Header>
+					<Modal.Body></Modal.Body>
+					<Modal.Footer>
+						<Button variant="secondary" onClick={handleCloseEdit}>
+							Fechar
+						</Button>
+						<Button className="custom-button">Editar</Button>
+					</Modal.Footer>
+				</Modal>
 			</div>
 		</div>
 	);

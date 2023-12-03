@@ -31,9 +31,31 @@ export const Calendar = () => {
 		<div className="app justify-content-center pb-5">
 			<Menu />
 			<div className="container mt-5 pt-5">
-				<Link to={'/dependentactivities/' + id} className="customLink">
-					Voltar
-				</Link>
+				<div className="d-flex ">
+					<Link to={'/dependentactivities/' + id} className="customLink ms-1">
+						{'Atividades'}
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="16"
+							height="16"
+							fill="currentColor"
+							className="bi bi-chevron-double-right"
+							viewBox="0 0 16 16"
+						>
+							<path
+								fill-rule="evenodd"
+								d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708z"
+							/>
+							<path
+								fill-rule="evenodd"
+								d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708z"
+							/>
+						</svg>
+					</Link>
+					<Link to={'/calendar/' + id} className="customLink text-secondary ms-1">
+						Calendário
+					</Link>
+				</div>
 			</div>
 			<div className="container mx-5 pt-3">
 				<div className="row">

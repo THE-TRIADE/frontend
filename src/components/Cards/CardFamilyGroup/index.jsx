@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+
 import { ButtonAction } from '../../ButtonAction';
 import '../styles.css';
 
-export const CardFamilyGroup = ({ familyGroup, deleteFunction }) => {
+export const CardFamilyGroup = ({ familyGroup, deleteFunction, editFunction }) => {
 	return (
 		<div className="col-12 col-md-4 mb-3 mb-md-0 mt-3">
 			<Link to={'/familygroupdetails/' + familyGroup.id} className="text-decoration-none">
@@ -19,7 +20,8 @@ export const CardFamilyGroup = ({ familyGroup, deleteFunction }) => {
 							</p>
 						))}
 					</div>
-					<div className="text-end mb-2 me-2">
+					<div className="d-flex justify-content-end">
+						<ButtonAction text="Editar" bgColor="bg-info" onClick={editFunction} />
 						<ButtonAction text="Excluir" bgColor="bg-danger" onClick={deleteFunction} />
 					</div>
 				</div>
@@ -31,4 +33,5 @@ export const CardFamilyGroup = ({ familyGroup, deleteFunction }) => {
 CardFamilyGroup.propTypes = {
 	familyGroup: PropTypes.object.isRequired,
 	deleteFunction: PropTypes.func.isRequired,
+	editFunction: PropTypes.func.isRequired,
 };

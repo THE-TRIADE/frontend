@@ -6,21 +6,23 @@ import { api } from '../config/api';
 import { guardianRoleEnum } from './ManageGuardians';
 
 const getActivities = (dependentId) => {
-	return api().get('/activity', { params: { dependentId } }).then((res) => {
-		let late = 0,
-			created = 0,
-			inProgress = 0;
-		res.data.forEach((activity) => {
-			if (activity.state === 'LATE') {
-				late++;
-			} else if (activity.state === 'CREATED') {
-				created++;
-			} else if (activity.state === 'IN_PROGRESS') {
-				inProgress++;
-			}
+	return api()
+		.get('/activity', { params: { dependentId } })
+		.then((res) => {
+			let late = 0,
+				created = 0,
+				inProgress = 0;
+			res.data.forEach((activity) => {
+				if (activity.state === 'LATE') {
+					late++;
+				} else if (activity.state === 'CREATED') {
+					created++;
+				} else if (activity.state === 'IN_PROGRESS') {
+					inProgress++;
+				}
+			});
+			return { late, created, inProgress };
 		});
-		return { late, created, inProgress };
-	});
 };
 
 export const FamilyGroupDetails = () => {
@@ -38,21 +40,25 @@ export const FamilyGroupDetails = () => {
 
 	useEffect(() => {
 		const getFamilyGroup = () => {
-			api().get('/familyGroup/' + id).then((res) => {
-				setFamilyGroup(res.data);
-			});
+			api()
+				.get('/familyGroup/' + id)
+				.then((res) => {
+					setFamilyGroup(res.data);
+				});
 		};
 		getFamilyGroup();
 	}, [id]);
 
 	useEffect(() => {
 		const getGuards = (dependentId) => {
-			api().get('/guard/by-dependent-id/' + dependentId).then((res) => {
-				setGuards((prevGuards) => ({
-					...prevGuards,
-					[dependentId]: res.data,
-				}));
-			});
+			api()
+				.get('/guard/by-dependent-id/' + dependentId)
+				.then((res) => {
+					setGuards((prevGuards) => ({
+						...prevGuards,
+						[dependentId]: res.data,
+					}));
+				});
 		};
 		if (familyGroup) {
 			familyGroup.dependents.forEach((dependent) => {
@@ -67,9 +73,36 @@ export const FamilyGroupDetails = () => {
 	return (
 		<div className="app">
 			<Menu />
+
 			<div className="container">
+				<div className="d-flex mt-5 pt-5">
+					<Link to={'/'} className="customLink">
+						Grupo Familiar{' '}
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="16"
+							height="16"
+							fill="currentColor"
+							className="bi bi-chevron-double-right"
+							viewBox="0 0 16 16"
+						>
+							<path
+								fill-rule="evenodd"
+								d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708z"
+							/>
+							<path
+								fill-rule="evenodd"
+								d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708z"
+							/>
+						</svg>
+					</Link>
+
+					<Link to={'/familygroupdetails/' + id} className="customLink text-secondary ms-1">
+						Detalhes do Grupo Familiar
+					</Link>
+				</div>
 				<div className="row">
-					<h3 className="mt-5 pt-5">{familyGroup && familyGroup.name}</h3>
+					<h3 className="mt-3">{familyGroup && familyGroup.name}</h3>
 					<div className="d-flex flex-row justify-content-between my-2">
 						<p className="fw-bold text-secondary pt-3">Responsáveis Parceiros:</p>
 						<Link className="customLink fs-5" to={'/manageguardians/' + id}>

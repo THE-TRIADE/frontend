@@ -40,6 +40,12 @@ export const Menu = () => {
 								Gastos
 							</Link>
 						</li>
+						<li className="nav-item mx-3">
+							<Link className={`nav-link ${isActive('/login')}`} to="/login">
+								{/*Todo href*/}
+								Sair
+							</Link>
+						</li>
 					</ul>
 				</div>
 			</div>
