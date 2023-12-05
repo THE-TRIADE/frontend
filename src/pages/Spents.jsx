@@ -20,6 +20,7 @@ export const Spents = () => {
 		paidOn: '',
 		dependentId: '-1',
 	});
+	0;
 	const [spents, setSpents] = useState([]);
 	const [dependents, setDependents] = useState([]);
 	const [errorMessages, setErrorMessages] = useState({
@@ -83,9 +84,17 @@ export const Spents = () => {
 			dependentId: null,
 		});
 	};
+	const [showEdit, setShowEdit] = useState(false);
 
+	const handleCloseEdit = () => setShowEdit(false);
+	const handleShowEdit = () => setShowEdit(true);
+	const [editSpent, setEditSpent] = useState(null);
+	const editFunction = (e, spent) => {
+		e.preventDefault();
+		setEditSpent(spent);
+		handleShowEdit();
+	};
 	const [trySubmit, setTrySubmit] = useState(false);
-	const modal = useRef(null);
 
 	useEffect(() => {
 		if (sessionStorage.getItem('token') == null) {
@@ -95,27 +104,43 @@ export const Spents = () => {
 
 	useEffect(() => {
 		const getSpents = () => {
-			api().get('/spent/by-guardian-id/' + sessionStorage.getItem('UserId')).then((res) => {
-				setSpents(res.data);
-			});
+			api()
+				.get('/spent/by-guardian-id/' + sessionStorage.getItem('UserId'))
+				.then((res) => {
+					setSpents(res.data);
+				});
 		};
 
 		const getDependents = () => {
-			api().get('/guardian/' + sessionStorage.getItem('UserId')).then((res) => {
-				const listDependent = res.data.guards.map((guard) => {
-					return {
-						dependentName: guard.dependentName,
-						dependentId: guard.dependentId,
-					};
+			api()
+				.get('/guardian/' + sessionStorage.getItem('UserId'))
+				.then((res) => {
+					const listDependent = res.data.guards.map((guard) => {
+						return {
+							dependentName: guard.dependentName,
+							dependentId: guard.dependentId,
+						};
+					});
+					setDependents(listDependent);
 				});
-				setDependents(listDependent);
-			});
 		};
 
 		getSpents();
 		getDependents();
 	}, []);
-
+	const submitEdit = () => {
+		api()
+			.put(`/spent/${editSpent.id}`, editSpent)
+			.then((res) => {
+				toast.success('Gasto editado com sucesso');
+				handleCloseEdit();
+				setSpents((oldList) => oldList.map((spent) => (spent.id === editSpent.id ? res.data : spent)));
+			})
+			.catch((err) => {
+				toast.error('Falha ao editar gasto');
+				console.error(err);
+			});
+	};
 	useEffect(() => {
 		clearValidationFields();
 		if (trySubmit) {
@@ -183,7 +208,12 @@ export const Spents = () => {
 							Ver resumo de gastos
 						</Link>
 						{spents.map((spent) => (
-							<CardSpents key={spent.id} spent={spent} deleteSpent={deleteSpent} />
+							<CardSpents
+								key={spent.id}
+								spent={spent}
+								deleteSpent={deleteSpent}
+								editSpent={(e) => editFunction(e, spent)}
+							/>
 						))}
 					</div>
 					<Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
@@ -239,6 +269,70 @@ export const Spents = () => {
 							</Button>
 							<Button className="custom-button" onClick={submitSpent}>
 								Cadastrar
+							</Button>
+						</Modal.Footer>
+					</Modal>
+					<Modal show={showEdit} onHide={handleClose} backdrop="static" keyboard={false}>
+						<Modal.Header closeButton>
+							<Modal.Title>
+								<h1 className="modal-title fs-5 secondary-color" id="ModalCadastrarGuardaLabel">
+									Editar Gasto
+								</h1>
+							</Modal.Title>
+						</Modal.Header>
+						<Modal.Body>
+							{editSpent && (
+								<div>
+									<div className="">
+										<TextualInput
+											placeholder="Nome do gasto"
+											label="Nome"
+											value={editSpent.name}
+											onChange={(e) => setEditSpent({ ...editSpent, name: e.target.value })}
+											required
+										/>
+									</div>
+									<div className="">
+										<TextualInput
+											placeholder="Valor do gasto"
+											label="Valor"
+											value={valueMask(editSpent.value)}
+											onChange={(e) => setEditSpent({ ...editSpent, value: e.target.value.replace(/\D/g, '') })}
+											required
+										/>
+									</div>
+									<div className="">
+										<DateInput
+											placeholder=""
+											label="Pago em"
+											value={editSpent.paidOn}
+											onChange={(e) => setEditSpent({ ...editSpent, paidOn: e.target.value })}
+											required
+										/>
+									</div>
+									<div className="">
+										<SelectInput
+											options={[
+												{ optName: 'Escolha um dependente', optValue: '-1', disabled: true },
+												...dependents.map((dependent) => {
+													return { optName: dependent.dependentName, optValue: dependent.dependentId.toString() };
+												}),
+											]}
+											value={editSpent.dependentId}
+											label="Dependente"
+											onChange={(e) => setEditSpent({ ...editSpent, dependentId: e.target.value })}
+											required
+										/>
+									</div>
+								</div>
+							)}
+						</Modal.Body>
+						<Modal.Footer>
+							<Button variant="secondary" onClick={handleCloseEdit}>
+								Fechar
+							</Button>
+							<Button className="custom-button" onClick={submitEdit}>
+								Editar
 							</Button>
 						</Modal.Footer>
 					</Modal>

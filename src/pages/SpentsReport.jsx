@@ -3,7 +3,7 @@ import { Fragment, useEffect, useState } from 'react';
 import { ButtonAction } from '../components/ButtonAction';
 import { Menu } from '../components/Menu';
 import { api } from '../config/api';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export const SpentsReports = () => {
 	const navigate = useNavigate();
@@ -21,21 +21,25 @@ export const SpentsReports = () => {
 
 	useEffect(() => {
 		const getSpents = () => {
-			api().get('/spent/by-guardian-id/' + sessionStorage.getItem('UserId')).then((res) => {
-				setSpents(res.data);
-			});
+			api()
+				.get('/spent/by-guardian-id/' + sessionStorage.getItem('UserId'))
+				.then((res) => {
+					setSpents(res.data);
+				});
 		};
 
 		const getDependents = () => {
-			api().get('/guardian/' + sessionStorage.getItem('UserId')).then((res) => {
-				const listDependent = res.data.guards.map((guard) => {
-					return {
-						dependentName: guard.dependentName,
-						dependentId: guard.dependentId,
-					};
+			api()
+				.get('/guardian/' + sessionStorage.getItem('UserId'))
+				.then((res) => {
+					const listDependent = res.data.guards.map((guard) => {
+						return {
+							dependentName: guard.dependentName,
+							dependentId: guard.dependentId,
+						};
+					});
+					setDependents(listDependent);
 				});
-				setDependents(listDependent);
-			});
 		};
 		getSpents();
 		getDependents();
@@ -44,9 +48,36 @@ export const SpentsReports = () => {
 	return (
 		<div className="container">
 			<Menu />
+			<div className="container mt-5 pt-5">
+				<div className="d-flex ">
+					<Link to={'/spents/'} className="customLink ms-1">
+						{'Gastos'}
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="16"
+							height="16"
+							fill="currentColor"
+							className="bi bi-chevron-double-right"
+							viewBox="0 0 16 16"
+						>
+							<path
+								fill-rule="evenodd"
+								d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708z"
+							/>
+							<path
+								fill-rule="evenodd"
+								d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708z"
+							/>
+						</svg>
+					</Link>
+					<Link to={'/spentsreport/'} className="customLink text-secondary ms-1">
+						Relatório de Gastos
+					</Link>
+				</div>
+			</div>
 			<div className="row">
 				<div className="col-12">
-					<div className="my-5 pt-5 d-flex flex-column flex-sm-row justify-content-between">
+					<div className="my-5 d-flex flex-column flex-sm-row justify-content-between">
 						<h3 className="pt-3 ">Resumo de Gastos por Dependente</h3>
 						<div className="hide-print">
 							<ButtonAction bgColor="bg-info" text="Imprimir Resumo" onClick={printWindow} />

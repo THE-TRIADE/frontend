@@ -71,7 +71,6 @@ export const ManageGuardians = () => {
 		setEditGuard(guard);
 		handleShowEdit();
 	};
-
 	const getGuardians = () => {
 		api()
 			.get('/guardian')
@@ -103,7 +102,19 @@ export const ManageGuardians = () => {
 				console.log(err);
 			});
 	};
-
+	const submitEdit = () => {
+		api()
+			.put(`/guard/${editGuard.id}`, editGuard)
+			.then((res) => {
+				toast.success('Guarda editada com sucesso');
+				handleCloseEdit();
+				setGuards((oldList) => oldList.map((guard) => (guard.id === editGuard.id ? res.data : guard)));
+			})
+			.catch((err) => {
+				toast.error('Falha ao editar guarda');
+				console.error(err);
+			});
+	};
 	useEffect(() => {
 		if (sessionStorage.getItem('token') == null) {
 			navigate('/login');
@@ -325,8 +336,7 @@ export const ManageGuardians = () => {
 														)}
 													</div>
 													<div className="d-flex justify-content-end">
-														<ButtonAction text="Editar" bgColor="bg-info" onClick={editFunction} />
-
+														<ButtonAction text="Editar" bgColor="bg-info" onClick={(e) => editFunction(e, guard)} />
 														<ButtonAction
 															text="Excluir"
 															bgColor="bg-danger"
@@ -410,12 +420,60 @@ export const ManageGuardians = () => {
 							</h1>
 						</Modal.Title>
 					</Modal.Header>
-					<Modal.Body></Modal.Body>
+					<Modal.Body>
+						{editGuard && (
+							<div>
+								<SelectInput
+									options={[
+										{ optName: 'Escolha um dependente', optValue: '-1', disabled: true },
+										...familyGroup.dependents.map((dependent) => {
+											return { optName: dependent.name, optValue: dependent.id.toString() };
+										}),
+									]}
+									value={editGuard.dependentId}
+									label="Dependente"
+									required
+									onChange={(e) => setEditGuard({ ...editGuard, dependentId: e.target.value })}
+								/>
+								<SelectInput
+									options={[
+										{ optName: 'Responsaveis', optValue: '-1', disabled: true },
+										...guardians.map((guardian) => {
+											return { optName: guardian.name, optValue: guardian.id.toString() };
+										}),
+									]}
+									value={editGuard.guardianId}
+									label="Responsável"
+									required
+									onChange={(e) => setEditGuard({ ...editGuard, guardianId: e.target.value })}
+								/>
+								<SelectInput
+									options={[
+										{ optName: 'Escolha um papel', optValue: '-1', disabled: true },
+										...guardianRoleEnum.map((role) => {
+											return { optName: role.key, optValue: role.value.toString() };
+										}),
+									]}
+									value={editGuard.guardianRole}
+									label="Papel do responsável"
+									required
+									onChange={(e) => setEditGuard({ ...editGuard, guardianRole: e.target.value })}
+								/>
+								<CheckBoxGroupInput
+									label="Dias da semana da guarda"
+									options={dayOfWeekEnum}
+									onChange={(e) => setEditGuard({ ...editGuard, daysOfWeek: e.target.value })}
+								/>
+							</div>
+						)}
+					</Modal.Body>
 					<Modal.Footer>
 						<Button variant="secondary" onClick={handleCloseEdit}>
 							Fechar
 						</Button>
-						<Button className="custom-button">Editar</Button>
+						<Button className="custom-button" onClick={submitEdit}>
+							Editar
+						</Button>
 					</Modal.Footer>
 				</Modal>
 			</div>
