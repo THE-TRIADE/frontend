@@ -23,7 +23,9 @@ export const Calendar = () => {
 	const mapActivitiesToEvents = () => {
 		return activities.map((activity) => ({
 			title: `${activity.name} - ${activity.hourStart}`,
-			date: activity.dateStart,
+			start: activity.dateStart,
+			end: activity.dateEnd,
+			extendedProps: activity,
 		}));
 	};
 
