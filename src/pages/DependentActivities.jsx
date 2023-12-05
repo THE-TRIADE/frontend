@@ -214,7 +214,19 @@ export const DependentActivities = () => {
 				setActivities((oldList) => oldList.filter((activity) => activity.id != activityId));
 			});
 	};
-
+	const submitEdit = () => {
+		api()
+			.put(`/activity/${editActivity.id}`, editActivity)
+			.then((res) => {
+				toast.success('Atividade editada com sucesso');
+				handleCloseEdit();
+				setActivities((oldList) => oldList.map((activity) => (activity.id === editActivity.id ? res.data : activity)));
+			})
+			.catch((err) => {
+				toast.error('Falha ao editar atividade');
+				console.error(err);
+			});
+	};
 	useEffect(() => {
 		if (trySubmitFinishForm) {
 			console.log(sentFinishForm);
@@ -763,12 +775,79 @@ export const DependentActivities = () => {
 							</h1>
 						</Modal.Title>
 					</Modal.Header>
-					<Modal.Body></Modal.Body>
+					<Modal.Body>
+						{editActivity && (
+							<div>
+								<TextualInput
+									placeholder="Título da atividade"
+									label="Título da Atividade"
+									value={editActivity.name}
+									onChange={(e) => setEditActivity({ ...editActivity, name: e.target.value })}
+									required
+								/>
+								<DateInput
+									placeholder=""
+									label="Data de início"
+									value={editActivity.dateStart}
+									onChange={(e) => setEditActivity({ ...editActivity, dateStart: e.target.value })}
+									required
+								/>
+								<TimeInput
+									placeholder=""
+									label="Hora de início"
+									value={editActivity.hourStart}
+									onChange={(e) => setEditActivity({ ...editActivity, hourStart: e.target.value })}
+									required
+								/>
+								<DateInput
+									placeholder=""
+									label="Data de fim"
+									value={editActivity.dateEnd}
+									onChange={(e) => setEditActivity({ ...editActivity, dateEnd: e.target.value })}
+									required
+								/>
+								<TimeInput
+									placeholder=""
+									label="Hora de fim"
+									value={editActivity.hourEnd}
+									onChange={(e) => setEditActivity({ ...editActivity, hourEnd: e.target.value })}
+									required
+								/>
+								<SelectInput
+									options={[
+										{ optName: 'Escolha um responsável', optValue: '-1', disabled: true },
+										...guardians.map((guardian) => {
+											return { optName: guardian.name, optValue: guardian.id.toString() };
+										}),
+									]}
+									value={editActivity.currentGuardian}
+									label="Responsável atual"
+									onChange={(e) => setEditActivity({ ...editActivity, currentGuardian: e.target.value })}
+									required
+								/>
+								<SelectInput
+									options={[
+										{ optName: 'Escolha um ator da atividade', optValue: '-1', disabled: true },
+										...[...guardians, dependent].map((person) => ({
+											optName: person.name,
+											optValue: person.id.toString(),
+										})),
+									]}
+									value={editActivity.actor}
+									label="Ator da atividade"
+									onChange={(e) => setEditActivity({ ...editActivity, actor: e.target.value })}
+									required
+								/>
+							</div>
+						)}
+					</Modal.Body>
 					<Modal.Footer>
 						<Button variant="secondary" onClick={handleCloseEdit}>
 							Fechar
 						</Button>
-						<Button className="custom-button">Editar</Button>
+						<Button className="custom-button" onClick={submitEdit}>
+							Editar
+						</Button>
 					</Modal.Footer>
 				</Modal>
 			</div>
