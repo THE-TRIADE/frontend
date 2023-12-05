@@ -50,6 +50,12 @@ export const Home = () => {
 		getAllFamilyGroups();
 	}, [getAllFamilyGroups]);
 
+	useEffect(() => {
+		if (editFamilyGroup != null) {
+			setDependentCount(editFamilyGroup.dependents.length);
+		}
+	}, [editFamilyGroup]);
+
 	const deleteFamilyGroup = (e, id) => {
 		e.preventDefault();
 		api()
@@ -129,10 +135,12 @@ export const Home = () => {
 							/>
 							<h5 className="text-center mt-5 text-secondary">Dependente(s)</h5>
 							<div className="my-3 text-start">
-								{Array.from({ length: editFamilyGroup.dependents.length }).map((_, index) => (
+								{Array.from({ length: dependentCount }).map((_, index) => (
 									<DependentForm
 										key={`kdf${index}`}
-										dependent={editFamilyGroup.dependents[index]}
+										initialValue={editFamilyGroup.dependents[index]}
+										counter={index + 1}
+										updateDependentCount={setDependentCount}
 										updateDependent={(newDependent) => {
 											const updatedDependents = [...editFamilyGroup.dependents];
 											updatedDependents[index] = newDependent;

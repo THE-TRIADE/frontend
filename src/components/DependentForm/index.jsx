@@ -4,11 +4,11 @@ import { CpfInput } from '../Inputs/CpfInput';
 import { TextualInput } from '../Inputs/TextualInput';
 import { ButtonOutline } from '../ButtonOutline';
 import PropTypes from 'prop-types';
-export const DependentForm = ({ counter, updateDependent, updateDependentCount }) => {
+export const DependentForm = ({ counter, updateDependent, updateDependentCount, initialValue = null }) => {
 	const [dependent, setDependent] = useState({
-		name: '',
-		cpf: '',
-		birthDate: '',
+		name: initialValue != null ? initialValue.name : '',
+		cpf: initialValue != null ? initialValue.cpf : '',
+		birthDate: initialValue != null ? initialValue.birthDate : '',
 	});
 
 	const updateForm = (inputName, event) => {
@@ -57,4 +57,5 @@ DependentForm.propTypes = {
 	counter: PropTypes.number.isRequired,
 	updateDependentCount: PropTypes.func.isRequired,
 	updateDependent: PropTypes.func.isRequired,
+	initialValue: PropTypes.object,
 };
