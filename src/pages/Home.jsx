@@ -7,6 +7,11 @@ import { Menu } from '../components/Menu';
 import { api } from '../config/api';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import { TextualInput } from '../components/Inputs/TextualInput';
+import { SelectInput } from '../components/Inputs/SelectInput';
+import { guardianRoleEnum } from './ManageGuardians';
+import { DependentForm } from '../components/DependentForm';
+import { ButtonOutline } from '../components/ButtonOutline';
 export const Home = () => {
 	const [familyGroups, setFamilyGroups] = useState([]);
 	const navigate = useNavigate();
@@ -20,6 +25,7 @@ export const Home = () => {
 		setEditFamilyGroup(familyGroup);
 		handleShow();
 	};
+	const [dependentCount, setDependentCount] = useState(1);
 
 	const getAllFamilyGroups = useCallback(() => {
 		let id = sessionStorage.getItem('UserId');
@@ -57,7 +63,21 @@ export const Home = () => {
 				console.log(err);
 			});
 	};
-
+	const submitEdit = () => {
+		api()
+			.put(`/familygroup/${editFamilyGroup.id}`, editFamilyGroup)
+			.then((res) => {
+				toast.success('Grupo familiar editado com sucesso');
+				handleClose();
+				setFamilyGroups((oldList) =>
+					oldList.map((familyGroup) => (familyGroup.id === editFamilyGroup.id ? res.data : familyGroup)),
+				);
+			})
+			.catch((err) => {
+				toast.error('Falha ao editar grupo familiar');
+				console.error(err);
+			});
+	};
 	return (
 		<div className="app">
 			<Menu />
@@ -88,8 +108,42 @@ export const Home = () => {
 				<Modal.Body>
 					{editFamilyGroup && (
 						<div>
-							<label className="customLabel">Nome do grupo familiar:</label>
-							<input type="text" className="inputCustom form-control mt-2 mb-2" defaultValue={editFamilyGroup.name} />
+							<TextualInput
+								placeholder="Nome"
+								label="Nome do grupo familiar"
+								value={editFamilyGroup.name}
+								onChange={(e) => setEditFamilyGroup({ ...editFamilyGroup, name: e.target.value })}
+								required
+							/>
+							<SelectInput
+								options={[
+									{ optName: 'Escolha um papel', optValue: '-1', disabled: true },
+									...guardianRoleEnum.map((role) => {
+										return { optName: role.key, optValue: role.value.toString() };
+									}),
+								]}
+								value={editFamilyGroup.guardianRole}
+								label="Papel do responsável"
+								required
+								onChange={(e) => setEditFamilyGroup({ ...editFamilyGroup, guardianRole: e.target.value })}
+							/>
+							<h5 className="text-center mt-5 text-secondary">Dependente(s)</h5>
+							<div className="my-3 text-start">
+								{Array.from({ length: editFamilyGroup.dependents.length }).map((_, index) => (
+									<DependentForm
+										key={`kdf${index}`}
+										dependent={editFamilyGroup.dependents[index]}
+										updateDependent={(newDependent) => {
+											const updatedDependents = [...editFamilyGroup.dependents];
+											updatedDependents[index] = newDependent;
+											setEditFamilyGroup({ ...editFamilyGroup, dependents: updatedDependents });
+										}}
+									/>
+								))}
+								<div>
+									<ButtonOutline onClick={() => setDependentCount((ps) => ps + 1)} text="Adicionar dependente +" />
+								</div>
+							</div>
 						</div>
 					)}
 				</Modal.Body>
@@ -97,7 +151,9 @@ export const Home = () => {
 					<Button variant="secondary" onClick={handleClose}>
 						Fechar
 					</Button>
-					<Button className="custom-button">Editar</Button>
+					<Button className="custom-button" onClick={submitEdit}>
+						Editar
+					</Button>
 				</Modal.Footer>
 			</Modal>
 		</div>
