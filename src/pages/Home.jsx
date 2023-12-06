@@ -12,6 +12,7 @@ import { SelectInput } from '../components/Inputs/SelectInput';
 import { guardianRoleEnum } from './ManageGuardians';
 import { DependentForm } from '../components/DependentForm';
 import { ButtonOutline } from '../components/ButtonOutline';
+import axios from 'axios';
 export const Home = () => {
 	const [familyGroups, setFamilyGroups] = useState([]);
 	const navigate = useNavigate();
@@ -22,7 +23,17 @@ export const Home = () => {
 	const [editFamilyGroup, setEditFamilyGroup] = useState(null);
 	const editFunction = (e, familyGroup) => {
 		e.preventDefault();
-		setEditFamilyGroup(familyGroup);
+		let gId = sessionStorage.getItem('UserId');
+		
+		let guardianRoleInitial = "MOTHER";
+		if(familyGroup.dependents.lenght > 0){
+			api()
+				.get(`/guard/by-guardian-id-and-dependent-id/${gId}/${familyGroup.dependents[0].id}`)
+				.then( res => {
+					guardianRoleInitial = res.data.guardianRole;
+			});
+		}
+		setEditFamilyGroup({...familyGroup, guardianRole: guardianRoleInitial});
 		handleShow();
 	};
 	const [dependentCount, setDependentCount] = useState(1);
@@ -53,6 +64,7 @@ export const Home = () => {
 	useEffect(() => {
 		if (editFamilyGroup != null) {
 			setDependentCount(editFamilyGroup.dependents.length);
+			console.log(editFamilyGroup);
 		}
 	}, [editFamilyGroup]);
 
@@ -70,19 +82,46 @@ export const Home = () => {
 			});
 	};
 	const submitEdit = () => {
-		api()
-			.put(`/familygroup/${editFamilyGroup.id}`, editFamilyGroup)
-			.then((res) => {
-				toast.success('Grupo familiar editado com sucesso');
-				handleClose();
-				setFamilyGroups((oldList) =>
-					oldList.map((familyGroup) => (familyGroup.id === editFamilyGroup.id ? res.data : familyGroup)),
-				);
-			})
-			.catch((err) => {
-				toast.error('Falha ao editar grupo familiar');
-				console.error(err);
-			});
+		let id = sessionStorage.getItem('UserId');
+		let editFamilyGroupRequest = {...editFamilyGroup, guardianId: id};
+		delete editFamilyGroupRequest["id"];
+		
+		// let id = sessionStorage.getItem('UserId');
+		// api()
+		// 	.get(`/guardian/${id}`)
+		// 	.then( res => {
+		// 		editFamilyGroupRequest.guardianRole = res.data.guardianRole;
+		// 	});
+		let requests = [];
+		let dependentsToCreate = [];
+		editFamilyGroupRequest.dependents.forEach(dependent => {
+			let dependentRequest = {...dependent};
+			if(dependent.id != null){
+				delete dependentRequest["id"];
+				requests.push(api().put(`/dependent/${dependent.id}`, dependentRequest));
+			}else{
+				dependentsToCreate.push(dependentRequest);
+			}
+		});
+		editFamilyGroupRequest = {...editFamilyGroupRequest, ["dependents"]: dependentsToCreate};
+
+		axios.all(requests).then(responses => {
+			console.log("runingign");
+			api()
+				.put(`/familyGroup/${editFamilyGroup.id}`, editFamilyGroupRequest)
+				.then((res) => {
+					toast.success('Grupo familiar editado com sucesso');
+					handleClose();
+					setFamilyGroups((oldList) =>
+						oldList.map((familyGroup) => (familyGroup.id === editFamilyGroup.id ? res.data : familyGroup)),
+					);
+				})
+				.catch((err) => {
+					toast.error('Falha ao editar grupo familiar');
+					console.error(err);
+				});
+		})
+
 	};
 	return (
 		<div className="app">
@@ -143,6 +182,7 @@ export const Home = () => {
 										updateDependentCount={setDependentCount}
 										updateDependent={(newDependent) => {
 											const updatedDependents = [...editFamilyGroup.dependents];
+											console.log(updatedDependents);
 											updatedDependents[index] = newDependent;
 											setEditFamilyGroup({ ...editFamilyGroup, dependents: updatedDependents });
 										}}

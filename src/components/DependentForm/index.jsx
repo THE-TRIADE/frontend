@@ -5,11 +5,19 @@ import { TextualInput } from '../Inputs/TextualInput';
 import { ButtonOutline } from '../ButtonOutline';
 import PropTypes from 'prop-types';
 export const DependentForm = ({ counter, updateDependent, updateDependentCount, initialValue = null }) => {
-	const [dependent, setDependent] = useState({
-		name: initialValue != null ? initialValue.name : '',
-		cpf: initialValue != null ? initialValue.cpf : '',
-		birthDate: initialValue != null ? initialValue.birthDate : '',
-	});
+	const [dependent, setDependent] = useState(
+		(initialValue != null && initialValue.id != null) ? 
+		{
+			name: initialValue != null ? initialValue.name : '',
+			cpf: initialValue != null ? initialValue.cpf : '',
+			birthDate: initialValue != null ? initialValue.birthDate : '',
+			id: initialValue.id
+		}: 
+		{
+			name: initialValue != null ? initialValue.name : '',
+			cpf: initialValue != null ? initialValue.cpf : '',
+			birthDate: initialValue != null ? initialValue.birthDate : '',
+		});
 
 	const updateForm = (inputName, event) => {
 		setDependent((prevState) => {
