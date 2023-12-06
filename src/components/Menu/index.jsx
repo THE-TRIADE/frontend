@@ -8,6 +8,12 @@ export const Menu = () => {
 		return location.pathname === path ? 'active' : '';
 	};
 
+	const logout = event => {
+		console.log("logued out")
+		sessionStorage.removeItem('UserId');
+		sessionStorage.removeItem('token');
+	}
+
 	return (
 		<nav className="navbar navbar-expand-sm fixed-top hide-print">
 			<div className="container-fluid">
@@ -41,7 +47,7 @@ export const Menu = () => {
 							</Link>
 						</li>
 						<li className="nav-item mx-3">
-							<Link className={`nav-link ${isActive('/login')}`} to="/login">
+							<Link className={`nav-link ${isActive('/login')}`} to="/login" onClick={logout}>
 								{/*Todo href*/}
 								Sair
 							</Link>
