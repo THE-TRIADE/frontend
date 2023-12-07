@@ -12,7 +12,7 @@ import { SelectInput } from '../components/Inputs/SelectInput';
 import { guardianRoleEnum } from './ManageGuardians';
 import { DependentForm } from '../components/DependentForm';
 import { ButtonOutline } from '../components/ButtonOutline';
-import axios from 'axios';
+
 export const Home = () => {
 	const [familyGroups, setFamilyGroups] = useState([]);
 	const navigate = useNavigate();
@@ -21,19 +21,19 @@ export const Home = () => {
 	const handleClose = () => setShow(false);
 	const handleShow = () => setShow(true);
 	const [editFamilyGroup, setEditFamilyGroup] = useState(null);
-	const editFunction = (e, familyGroup) => {
+	const editFunction = async (e, familyGroup) => {
 		e.preventDefault();
 		let gId = sessionStorage.getItem('UserId');
-		
-		let guardianRoleInitial = "MOTHER";
-		if(familyGroup.dependents.lenght > 0){
-			api()
+
+		let guardianRoleInitial = 'TEMPORARY';
+		if (familyGroup.dependents.lenght > 0) {
+			await api()
 				.get(`/guard/by-guardian-id-and-dependent-id/${gId}/${familyGroup.dependents[0].id}`)
-				.then( res => {
+				.then((res) => {
 					guardianRoleInitial = res.data.guardianRole;
-			});
+				});
 		}
-		setEditFamilyGroup({...familyGroup, guardianRole: guardianRoleInitial});
+		setEditFamilyGroup({ ...familyGroup, guardianRole: guardianRoleInitial });
 		handleShow();
 	};
 	const [dependentCount, setDependentCount] = useState(1);
@@ -83,45 +83,27 @@ export const Home = () => {
 	};
 	const submitEdit = () => {
 		let id = sessionStorage.getItem('UserId');
-		let editFamilyGroupRequest = {...editFamilyGroup, guardianId: id};
-		delete editFamilyGroupRequest["id"];
-		
-		// let id = sessionStorage.getItem('UserId');
-		// api()
-		// 	.get(`/guardian/${id}`)
-		// 	.then( res => {
-		// 		editFamilyGroupRequest.guardianRole = res.data.guardianRole;
-		// 	});
-		let requests = [];
-		let dependentsToCreate = [];
-		editFamilyGroupRequest.dependents.forEach(dependent => {
-			let dependentRequest = {...dependent};
-			if(dependent.id != null){
-				delete dependentRequest["id"];
-				requests.push(api().put(`/dependent/${dependent.id}`, dependentRequest));
-			}else{
-				dependentsToCreate.push(dependentRequest);
-			}
+		const familyGroupId = editFamilyGroup.id;
+		let editFamilyGroupRequest = { ...editFamilyGroup, guardianId: id };
+		delete editFamilyGroupRequest.id;
+		editFamilyGroupRequest.dependents = editFamilyGroupRequest.dependents.map((dep) => {
+			delete dep.id;
+			return dep;
 		});
-		editFamilyGroupRequest = {...editFamilyGroupRequest, ["dependents"]: dependentsToCreate};
 
-		axios.all(requests).then(responses => {
-			console.log("runingign");
-			api()
-				.put(`/familyGroup/${editFamilyGroup.id}`, editFamilyGroupRequest)
-				.then((res) => {
-					toast.success('Grupo familiar editado com sucesso');
-					handleClose();
-					setFamilyGroups((oldList) =>
-						oldList.map((familyGroup) => (familyGroup.id === editFamilyGroup.id ? res.data : familyGroup)),
-					);
-				})
-				.catch((err) => {
-					toast.error('Falha ao editar grupo familiar');
-					console.error(err);
-				});
-		})
-
+		api()
+			.put(`/familyGroup/${familyGroupId}`, editFamilyGroupRequest)
+			.then((res) => {
+				toast.success('Grupo familiar editado com sucesso');
+				handleClose();
+				setFamilyGroups((oldList) =>
+					oldList.map((familyGroup) => (familyGroup.id === res.data.id ? res.data : familyGroup)),
+				);
+			})
+			.catch((err) => {
+				toast.error('Falha ao editar grupo familiar');
+				console.error(err);
+			});
 	};
 	return (
 		<div className="app">

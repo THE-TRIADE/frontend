@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TextualInput } from '../components/Inputs/TextualInput';
 import { DateInput } from '../components/Inputs/DateInput';
 import { SelectInput } from '../components/Inputs/SelectInput';
@@ -91,7 +91,15 @@ export const Spents = () => {
 	const [editSpent, setEditSpent] = useState(null);
 	const editFunction = (e, spent) => {
 		e.preventDefault();
-		setEditSpent(spent);
+		const updatedSpent = {
+			id: spent.id,
+			name: spent.name,
+			value: spent.value,
+			paidOn: spent.paidOn,
+			dependentId: spent.dependentId,
+			guardianId: spent.guardianId,
+		};
+		setEditSpent(updatedSpent);
 		handleShowEdit();
 	};
 	const [trySubmit, setTrySubmit] = useState(false);
@@ -129,12 +137,16 @@ export const Spents = () => {
 		getDependents();
 	}, []);
 	const submitEdit = () => {
+		const updatedSpent = editSpent;
+		const spentId = updatedSpent.id;
+		delete updatedSpent.id;
+
 		api()
-			.put(`/spent/${editSpent.id}`, editSpent)
+			.put(`/spent/${spentId}`, updatedSpent)
 			.then((res) => {
 				toast.success('Gasto editado com sucesso');
 				handleCloseEdit();
-				setSpents((oldList) => oldList.map((spent) => (spent.id === editSpent.id ? res.data : spent)));
+				setSpents((oldList) => oldList.map((spent) => (spent.id === res.data.id ? res.data : spent)));
 			})
 			.catch((err) => {
 				toast.error('Falha ao editar gasto');
@@ -272,7 +284,7 @@ export const Spents = () => {
 							</Button>
 						</Modal.Footer>
 					</Modal>
-					<Modal show={showEdit} onHide={handleClose} backdrop="static" keyboard={false}>
+					<Modal show={showEdit} onHide={handleCloseEdit} backdrop="static" keyboard={false}>
 						<Modal.Header closeButton>
 							<Modal.Title>
 								<h1 className="modal-title fs-5 secondary-color" id="ModalCadastrarGuardaLabel">

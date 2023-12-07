@@ -66,9 +66,15 @@ export const ManageGuardians = () => {
 	const handleCloseEdit = () => setShowEdit(false);
 	const handleShowEdit = () => setShowEdit(true);
 	const [editGuard, setEditGuard] = useState(null);
+	// eslint-disable-next-line no-unused-vars
 	const editFunction = (e, guard) => {
 		e.preventDefault();
-		setEditGuard(guard);
+		const updatedGuard = {
+			guardianRole: guard.guardianRole,
+			dependentId: guard.dependentId,
+			guardianId: guard.guardianId,
+		};
+		setEditGuard(updatedGuard);
 		handleShowEdit();
 	};
 	const getGuardians = () => {
@@ -102,13 +108,15 @@ export const ManageGuardians = () => {
 				console.log(err);
 			});
 	};
+
 	const submitEdit = () => {
+		const updatedGuard = editGuard;
 		api()
-			.put(`/guard/${editGuard.id}`, editGuard)
+			.put(`/guard/?dependentId=${updatedGuard.dependentId}&guardianId=${updatedGuard.guardianId}`, updatedGuard)
 			.then((res) => {
 				toast.success('Guarda editada com sucesso');
 				handleCloseEdit();
-				setGuards((oldList) => oldList.map((guard) => (guard.id === editGuard.id ? res.data : guard)));
+				setGuards((oldList) => oldList.map((guard) => (guard.id === res.data.id ? res.data : guard)));
 			})
 			.catch((err) => {
 				toast.error('Falha ao editar guarda');
@@ -250,11 +258,11 @@ export const ManageGuardians = () => {
 							viewBox="0 0 16 16"
 						>
 							<path
-								fill-rule="evenodd"
+								fillRule="evenodd"
 								d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708z"
 							/>
 							<path
-								fill-rule="evenodd"
+								fillRule="evenodd"
 								d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708z"
 							/>
 						</svg>
@@ -271,11 +279,11 @@ export const ManageGuardians = () => {
 							viewBox="0 0 16 16"
 						>
 							<path
-								fill-rule="evenodd"
+								fillRule="evenodd"
 								d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708z"
 							/>
 							<path
-								fill-rule="evenodd"
+								fillRule="evenodd"
 								d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708z"
 							/>
 						</svg>
@@ -336,7 +344,8 @@ export const ManageGuardians = () => {
 														)}
 													</div>
 													<div className="d-flex justify-content-end">
-														<ButtonAction text="Editar" bgColor="bg-info" onClick={(e) => editFunction(e, guard)} />
+														{/* TODO Descomentar quando tiver PUT/guard */}
+														{/* <ButtonAction text="Editar" bgColor="bg-info" onClick={(e) => editFunction(e, guard)} /> */}
 														<ButtonAction
 															text="Excluir"
 															bgColor="bg-danger"
@@ -412,7 +421,7 @@ export const ManageGuardians = () => {
 						</Button>
 					</Modal.Footer>
 				</Modal>
-				<Modal show={showEdit} onHide={handleClose} backdrop="static" keyboard={false}>
+				<Modal show={showEdit} onHide={handleCloseEdit} backdrop="static" keyboard={false}>
 					<Modal.Header closeButton>
 						<Modal.Title>
 							<h1 className="modal-title fs-5 secondary-color" id="ModalCadastrarGuardaLabel">

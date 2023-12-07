@@ -99,7 +99,19 @@ export const DependentActivities = () => {
 	const editFunction = (e, activity) => {
 		console.log('	cliquei');
 		e.preventDefault();
-		setEditActivity(activity);
+		const currentActivity = {
+			name: activity.name,
+			dateStart: activity.dateStart,
+			hourStart: activity.hourStart,
+			dateEnd: activity.dateEnd,
+			hourEnd: activity.hourEnd,
+			dependentId: activity.dependentId,
+			currentGuardian: activity.currentGuardianId,
+			actor: activity.actorId,
+			id: activity.id,
+		};
+		console.log(currentActivity);
+		setEditActivity(currentActivity);
 		handleShowEdit();
 	};
 	const updateForm = (inputName, event) => {
@@ -215,12 +227,22 @@ export const DependentActivities = () => {
 			});
 	};
 	const submitEdit = () => {
+		const sendEditActivity = editActivity;
+		const activityId = sendEditActivity.id;
+		delete sendEditActivity.id;
+		console.log('send', sendEditActivity);
 		api()
-			.put(`/activity/${editActivity.id}`, editActivity)
+			.put(`/activity/${activityId}`, sendEditActivity)
 			.then((res) => {
 				toast.success('Atividade editada com sucesso');
 				handleCloseEdit();
-				setActivities((oldList) => oldList.map((activity) => (activity.id === editActivity.id ? res.data : activity)));
+				console.log(res.data);
+
+				setActivities((oldList) => {
+					let newList = [...oldList];
+					newList = newList.map((activity) => (activity.id === res.data.id ? res.data : activity));
+					return newList;
+				});
 			})
 			.catch((err) => {
 				toast.error('Falha ao editar atividade');
@@ -332,11 +354,11 @@ export const DependentActivities = () => {
 							viewBox="0 0 16 16"
 						>
 							<path
-								fill-rule="evenodd"
+								fillRule="evenodd"
 								d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708z"
 							/>
 							<path
-								fill-rule="evenodd"
+								fillRule="evenodd"
 								d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708z"
 							/>
 						</svg>
@@ -353,11 +375,11 @@ export const DependentActivities = () => {
 							viewBox="0 0 16 16"
 						>
 							<path
-								fill-rule="evenodd"
+								fillRule="evenodd"
 								d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708z"
 							/>
 							<path
-								fill-rule="evenodd"
+								fillRule="evenodd"
 								d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708z"
 							/>
 						</svg>
@@ -456,6 +478,7 @@ export const DependentActivities = () => {
 													deleteFunction={deleteActivityFunction}
 													target="#ModalFinishActivity"
 													funcOnClickFinish={setActivityToSendFinish}
+													editFunction={(e) => editFunction(e, activity)}
 												/>
 											))}
 									</div>
@@ -492,6 +515,7 @@ export const DependentActivities = () => {
 													deleteFunction={deleteActivityFunction}
 													target="#ModalFinishActivity"
 													funcOnClickFinish={setActivityToSendFinish}
+													editFunction={(e) => editFunction(e, activity)}
 												/>
 											))}
 									</div>
@@ -653,7 +677,7 @@ export const DependentActivities = () => {
 				)}
 				{/* MODAL DE FINISH ACTIVITY FIM */}
 				{/* MODAL CADASTRO DE ATIVIDADE INICIO */}
-				{!!dependent && !!guardians.length && (
+				{!!Object.keys(dependent).length && !!guardians.length && (
 					<Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
 						<Modal.Header closeButton>
 							<Modal.Title>
@@ -767,7 +791,7 @@ export const DependentActivities = () => {
 					</Modal>
 				)}
 				{/* MODAL CADASTRO DE ATIVIDADE FIM */}
-				<Modal show={showEdit} onHide={handleClose} backdrop="static" keyboard={false}>
+				<Modal show={showEdit} onHide={handleCloseEdit} backdrop="static" keyboard={false}>
 					<Modal.Header closeButton>
 						<Modal.Title>
 							<h1 className="modal-title fs-5 secondary-color" id="ModalCadastrarGuardaLabel">
