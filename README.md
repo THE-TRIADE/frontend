@@ -1,5 +1,7 @@
 # Frontend
 
+Este repositório diz respeito ao frontend da aplicação FamilyRoutine. Ele deve ser usado em conjunto com o repositório do backend, que é uma API REST e está disponível [aqui](https://github.com/THE-TRIADE/backend).
+
 ## Pré-requisitos para a compilação e utilização do sistema
 
 Utilizar os seguintes tutoriais para configurar o ambiente de desenvolvimento:
@@ -45,6 +47,10 @@ Clonar o repositório a partir da branch develop:
 git clone https://github.com/THE-TRIADE/frontend.git -b develop
 ```
 
+Criar arquivo externalizado `.env` na raiz do projeto com a seguinte configuração:
+
+```VITE_API_URL=<endereço do backend, localmente seria: http://localhost:8080>```
+
 Após, baixar as dependências do projeto:
 
 ```bash
@@ -60,9 +66,9 @@ npm run build
 Por fim, rodar o projeto:
 
 ```bash
-npm run preview
+npm run dev
 ```
-
+Abra http://localhost:5173 no seu browser para ver a tela inicial do projeto.
 
 ## Documentação oficial do React.js
-- [React.js Documentation](https://react.dev/) - learn about React.js features and API.
+- [React.js](https://react.dev/) - aprenda sobre React, funcionalidades e API.
