@@ -57,7 +57,17 @@ Após, baixar as dependências do projeto:
 npm install
 ```
 
-Após, buildar o projeto:
+### Modo desenvolvimento
+
+Rodar o projeto:
+
+```bash
+npm run dev
+```
+
+### Modo produção
+
+Buildar o projeto:
 
 ```bash
 npm run build
@@ -66,9 +76,9 @@ npm run build
 Por fim, rodar o projeto:
 
 ```bash
-npm run dev
+npm run preview
 ```
-Abra http://localhost:5173 no seu browser para ver a tela inicial do projeto.
+Abra http://localhost:5173 (modo desenvolvimeento) ou http://localhost:4173 (modo produção) no seu browser para ver a tela inicial do projeto.
 
 ## Documentação oficial do React.js
 - [React.js](https://react.dev/) - aprenda sobre React, funcionalidades e API.
